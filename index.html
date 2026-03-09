@@ -265,6 +265,11 @@
   .ai-modal { max-width:580px; }
   .ai-result-preview { background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:12px; margin-top:12px; font-size:12px; color:var(--text-dim); max-height:160px; overflow-y:auto; display:none; }
 
+  /* แสดงช่องกรอก API Key เพื่อความปลอดภัย */
+  .api-key-row { margin-top:14px; }
+  .api-key-row label { font-size:11px; font-weight:600; color:var(--text-dim); letter-spacing:0.5px; text-transform:uppercase; }
+  .api-key-note { font-size:10px; color:var(--text-muted); margin-top:3px; }
+
   /* REMINDER */
   .reminder-badge { display:inline-flex; align-items:center; gap:3px; padding:2px 7px; border-radius:20px; font-size:10px; font-weight:700; margin-left:5px; }
   .reminder-due  { background:rgba(239,68,68,0.15); color:var(--red); }
@@ -281,50 +286,6 @@
 
   /* EXPORT */
   .export-grid { display:grid; grid-template-columns:1fr 1fr; gap:11px; margin-top:6px; }
-  .export-card { background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:18px 14px; text-align:center; cursor:pointer; transition:all 0.2s; }
-  .export-card:hover { border-color:var(--accent); transform:translateY(-2px); }
-  .export-card-icon { font-size:28px; margin-bottom:8px; }
-  .export-card-title { font-size:13px; font-weight:700; margin-bottom:3px; }
-  .export-card-sub { font-size:11px; color:var(--text-dim); }
-
-  /* ── NEW FEATURES ── */
-  /* AI Scan */
-  .ai-modal { max-width:580px; }
-  .ai-drop-zone { border:2px dashed var(--border); border-radius:14px; padding:30px 20px; text-align:center; cursor:pointer; transition:all 0.25s; position:relative; overflow:hidden; }
-  .ai-drop-zone:hover,.ai-drop-zone.drag-over { border-color:var(--accent); background:var(--accent-glow); }
-  .ai-drop-zone input[type=file] { position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%; }
-  .ai-drop-icon { font-size:40px; margin-bottom:10px; line-height:1; }
-  .ai-drop-title { font-size:15px; font-weight:700; margin-bottom:5px; }
-  .ai-drop-sub { font-size:12px; color:var(--text-dim); }
-  .ai-img-preview { width:100%; max-height:200px; object-fit:contain; border-radius:10px; border:1px solid var(--border); margin-top:12px; display:none; }
-  .ai-status-box { margin-top:12px; padding:12px 14px; border-radius:10px; font-size:13px; display:none; gap:8px; align-items:center; }
-  .ai-status-box.loading { display:flex; background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.2); color:var(--blue); }
-  .ai-status-box.success { display:flex; background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.2); color:var(--green); }
-  .ai-status-box.error   { display:flex; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.2); color:var(--red); }
-  @keyframes spin { to { transform:rotate(360deg); } }
-  .spinner { display:inline-block; width:16px; height:16px; border:2px solid currentColor; border-top-color:transparent; border-radius:50%; animation:spin 0.7s linear infinite; flex-shrink:0; }
-  .ai-result-box { background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:12px 14px; margin-top:12px; font-size:12px; color:var(--text-dim); max-height:150px; overflow-y:auto; display:none; font-family:'Space Mono',monospace; line-height:1.6; }
-  .api-key-row { margin-top:14px; display: none; /* ซ่อนช่องกรอก API Key เนื่องจากใส่ไว้ในโค้ดแล้ว */ }
-  .api-key-row label { font-size:11px; font-weight:600; color:var(--text-dim); letter-spacing:0.5px; text-transform:uppercase; }
-  .api-key-note { font-size:10px; color:var(--text-muted); margin-top:3px; }
-
-  /* Reminder */
-  .remind-modal { max-width:540px; }
-  .remind-list { display:flex; flex-direction:column; gap:8px; max-height:270px; overflow-y:auto; margin-bottom:14px; }
-  .remind-card { background:var(--surface2); border:1px solid var(--border); border-radius:11px; padding:12px 13px; }
-  .remind-card-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
-  .remind-card-name { font-size:13px; font-weight:600; }
-  .remind-card-status { font-size:11px; font-weight:700; padding:2px 9px; border-radius:20px; }
-  .status-due  { background:rgba(239,68,68,0.15); color:var(--red); }
-  .status-soon { background:rgba(234,179,8,0.15);  color:var(--yellow); }
-  .status-ok   { background:rgba(34,197,94,0.1);  color:var(--green); }
-  .remind-card-meta { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; font-size:11px; color:var(--text-dim); }
-  .remind-meta-item span { display:block; font-weight:600; color:var(--text); margin-top:2px; }
-  .remind-add-grid { display:grid; grid-template-columns:1fr 90px 90px; gap:8px; }
-
-  /* Export */
-  .export-modal { max-width:420px; }
-  .export-grid { display:grid; grid-template-columns:1fr 1fr; gap:11px; margin:4px 0; }
   .export-card { background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:18px 14px; text-align:center; cursor:pointer; transition:all 0.2s; }
   .export-card:hover { border-color:var(--accent); transform:translateY(-2px); }
   .export-card-icon { font-size:28px; margin-bottom:8px; }
@@ -616,7 +577,7 @@
 
     <div class="api-key-row">
       <label>🔑 Gemini API Key</label>
-      <input type="password" id="aiApiKey" value="AIzaSyChuId4e0fQNqepJdqJp-bbOkTMcBFvbac" placeholder="AIzaSy..." style="width:100%;margin-top:6px;font-size:13px">
+      <input type="password" id="aiApiKey" placeholder="AIzaSy..." style="width:100%;margin-top:6px;font-size:13px">
       <div class="api-key-note">เก็บเฉพาะใน browser ของคุณเท่านั้น ไม่ส่งไปไหนนอกจาก Gemini API</div>
     </div>
 
@@ -1333,7 +1294,9 @@ function openAiScanModal(){
   document.getElementById('aiDropIcon').textContent='📷';
   document.getElementById('aiRunBtn').disabled=true;
   document.getElementById('aiRunBtn').style.opacity='0.5';
-  // ใช้ค่าจาก value ใน input โดยตรง ซึ่งตอนนี้กำหนดไว้แล้ว
+  
+  // เรียกคืนค่า API Key จาก LocalStorage ถ้าเคยกรอกไว้
+  document.getElementById('aiApiKey').value = localStorage.getItem('csGeminiApiKey') || '';
   document.getElementById('aiFileInput').value='';
   document.getElementById('aiScanOverlay').classList.add('open');
 }
@@ -1368,6 +1331,8 @@ async function runAiScan(){
   const apiKey = document.getElementById('aiApiKey').value.trim();
   if(!apiKey){ alert('กรุณากรอก Gemini API Key ก่อน'); return; }
   if(!aiImageBase64){ alert('กรุณาเลือกรูปภาพก่อน'); return; }
+  
+  // เซฟ API Key ไว้ในเครื่อง จะได้ไม่ต้องกรอกใหม่รอบหน้า
   localStorage.setItem('csGeminiApiKey', apiKey);
 
   const statusBox = document.getElementById('aiStatusBox');
