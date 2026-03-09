@@ -513,30 +513,20 @@
     </div>
     <div class="service-items" id="serviceItems"></div>
     
-    <!-- เพิ่มส่วนลด และ VAT -->
+    <!-- เพิ่มส่วนลด -->
     <div style="margin-top:13px; background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:12px;">
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
+      <div style="margin-bottom:12px;">
         <div>
           <label style="font-size:10px; color:var(--text-muted);">ส่วนลด (บาท)</label>
           <input type="number" id="fDiscount" placeholder="0" min="0" oninput="updateFormTotal()" style="width:100%; font-size:13px; padding:8px;">
-        </div>
-        <div>
-          <label style="font-size:10px; color:var(--text-muted);">ภาษีมูลค่าเพิ่ม (VAT)</label>
-          <select id="fVat" onchange="updateFormTotal()" style="width:100%; font-size:13px; padding:8px;">
-            <option value="0">ไม่มี (0%)</option>
-            <option value="7">7%</option>
-          </select>
         </div>
       </div>
       
       <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-dim); margin-bottom:4px;">
         <span>ยอดรวมรายการ:</span><span id="formSubtotal">฿0.00</span>
       </div>
-      <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--red); margin-bottom:4px; display:none;" id="formDiscountRow">
+      <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--red); margin-bottom:8px; display:none;" id="formDiscountRow">
         <span>ส่วนลด:</span><span id="formDiscountVal">-฿0.00</span>
-      </div>
-      <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-dim); margin-bottom:8px; display:none;" id="formVatRow">
-        <span>ภาษีมูลค่าเพิ่ม (VAT):</span><span id="formVatVal">+฿0.00</span>
       </div>
       
       <div class="form-total">
@@ -882,17 +872,10 @@ function openDetail(id){
   let summaryRows = '';
   const subtotal = r.subtotal !== undefined ? r.subtotal : r.total; // กรณีข้อมูลเก่าไม่มี field subtotal
   const discount = r.discount || 0;
-  const vatRate = r.vatRate || 0;
-  const vatAmount = r.vatAmount || 0;
 
-  if (discount > 0 || vatRate > 0) {
+  if (discount > 0) {
       summaryRows += `<tr><td colspan="4" style="text-align:right; color:var(--text-dim)">ยอดรวมรายการ</td><td style="text-align:right">฿${subtotal.toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2})}</td></tr>`;
-      if(discount > 0) {
-         summaryRows += `<tr><td colspan="4" style="text-align:right; color:var(--red)">ส่วนลด</td><td style="text-align:right; color:var(--red)">-฿${discount.toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2})}</td></tr>`;
-      }
-      if(vatRate > 0) {
-         summaryRows += `<tr><td colspan="4" style="text-align:right; color:var(--text-dim)">VAT (${vatRate}%)</td><td style="text-align:right">฿${vatAmount.toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2})}</td></tr>`;
-      }
+      summaryRows += `<tr><td colspan="4" style="text-align:right; color:var(--red)">ส่วนลด</td><td style="text-align:right; color:var(--red)">-฿${discount.toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2})}</td></tr>`;
   }
   summaryRows += `<tr class="total-row"><td colspan="4">ยอดสุทธิ</td><td style="text-align:right">฿${(r.total||0).toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2})}</td></tr>`;
 
@@ -951,7 +934,6 @@ function openModal(id=null){
     document.getElementById('fMileage').value=r.mileage||'';
     document.getElementById('fNote').value=r.note||'';
     document.getElementById('fDiscount').value=r.discount||'';
-    document.getElementById('fVat').value=r.vatRate||'0';
     document.getElementById('serviceItems').innerHTML='';
     r.items.forEach(it=>addServiceItem(it));
   } else {
@@ -960,7 +942,6 @@ function openModal(id=null){
     document.getElementById('fMileage').value='';
     document.getElementById('fNote').value='';
     document.getElementById('fDiscount').value='';
-    document.getElementById('fVat').value='0';
     document.getElementById('serviceItems').innerHTML='';
     addServiceItem();
   }
@@ -1049,13 +1030,11 @@ function updateFormTotal(){
   });
 
   const discount = parseFloat(document.getElementById('fDiscount').value) || 0;
-  const vatRate = parseFloat(document.getElementById('fVat').value) || 0;
 
   let afterDiscount = subtotal - discount;
   if(afterDiscount < 0) afterDiscount = 0;
 
-  const vatAmount = afterDiscount * (vatRate / 100);
-  const netTotal = afterDiscount + vatAmount;
+  const netTotal = afterDiscount;
 
   document.getElementById('formSubtotal').textContent = '฿' + subtotal.toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2});
 
@@ -1065,14 +1044,6 @@ function updateFormTotal(){
     document.getElementById('formDiscountVal').textContent = '-฿' + discount.toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2});
   } else {
     discountRow.style.display = 'none';
-  }
-
-  const vatRow = document.getElementById('formVatRow');
-  if(vatRate > 0) {
-    vatRow.style.display = 'flex';
-    document.getElementById('formVatVal').textContent = '+฿' + vatAmount.toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2});
-  } else {
-    vatRow.style.display = 'none';
   }
 
   document.getElementById('formTotal').textContent = '฿' + netTotal.toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2});
@@ -1100,11 +1071,9 @@ function saveRecord(){
   });
 
   const discount = parseFloat(document.getElementById('fDiscount').value) || 0;
-  const vatRate = parseFloat(document.getElementById('fVat').value) || 0;
   let afterDiscount = subtotal - discount;
   if(afterDiscount < 0) afterDiscount = 0;
-  const vatAmount = afterDiscount * (vatRate / 100);
-  const total = afterDiscount + vatAmount;
+  const total = afterDiscount;
 
   const rec={
     id:editingId||Date.now(),
@@ -1116,8 +1085,6 @@ function saveRecord(){
     items, 
     subtotal, 
     discount, 
-    vatRate, 
-    vatAmount, 
     total
   };
 
@@ -1422,7 +1389,6 @@ async function runAiScan(){
   "mileage": จำนวนกิโลเมตรเป็นตัวเลขหรือ null,
   "note": "หมายเหตุเพิ่มเติมถ้ามี",
   "discount": ส่วนลดที่ปรากฏในบิลเป็นตัวเลข (ถ้าไม่มีให้ใส่ 0),
-  "vatRate": ภาษีมูลค่าเพิ่มหรือ VAT เป็นเปอร์เซ็นต์ (เช่น 7 หรือ 0 ถ้าไม่มี),
   "items": [
     { "name": "ชื่อรายการงาน/อะไหล่", "type": "ค่าบริการ|อะไหล่|ค่าแรง|อื่นๆ", "qty": จำนวน, "cost": ราคาต่อหน่วยเป็นตัวเลข }
   ]
@@ -1475,9 +1441,8 @@ async function runAiScan(){
       if(parsed.mileage) document.getElementById('fMileage').value = parsed.mileage;
       if(parsed.note)   document.getElementById('fNote').value   = parsed.note;
       
-      // อัปเดตส่วนลดและ VAT
+      // อัปเดตส่วนลด
       if(parsed.discount) document.getElementById('fDiscount').value = parsed.discount;
-      if(parsed.vatRate)  document.getElementById('fVat').value  = parsed.vatRate;
 
       if(parsed.items && parsed.items.length){
         document.getElementById('serviceItems').innerHTML='';
@@ -1491,7 +1456,7 @@ async function runAiScan(){
         });
         updateFormTotal();
       }
-      alert(`✅ AI กรอกข้อมูลสำเร็จ!\nพบ ${(parsed.items||[]).length} รายการ\nส่วนลด: ${parsed.discount||0} บาท, VAT: ${parsed.vatRate||0}%\nกรุณาตรวจสอบและแก้ไขก่อนบันทึก`);
+      alert(`✅ AI กรอกข้อมูลสำเร็จ!\nพบ ${(parsed.items||[]).length} รายการ\nส่วนลด: ${parsed.discount||0} บาท\nกรุณาตรวจสอบและแก้ไขก่อนบันทึก`);
     }, 200);
 
   } catch(err){
