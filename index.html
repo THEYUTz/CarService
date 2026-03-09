@@ -716,30 +716,14 @@ function saveAll(){
 // ════════════════════════════════════
 window.onload = () => {
   if (!vehicles) {
-    vehicles = [
-      { id:'v1', name:'Honda Forza 350', plate:'ขข-4567', icon:'🏍', color:'#f97316' },
-      { id:'v2', name:'Honda PCX',       plate:'คค-8901', icon:'🛵', color:'#3b82f6' },
-    ];
+    vehicles = [];
   }
   if (!serviceTypes) {
     serviceTypes = DEFAULT_SERVICE_TYPES.map((s,i)=>({id:'st'+i, ...s}));
   }
 
   if (!records) {
-    records = [
-      // PCX
-      {id:101,vehicleId:'v2',date:'2025-01-20',center:'Honda Wing ลาดพร้าว',mileage:8500,note:'เช็คระยะ 8,000 กม.',items:[{name:'เปลี่ยนถ่ายน้ำมันเครื่อง',type:'ค่าบริการ',cost:450},{name:'เปลี่ยนไส้กรองอากาศ',type:'อะไหล่',cost:280}],total:730},
-      {id:102,vehicleId:'v2',date:'2025-05-10',center:'Honda Wing ลาดพร้าว',mileage:12200,note:'',items:[{name:'เปลี่ยนถ่ายน้ำมันเครื่อง',type:'ค่าบริการ',cost:450},{name:'ตรวจเช็คเบรก',type:'ค่าบริการ',cost:0},{name:'เปลี่ยนหัวเทียน',type:'อะไหล่',cost:350}],total:800},
-      {id:103,vehicleId:'v2',date:'2025-09-15',center:'ร้านช่างแถวบ้าน',mileage:16800,note:'โซ่หย่อน',items:[{name:'เปลี่ยนถ่ายน้ำมันเครื่อง',type:'ค่าบริการ',cost:450},{name:'ตั้งโซ่',type:'ค่าแรง',cost:100}],total:550},
-      // Forza 350
-      {id:201,vehicleId:'v1',date:'2024-11-05',center:'Honda Dream Wing สาขาพระราม 9',mileage:1000,note:'เช็คระยะ 1,000 กม. ครั้งแรก',items:[{name:'เปลี่ยนถ่ายน้ำมันเครื่อง',type:'ค่าบริการ',cost:650},{name:'ตรวจเช็คระยะ',type:'ค่าบริการ',cost:0},{name:'ตรวจเช็คเบรก',type:'ค่าบริการ',cost:0}],total:650},
-      {id:202,vehicleId:'v1',date:'2025-02-18',center:'Honda Dream Wing สาขาพระราม 9',mileage:5200,note:'เช็คระยะ 5,000 กม.',items:[{name:'เปลี่ยนถ่ายน้ำมันเครื่อง',type:'ค่าบริการ',cost:650},{name:'เปลี่ยนไส้กรองน้ำมัน',type:'อะไหล่',cost:420},{name:'เปลี่ยนไส้กรองอากาศ',type:'อะไหล่',cost:580},{name:'ตรวจเช็คเบรก',type:'ค่าบริการ',cost:0}],total:1650},
-      {id:203,vehicleId:'v1',date:'2025-04-10',center:'Honda Dream Wing สาขาพระราม 9',mileage:8800,note:'ล้อหน้าสั่น ตรวจสอบล้อ',items:[{name:'เปลี่ยนยาง',type:'อะไหล่',cost:2800},{name:'ตั้งโซ่',type:'ค่าแรง',cost:150},{name:'เปลี่ยนถ่ายน้ำมันเครื่อง',type:'ค่าบริการ',cost:650}],total:3600},
-      {id:204,vehicleId:'v1',date:'2025-06-22',center:'ร้าน Moto Clinic รัชดา',mileage:11500,note:'เช็คระยะ 10,000 กม.',items:[{name:'เปลี่ยนถ่ายน้ำมันเครื่อง',type:'ค่าบริการ',cost:650},{name:'เปลี่ยนไส้กรองน้ำมัน',type:'อะไหล่',cost:420},{name:'ตรวจเช็คเบรก',type:'ค่าบริการ',cost:0},{name:'ปรับวาล์ว',type:'ค่าแรง',cost:500},{name:'ตรวจเช็คแบตเตอรี่',type:'ค่าบริการ',cost:0}],total:1570},
-      {id:205,vehicleId:'v1',date:'2025-08-05',center:'Honda Dream Wing สาขาพระราม 9',mileage:14200,note:'เสียงดังจากด้านหน้า',items:[{name:'เปลี่ยนน้ำมันโช้ค',type:'อะไหล่',cost:1200},{name:'เปลี่ยนถ่ายน้ำมันเครื่อง',type:'ค่าบริการ',cost:650}],total:1850},
-      {id:206,vehicleId:'v1',date:'2025-10-30',center:'Honda Dream Wing สาขาพระราม 9',mileage:17800,note:'เช็คระยะ 15,000 กม.',items:[{name:'เปลี่ยนถ่ายน้ำมันเครื่อง',type:'ค่าบริการ',cost:650},{name:'เปลี่ยนไส้กรองน้ำมัน',type:'อะไหล่',cost:420},{name:'เปลี่ยนไส้กรองอากาศ',type:'อะไหล่',cost:580},{name:'เปลี่ยนหัวเทียน',type:'อะไหล่',cost:480},{name:'เปลี่ยนโซ่-สเตอร์',type:'อะไหล่',cost:2200},{name:'ตรวจเช็คเบรก',type:'ค่าบริการ',cost:0}],total:4330},
-      {id:207,vehicleId:'v1',date:'2025-12-15',center:'ร้าน Moto Clinic รัชดา',mileage:20100,note:'',items:[{name:'เปลี่ยนถ่ายน้ำมันเครื่อง',type:'ค่าบริการ',cost:650},{name:'ตรวจเช็คน้ำมันเบรก',type:'ค่าบริการ',cost:0},{name:'ตั้งโซ่',type:'ค่าแรง',cost:150}],total:800},
-    ];
+    records = [];
   }
 
   document.getElementById('fDate').value = new Date().toISOString().split('T')[0];
