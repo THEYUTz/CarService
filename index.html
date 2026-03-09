@@ -304,7 +304,7 @@
   @keyframes spin { to { transform:rotate(360deg); } }
   .spinner { display:inline-block; width:16px; height:16px; border:2px solid currentColor; border-top-color:transparent; border-radius:50%; animation:spin 0.7s linear infinite; flex-shrink:0; }
   .ai-result-box { background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:12px 14px; margin-top:12px; font-size:12px; color:var(--text-dim); max-height:150px; overflow-y:auto; display:none; font-family:'Space Mono',monospace; line-height:1.6; }
-  .api-key-row { margin-top:14px; }
+  .api-key-row { margin-top:14px; display: none; /* ซ่อนช่องกรอก API Key เนื่องจากใส่ไว้ในโค้ดแล้ว */ }
   .api-key-row label { font-size:11px; font-weight:600; color:var(--text-dim); letter-spacing:0.5px; text-transform:uppercase; }
   .api-key-note { font-size:10px; color:var(--text-muted); margin-top:3px; }
 
@@ -584,7 +584,7 @@
       ondragover="event.preventDefault();this.classList.add('drag-over')"
       ondragleave="this.classList.remove('drag-over')"
       ondrop="handleAiDrop(event)">
-      <input type="file" id="aiFileInput" accept="image/*" capture="environment" onchange="handleAiFile(event)">
+      <input type="file" id="aiFileInput" accept="image/*" onchange="handleAiFile(event)">
       <div class="ai-drop-icon" id="aiDropIcon">📷</div>
       <div class="ai-drop-title">แตะเพื่อถ่ายรูป หรือลากไฟล์มาวาง</div>
       <div class="ai-drop-sub">รองรับ JPG, PNG • ใบงาน ใบเสร็จ หรือรูปถ่ายหน้าจอ</div>
@@ -595,9 +595,9 @@
     <div class="ai-result-box" id="aiResultBox"></div>
 
     <div class="api-key-row">
-      <label>🔑 Anthropic API Key</label>
-      <input type="password" id="aiApiKey" placeholder="sk-ant-api03-..." style="width:100%;margin-top:6px;font-size:13px">
-      <div class="api-key-note">เก็บเฉพาะใน browser ของคุณเท่านั้น ไม่ส่งไปไหนนอกจาก Anthropic API</div>
+      <label>🔑 Gemini API Key</label>
+      <input type="password" id="aiApiKey" value="AIzaSyChuId4e0fQNqepJdqJp-bbOkTMcBFvbac" placeholder="AIzaSy..." style="width:100%;margin-top:6px;font-size:13px">
+      <div class="api-key-note">เก็บเฉพาะใน browser ของคุณเท่านั้น ไม่ส่งไปไหนนอกจาก Gemini API</div>
     </div>
 
     <div style="display:flex;gap:8px;margin-top:18px;justify-content:flex-end;flex-wrap:wrap">
@@ -1252,16 +1252,18 @@ function resetServiceTypes(){
 //  AI SCAN
 // ════════════════════════════════════
 let aiImageBase64 = null;
+let aiImageMimeType = null;
 
 function openAiScanModal(){
   aiImageBase64 = null;
+  aiImageMimeType = null;
   document.getElementById('aiImgPreview').style.display='none';
   document.getElementById('aiStatusBox').className='ai-status-box';
   document.getElementById('aiResultBox').style.display='none';
   document.getElementById('aiDropIcon').textContent='📷';
   document.getElementById('aiRunBtn').disabled=true;
   document.getElementById('aiRunBtn').style.opacity='0.5';
-  document.getElementById('aiApiKey').value = localStorage.getItem('csApiKey')||'';
+  // ใช้ค่าจาก value ใน input โดยตรง ซึ่งตอนนี้กำหนดไว้แล้ว
   document.getElementById('aiFileInput').value='';
   document.getElementById('aiScanOverlay').classList.add('open');
 }
@@ -1279,6 +1281,7 @@ function processAiFile(file){
   const reader = new FileReader();
   reader.onload = (e)=>{
     const dataUrl = e.target.result;
+    aiImageMimeType = dataUrl.split(';')[0].split(':')[1];
     aiImageBase64 = dataUrl.split(',')[1];
     const img = document.getElementById('aiImgPreview');
     img.src = dataUrl; img.style.display='block';
@@ -1293,9 +1296,9 @@ function processAiFile(file){
 
 async function runAiScan(){
   const apiKey = document.getElementById('aiApiKey').value.trim();
-  if(!apiKey){ alert('กรุณากรอก Anthropic API Key ก่อน'); return; }
+  if(!apiKey){ alert('กรุณากรอก Gemini API Key ก่อน'); return; }
   if(!aiImageBase64){ alert('กรุณาเลือกรูปภาพก่อน'); return; }
-  localStorage.setItem('csApiKey', apiKey);
+  localStorage.setItem('csGeminiApiKey', apiKey);
 
   const statusBox = document.getElementById('aiStatusBox');
   const resultBox = document.getElementById('aiResultBox');
@@ -1306,22 +1309,7 @@ async function runAiScan(){
   resultBox.style.display='none';
 
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version':'2023-06-01',
-        'anthropic-dangerous-direct-browser-access':'true'
-      },
-      body: JSON.stringify({
-        model:'claude-opus-4-5',
-        max_tokens:1500,
-        messages:[{
-          role:'user',
-          content:[
-            { type:'image', source:{ type:'base64', media_type:'image/jpeg', data: aiImageBase64 } },
-            { type:'text', text:`คุณคือผู้เชี่ยวชาญอ่านใบงานศูนย์บริการรถยนต์/มอเตอร์ไซค์
+    const prompt = `คุณคือผู้เชี่ยวชาญอ่านใบงานศูนย์บริการรถยนต์/มอเตอร์ไซค์
 กรุณาอ่านข้อมูลจากรูปนี้แล้วตอบกลับเป็น JSON เท่านั้น ไม่มีข้อความอื่น
 
 รูปแบบ JSON ที่ต้องการ:
@@ -1335,10 +1323,26 @@ async function runAiScan(){
   ]
 }
 
-หมายเหตุ: cost ให้ใส่ราคาต่อหน่วย (ไม่ใช่รวม) ถ้าไม่มีราคาให้ใส่ 0` }
-          ]
-        }]
-      })
+หมายเหตุ: cost ให้ใส่ราคาต่อหน่วย (ไม่ใช่รวม) ถ้าไม่มีราคาให้ใส่ 0`;
+
+    const payload = {
+      contents: [{
+        parts: [
+          { text: prompt },
+          { inlineData: { mimeType: aiImageMimeType || "image/jpeg", data: aiImageBase64 } }
+        ]
+      }],
+      generationConfig: {
+        responseMimeType: "application/json"
+      }
+    };
+
+    const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
     });
 
     if(!resp.ok){
@@ -1347,7 +1351,7 @@ async function runAiScan(){
     }
 
     const data = await resp.json();
-    const raw = data.content?.find(c=>c.type==='text')?.text || '';
+    const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
     resultBox.style.display='block';
     resultBox.textContent = raw;
 
