@@ -264,8 +264,6 @@
   @keyframes spin { to { transform:rotate(360deg); } }
   .spinner { display:inline-block; width:16px; height:16px; border:2px solid currentColor; border-top-color:transparent; border-radius:50%; animation:spin 0.7s linear infinite; flex-shrink:0; }
   .ai-result-box { background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:12px 14px; margin-top:12px; font-size:12px; color:var(--text-dim); max-height:150px; overflow-y:auto; display:none; font-family:'Space Mono',monospace; line-height:1.6; }
-
-  /* แสดงช่องกรอก API Key เพื่อความปลอดภัย */
   .api-key-row { margin-top:14px; }
   .api-key-row label { font-size:11px; font-weight:600; color:var(--text-dim); letter-spacing:0.5px; text-transform:uppercase; }
   .api-key-note { font-size:10px; color:var(--text-muted); margin-top:3px; }
@@ -1625,19 +1623,17 @@ function clearAllData(){
 
 // =========================================================================
 // 🚀 ADDED: FIREBASE LOGIN & CLOUD SYNC
-// (เขียนต่อท้ายสุด โดยไม่มีการแก้ไขโค้ดที่อยู่ด้านบนเลยแม้แต่ตัวเดียว)
 // =========================================================================
 (async function initFirebaseSync() {
   const headerActions = document.querySelector('.header-actions');
   const authBtn = document.createElement('button');
   authBtn.className = 'btn btn-ghost';
   authBtn.innerHTML = '☁️ กำลังเชื่อมต่อคลาวด์...';
-  // แทรกปุ่มสถานะคลาวด์ไว้เป็นปุ่มแรกสุดของ Header
   headerActions.insertBefore(authBtn, headerActions.firstChild);
 
   try {
     const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js");
-    const { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
+    const { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
     const { getFirestore, doc, setDoc, getDoc } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
 
     const firebaseConfig = {
@@ -1654,6 +1650,7 @@ function clearAllData(){
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
 
     // เก็บฟังก์ชันบันทึกเดิมไว้
     const originalSaveAll = window.saveAll || saveAll;
@@ -1672,7 +1669,10 @@ function clearAllData(){
           reminders: reminders,
           updatedAt: new Date().toISOString()
         });
-        authBtn.innerHTML = `✅ ซิงค์แล้ว (${auth.currentUser.uid.substring(0,5)})`;
+        
+        const isAnon = auth.currentUser.isAnonymous;
+        const dispName = isAnon ? 'ชั่วคราว' : (auth.currentUser.email ? auth.currentUser.email.split('@')[0] : auth.currentUser.uid.substring(0,5));
+        authBtn.innerHTML = `✅ ซิงค์แล้ว (${dispName})`;
       } catch(e) { 
         console.error("Firebase save error", e); 
         authBtn.innerHTML = '❌ ซิงค์ล้มเหลว';
@@ -1742,21 +1742,69 @@ function clearAllData(){
               await saveToFirebase();
             }
           }
-          authBtn.innerHTML = `✅ ซิงค์แล้ว (${user.uid.substring(0,5)})`;
           
-          // ผูกอีเวนต์คลิกปุ่มเพื่อแสดงรายละเอียด
+          const isAnon = user.isAnonymous;
+          const dispName = isAnon ? 'ชั่วคราว' : (user.email ? user.email.split('@')[0] : user.uid.substring(0,5));
+          authBtn.innerHTML = `✅ ซิงค์แล้ว (${dispName})`;
+          
+          // ผูกอีเวนต์คลิกปุ่มเพื่อแสดงรายละเอียดและตัวเลือกล็อกอิน
           authBtn.onclick = () => {
              const overlay = document.createElement('div');
-             overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(3px);z-index:9999;display:flex;align-items:center;justify-content:center;';
+             overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(3px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:14px;';
+             
+             let actionButtons = '';
+             if (isAnon) {
+                 actionButtons = `
+                    <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;padding:8px;background:rgba(234,179,8,0.1);border-radius:8px;border:1px solid rgba(234,179,8,0.2);">
+                        ⚠️ ขณะนี้ใช้งานแบบ "ไม่ระบุตัวตน" หากเปลี่ยนอุปกรณ์ ข้อมูลอาจสูญหาย แนะนำให้ล็อกอินเพื่อบันทึกข้อมูลถาวร
+                    </div>
+                    <button class="btn" id="googleLoginBtn" style="width:100%;justify-content:center;background:#db4437;color:white;margin-bottom:8px;font-size:14px;padding:12px;">🔴 ล็อกอินด้วย Google</button>
+                 `;
+             } else {
+                 actionButtons = `
+                    <div style="font-size:13px;color:var(--green);margin-bottom:12px;font-weight:bold;">
+                        ✅ ล็อกอินด้วย ${user.email} แล้ว
+                    </div>
+                    <button class="btn btn-ghost" id="googleLogoutBtn" style="width:100%;justify-content:center;margin-bottom:8px;border:1px solid var(--border);">ออกจากระบบ</button>
+                 `;
+             }
+             
              const box = document.createElement('div');
-             box.style.cssText = 'background:var(--surface);padding:24px;border-radius:16px;border:1px solid var(--border);text-align:center;max-width:320px;color:var(--text);font-family:"Sarabun",sans-serif;box-shadow:0 10px 30px rgba(0,0,0,0.5);';
+             box.style.cssText = 'background:var(--surface);padding:24px;border-radius:16px;border:1px solid var(--border);text-align:center;max-width:320px;width:100%;color:var(--text);font-family:"Sarabun",sans-serif;box-shadow:0 10px 30px rgba(0,0,0,0.5);';
              box.innerHTML = `<div style="font-size:46px;margin-bottom:10px;">☁️</div>
                               <h3 style="margin-bottom:10px;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;color:var(--accent);">CLOUD SYNC ACTIVE</h3>
-                              <p style="font-size:13px;color:var(--text-dim);margin-bottom:18px;line-height:1.5;">ระบบได้เข้าสู่ระบบอย่างปลอดภัย และซิงค์ข้อมูลทั้งหมดของคุณขึ้น Firebase Firestore แบบ Real-time เรียบร้อยแล้ว<br><br><span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--text-muted);">UID: ${user.uid}</span></p>
-                              <button class="btn btn-primary" id="closeCloudAlert" style="width:100%;justify-content:center;">ตกลง</button>`;
+                              <p style="font-size:13px;color:var(--text-dim);margin-bottom:18px;line-height:1.5;">ระบบได้เข้าสู่ระบบอย่างปลอดภัย และซิงค์ข้อมูลทั้งหมดของคุณขึ้น Firebase Firestore แบบ Real-time เรียบร้อยแล้ว</p>
+                              ${actionButtons}
+                              <button class="btn btn-primary" id="closeCloudAlert" style="width:100%;justify-content:center;">ปิดหน้าต่าง</button>`;
+             
              overlay.appendChild(box);
              document.body.appendChild(overlay);
+             
+             // Event Listeners for new buttons
              document.getElementById('closeCloudAlert').onclick = () => overlay.remove();
+             
+             if (document.getElementById('googleLoginBtn')) {
+                 document.getElementById('googleLoginBtn').onclick = async () => {
+                     try {
+                         overlay.remove();
+                         authBtn.innerHTML = '☁️ กำลังล็อกอิน...';
+                         await signInWithPopup(auth, provider);
+                     } catch (error) {
+                         console.error("Google Sign-In Error", error);
+                         alert('ล็อกอิน Google ล้มเหลว: ' + error.message);
+                         authBtn.innerHTML = '❌ ล็อกอินล้มเหลว';
+                     }
+                 };
+             }
+             
+             if (document.getElementById('googleLogoutBtn')) {
+                 document.getElementById('googleLogoutBtn').onclick = async () => {
+                     overlay.remove();
+                     authBtn.innerHTML = '☁️ กำลังออกจากระบบ...';
+                     await signOut(auth);
+                     await signInAnonymously(auth);
+                 };
+             }
           };
 
         } catch(e) { 
