@@ -224,8 +224,8 @@
   .period-btn { padding:6px 12px; border-radius:8px; font-family:'Sarabun',sans-serif; font-size:12px; cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--text-dim); transition:all 0.2s; }
   .period-btn.active { background:var(--accent); color:#fff; border-color:var(--accent); }
 
-  .form-total { background:var(--accent-glow); border:1px solid rgba(249,115,22,0.3); border-radius:10px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; }
-  .form-total-label { font-size:13px; color:var(--text-dim); }
+  .form-total { background:var(--accent-glow); border:1px solid rgba(249,115,22,0.3); border-radius:10px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; margin-top: 10px;}
+  .form-total-label { font-size:13px; color:var(--text-dim); font-weight: bold;}
   .form-total-value { font-family:'Space Mono',monospace; font-size:18px; font-weight:700; color:var(--accent); }
 
   .summary-vehicle-filter { display:flex; gap:6px; flex-wrap:wrap; }
@@ -512,9 +512,39 @@
       <button class="btn btn-ghost btn-sm" onclick="addServiceItem()">＋ เพิ่ม</button>
     </div>
     <div class="service-items" id="serviceItems"></div>
-    <div style="margin-top:13px">
-      <div class="form-total"><span class="form-total-label">💰 รวมทั้งหมด</span><span class="form-total-value" id="formTotal">฿0</span></div>
+    
+    <!-- เพิ่มส่วนลด และ VAT -->
+    <div style="margin-top:13px; background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:12px;">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
+        <div>
+          <label style="font-size:10px; color:var(--text-muted);">ส่วนลด (บาท)</label>
+          <input type="number" id="fDiscount" placeholder="0" min="0" oninput="updateFormTotal()" style="width:100%; font-size:13px; padding:8px;">
+        </div>
+        <div>
+          <label style="font-size:10px; color:var(--text-muted);">ภาษีมูลค่าเพิ่ม (VAT)</label>
+          <select id="fVat" onchange="updateFormTotal()" style="width:100%; font-size:13px; padding:8px;">
+            <option value="0">ไม่มี (0%)</option>
+            <option value="7">7%</option>
+          </select>
+        </div>
+      </div>
+      
+      <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-dim); margin-bottom:4px;">
+        <span>ยอดรวมรายการ:</span><span id="formSubtotal">฿0.00</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--red); margin-bottom:4px; display:none;" id="formDiscountRow">
+        <span>ส่วนลด:</span><span id="formDiscountVal">-฿0.00</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-dim); margin-bottom:8px; display:none;" id="formVatRow">
+        <span>ภาษีมูลค่าเพิ่ม (VAT):</span><span id="formVatVal">+฿0.00</span>
+      </div>
+      
+      <div class="form-total">
+        <span class="form-total-label">ยอดสุทธิ</span>
+        <span class="form-total-value" id="formTotal">฿0.00</span>
+      </div>
     </div>
+
     <div style="display:flex;gap:7px;margin-top:16px;justify-content:flex-end">
       <button class="btn btn-ghost" onclick="closeModal()">ยกเลิก</button>
       <button class="btn btn-primary" onclick="saveRecord()">💾 บันทึก</button>
@@ -795,15 +825,15 @@ function getFilteredRecords(){
 // ════════════════════════════════════
 function updateStats(){
   const recs = getFilteredRecords();
-  const totalCost = recs.reduce((s,r)=>s+r.total,0);
+  const totalCost = recs.reduce((s,r)=>s+(r.total||0),0);
   const yr = new Date().getFullYear();
-  const yrCost = recs.filter(r=>new Date(r.date).getFullYear()===yr).reduce((s,r)=>s+r.total,0);
+  const yrCost = recs.filter(r=>new Date(r.date).getFullYear()===yr).reduce((s,r)=>s+(r.total||0),0);
   const sc={};
   recs.forEach(r=>r.items.forEach(it=>{sc[it.name]=(sc[it.name]||0)+1;}));
   const top = Object.entries(sc).sort((a,b)=>b[1]-a[1])[0];
   document.getElementById('statTotal').textContent    = recs.length;
-  document.getElementById('statCost').textContent     = '฿'+totalCost.toLocaleString();
-  document.getElementById('statYear').textContent     = '฿'+yrCost.toLocaleString();
+  document.getElementById('statCost').textContent     = '฿'+totalCost.toLocaleString(undefined,{maximumFractionDigits:2});
+  document.getElementById('statYear').textContent     = '฿'+yrCost.toLocaleString(undefined,{maximumFractionDigits:2});
   document.getElementById('statTop').textContent      = top?top[0]:'-';
   document.getElementById('statTopCount').textContent = top?`${top[1]} ครั้ง`:'';
 }
@@ -835,7 +865,7 @@ function renderRecords(){
         <div class="record-tags">${tags.map(t=>`<span class="tag ${getTagClass(t)}">${t}</span>`).join('')}${r.items.length>3?`<span class="tag tag-other">+${r.items.length-3}</span>`:''}</div>
       </div>
       <div class="record-cost">
-        <div class="record-cost-value">฿${r.total.toLocaleString()}</div>
+        <div class="record-cost-value">฿${(r.total||0).toLocaleString(undefined,{maximumFractionDigits:2})}</div>
         <div class="record-cost-label">${r.items.length} รายการ</div>
       </div>
     </div>`;
@@ -848,6 +878,24 @@ function renderRecords(){
 function openDetail(id){
   viewingId=String(id);
   const r=records.find(x=>String(x.id)===String(id)), v=vehicles.find(x=>x.id===r.vehicleId)||{}, d=new Date(r.date);
+  
+  let summaryRows = '';
+  const subtotal = r.subtotal !== undefined ? r.subtotal : r.total; // กรณีข้อมูลเก่าไม่มี field subtotal
+  const discount = r.discount || 0;
+  const vatRate = r.vatRate || 0;
+  const vatAmount = r.vatAmount || 0;
+
+  if (discount > 0 || vatRate > 0) {
+      summaryRows += `<tr><td colspan="4" style="text-align:right; color:var(--text-dim)">ยอดรวมรายการ</td><td style="text-align:right">฿${subtotal.toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2})}</td></tr>`;
+      if(discount > 0) {
+         summaryRows += `<tr><td colspan="4" style="text-align:right; color:var(--red)">ส่วนลด</td><td style="text-align:right; color:var(--red)">-฿${discount.toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2})}</td></tr>`;
+      }
+      if(vatRate > 0) {
+         summaryRows += `<tr><td colspan="4" style="text-align:right; color:var(--text-dim)">VAT (${vatRate}%)</td><td style="text-align:right">฿${vatAmount.toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2})}</td></tr>`;
+      }
+  }
+  summaryRows += `<tr class="total-row"><td colspan="4">ยอดสุทธิ</td><td style="text-align:right">฿${(r.total||0).toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2})}</td></tr>`;
+
   document.getElementById('detailContent').innerHTML=`
     <div class="detail-row"><span class="detail-label">🚗 รถ</span><span class="detail-value">${v.icon||''} ${v.name||'-'} <span style="color:var(--text-dim);font-size:11px">${v.plate||''}</span></span></div>
     <div class="detail-row"><span class="detail-label">📅 วันที่</span><span class="detail-value">${d.getDate()} ${MONTHS_TH[d.getMonth()]} ${d.getFullYear()+543}</span></div>
@@ -864,7 +912,7 @@ function openDetail(id){
           <td style="text-align:right;font-family:'Space Mono',monospace">${it.cost>0?'฿'+it.cost.toLocaleString():'<span style="color:var(--text-muted)">ฟรี</span>'}</td>
           <td style="text-align:right;font-family:'Space Mono',monospace;color:var(--accent)">${it.cost>0?'฿'+((it.qty||1)*it.cost).toLocaleString():'<span style="color:var(--text-muted)">ฟรี</span>'}</td>
         </tr>`).join('')}
-        <tr class="total-row"><td colspan="4">รวมทั้งหมด</td><td style="text-align:right">฿${r.total.toLocaleString()}</td></tr>
+        ${summaryRows}
       </tbody>
     </table>`;
   document.getElementById('detailOverlay').classList.add('open');
@@ -902,6 +950,8 @@ function openModal(id=null){
     document.getElementById('fCenter').value=r.center;
     document.getElementById('fMileage').value=r.mileage||'';
     document.getElementById('fNote').value=r.note||'';
+    document.getElementById('fDiscount').value=r.discount||'';
+    document.getElementById('fVat').value=r.vatRate||'0';
     document.getElementById('serviceItems').innerHTML='';
     r.items.forEach(it=>addServiceItem(it));
   } else {
@@ -909,6 +959,8 @@ function openModal(id=null){
     document.getElementById('fCenter').value='';
     document.getElementById('fMileage').value='';
     document.getElementById('fNote').value='';
+    document.getElementById('fDiscount').value='';
+    document.getElementById('fVat').value='0';
     document.getElementById('serviceItems').innerHTML='';
     addServiceItem();
   }
@@ -989,13 +1041,41 @@ function onSvcTypeChange(sel){
 function removeServiceItem(btn){ btn.closest('.service-item-row').remove(); updateFormTotal(); }
 
 function updateFormTotal(){
-  let total=0;
+  let subtotal=0;
   document.querySelectorAll('.service-item-row').forEach(row=>{
     const qty  = parseFloat(row.querySelector('.svc-qty').value)||1;
     const cost = parseFloat(row.querySelector('.svc-cost').value)||0;
-    total += qty*cost;
+    subtotal += qty*cost;
   });
-  document.getElementById('formTotal').textContent='฿'+total.toLocaleString(undefined,{maximumFractionDigits:2});
+
+  const discount = parseFloat(document.getElementById('fDiscount').value) || 0;
+  const vatRate = parseFloat(document.getElementById('fVat').value) || 0;
+
+  let afterDiscount = subtotal - discount;
+  if(afterDiscount < 0) afterDiscount = 0;
+
+  const vatAmount = afterDiscount * (vatRate / 100);
+  const netTotal = afterDiscount + vatAmount;
+
+  document.getElementById('formSubtotal').textContent = '฿' + subtotal.toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2});
+
+  const discountRow = document.getElementById('formDiscountRow');
+  if(discount > 0) {
+    discountRow.style.display = 'flex';
+    document.getElementById('formDiscountVal').textContent = '-฿' + discount.toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2});
+  } else {
+    discountRow.style.display = 'none';
+  }
+
+  const vatRow = document.getElementById('formVatRow');
+  if(vatRate > 0) {
+    vatRow.style.display = 'flex';
+    document.getElementById('formVatVal').textContent = '+฿' + vatAmount.toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2});
+  } else {
+    vatRow.style.display = 'none';
+  }
+
+  document.getElementById('formTotal').textContent = '฿' + netTotal.toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2});
 }
 
 function saveRecord(){
@@ -1004,20 +1084,43 @@ function saveRecord(){
   const center=document.getElementById('fCenter').value.trim();
   if(!vid){alert('กรุณาเลือกรถ');return;}
   if(!date||!center){alert('กรุณากรอกวันที่และชื่อศูนย์/อู่');return;}
+  
+  let subtotal = 0;
   const items=Array.from(document.querySelectorAll('.service-item-row')).map(row=>{
     const qty  = parseFloat(row.querySelector('.svc-qty').value)||1;
     const cost = parseFloat(row.querySelector('.svc-cost').value)||0;
     const type = row.querySelector('.svc-type').value;
+    const itemSubtotal = qty*cost;
+    subtotal += itemSubtotal;
     return {
       name: row.querySelector('.svc-name').value,
       type, qty, unit: getUnit(type), cost,
-      subtotal: qty*cost
+      subtotal: itemSubtotal
     };
   });
-  const rec={id:editingId||Date.now(),vehicleId:vid,date,center,
+
+  const discount = parseFloat(document.getElementById('fDiscount').value) || 0;
+  const vatRate = parseFloat(document.getElementById('fVat').value) || 0;
+  let afterDiscount = subtotal - discount;
+  if(afterDiscount < 0) afterDiscount = 0;
+  const vatAmount = afterDiscount * (vatRate / 100);
+  const total = afterDiscount + vatAmount;
+
+  const rec={
+    id:editingId||Date.now(),
+    vehicleId:vid,
+    date,
+    center,
     mileage:parseInt(document.getElementById('fMileage').value)||0,
     note:document.getElementById('fNote').value.trim(),
-    items, total:items.reduce((s,it)=>s+it.subtotal,0)};
+    items, 
+    subtotal, 
+    discount, 
+    vatRate, 
+    vatAmount, 
+    total
+  };
+
   if(editingId){const i=records.findIndex(r=>String(r.id)===String(editingId));records[i]=rec;}
   else records.push(rec);
   saveAll(); closeModal(); updateStats(); renderRecords(); renderSummary();
@@ -1113,20 +1216,20 @@ function renderSummary(){
 function renderMonthChart(yr){
   const data=Array.from({length:12},(_,i)=>i).map(m=>({
     label:MONTHS_TH[m],
-    cost:yr.filter(r=>new Date(r.date).getMonth()===m).reduce((s,r)=>s+r.total,0),
+    cost:yr.filter(r=>new Date(r.date).getMonth()===m).reduce((s,r)=>s+(r.total||0),0),
     count:yr.filter(r=>new Date(r.date).getMonth()===m).length
   }));
   const mxC=Math.max(...data.map(d=>d.cost),1), mxN=Math.max(...data.map(d=>d.count),1);
-  document.getElementById('costChart').innerHTML=data.map(d=>`<div class="bar-item"><div class="bar-label"><span>${d.label}</span><span>${d.cost?'฿'+d.cost.toLocaleString():'-'}</span></div><div class="bar-track"><div class="bar-fill" style="width:${(d.cost/mxC*100).toFixed(1)}%"></div></div></div>`).join('');
+  document.getElementById('costChart').innerHTML=data.map(d=>`<div class="bar-item"><div class="bar-label"><span>${d.label}</span><span>${d.cost?'฿'+d.cost.toLocaleString(undefined,{maximumFractionDigits:2}):'-'}</span></div><div class="bar-track"><div class="bar-fill" style="width:${(d.cost/mxC*100).toFixed(1)}%"></div></div></div>`).join('');
   document.getElementById('countChart').innerHTML=data.map(d=>`<div class="bar-item"><div class="bar-label"><span>${d.label}</span><span>${d.count?d.count+' ครั้ง':'-'}</span></div><div class="bar-track"><div class="bar-fill" style="width:${(d.count/mxN*100).toFixed(1)}%;background:linear-gradient(90deg,var(--blue),var(--purple))"></div></div></div>`).join('');
 }
 
 function renderYearChart(base){
   const years=[...new Set(base.map(r=>new Date(r.date).getFullYear()))].sort();
   if(!years.length){document.getElementById('costChart').innerHTML='';document.getElementById('countChart').innerHTML='';return;}
-  const data=years.map(y=>({label:y,cost:base.filter(r=>new Date(r.date).getFullYear()===y).reduce((s,r)=>s+r.total,0),count:base.filter(r=>new Date(r.date).getFullYear()===y).length}));
+  const data=years.map(y=>({label:y,cost:base.filter(r=>new Date(r.date).getFullYear()===y).reduce((s,r)=>s+(r.total||0),0),count:base.filter(r=>new Date(r.date).getFullYear()===y).length}));
   const mxC=Math.max(...data.map(d=>d.cost),1), mxN=Math.max(...data.map(d=>d.count),1);
-  document.getElementById('costChart').innerHTML=data.map(d=>`<div class="bar-item"><div class="bar-label"><span>${d.label}</span><span>฿${d.cost.toLocaleString()}</span></div><div class="bar-track"><div class="bar-fill" style="width:${(d.cost/mxC*100).toFixed(1)}%"></div></div></div>`).join('');
+  document.getElementById('costChart').innerHTML=data.map(d=>`<div class="bar-item"><div class="bar-label"><span>${d.label}</span><span>฿${d.cost.toLocaleString(undefined,{maximumFractionDigits:2})}</span></div><div class="bar-track"><div class="bar-fill" style="width:${(d.cost/mxC*100).toFixed(1)}%"></div></div></div>`).join('');
   document.getElementById('countChart').innerHTML=data.map(d=>`<div class="bar-item"><div class="bar-label"><span>${d.label}</span><span>${d.count} ครั้ง</span></div><div class="bar-track"><div class="bar-fill" style="width:${(d.count/mxN*100).toFixed(1)}%;background:linear-gradient(90deg,var(--blue),var(--purple))"></div></div></div>`).join('');
 }
 
@@ -1139,7 +1242,7 @@ function renderPodium(recs){
   const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,5);
   const medals=['🥇','🥈','🥉','4️⃣','5️⃣'];
   document.getElementById('podiumChart').innerHTML=!sorted.length?'<p style="color:var(--text-dim);font-size:13px">ไม่มีข้อมูล</p>':
-    sorted.map(([name,count],i)=>`<div class="podium-item"><div class="podium-rank">${medals[i]}</div><div class="podium-name">${name}</div><div class="podium-count">${count} ครั้ง</div><div class="podium-cost">฿${(costs[name]||0).toLocaleString()}</div></div>`).join('');
+    sorted.map(([name,count],i)=>`<div class="podium-item"><div class="podium-rank">${medals[i]}</div><div class="podium-name">${name}</div><div class="podium-count">${count} ครั้ง</div><div class="podium-cost">฿${(costs[name]||0).toLocaleString(undefined,{maximumFractionDigits:2})}</div></div>`).join('');
 }
 
 function renderServiceTable(recs){
@@ -1150,7 +1253,7 @@ function renderServiceTable(recs){
   }));
   const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
   document.getElementById('serviceTable').innerHTML=!sorted.length?`<tr><td colspan="4" style="text-align:center;color:var(--text-dim);padding:18px">ไม่มีข้อมูล</td></tr>`:
-    sorted.map(([name,count])=>`<tr><td><span class="tag ${getTagClass(name)}" style="margin-right:5px">●</span>${name}</td><td><span style="font-family:'Space Mono',monospace">${count}</span> ครั้ง</td><td style="font-family:'Space Mono',monospace;color:var(--accent)">฿${(costs[name]||0).toLocaleString()}</td><td style="font-family:'Space Mono',monospace;color:var(--text-dim)">฿${Math.round((costs[name]||0)/count).toLocaleString()}</td></tr>`).join('');
+    sorted.map(([name,count])=>`<tr><td><span class="tag ${getTagClass(name)}" style="margin-right:5px">●</span>${name}</td><td><span style="font-family:'Space Mono',monospace">${count}</span> ครั้ง</td><td style="font-family:'Space Mono',monospace;color:var(--accent)">฿${(costs[name]||0).toLocaleString(undefined,{maximumFractionDigits:2})}</td><td style="font-family:'Space Mono',monospace;color:var(--text-dim)">฿${Math.round((costs[name]||0)/count).toLocaleString(undefined,{maximumFractionDigits:2})}</td></tr>`).join('');
 }
 // ════════════════════════════════════
 //  MANAGE SERVICE TYPES
@@ -1318,6 +1421,8 @@ async function runAiScan(){
   "date": "YYYY-MM-DD หรือ null ถ้าไม่มี",
   "mileage": จำนวนกิโลเมตรเป็นตัวเลขหรือ null,
   "note": "หมายเหตุเพิ่มเติมถ้ามี",
+  "discount": ส่วนลดที่ปรากฏในบิลเป็นตัวเลข (ถ้าไม่มีให้ใส่ 0),
+  "vatRate": ภาษีมูลค่าเพิ่มหรือ VAT เป็นเปอร์เซ็นต์ (เช่น 7 หรือ 0 ถ้าไม่มี),
   "items": [
     { "name": "ชื่อรายการงาน/อะไหล่", "type": "ค่าบริการ|อะไหล่|ค่าแรง|อื่นๆ", "qty": จำนวน, "cost": ราคาต่อหน่วยเป็นตัวเลข }
   ]
@@ -1369,6 +1474,10 @@ async function runAiScan(){
       if(parsed.date)   document.getElementById('fDate').value   = parsed.date;
       if(parsed.mileage) document.getElementById('fMileage').value = parsed.mileage;
       if(parsed.note)   document.getElementById('fNote').value   = parsed.note;
+      
+      // อัปเดตส่วนลดและ VAT
+      if(parsed.discount) document.getElementById('fDiscount').value = parsed.discount;
+      if(parsed.vatRate)  document.getElementById('fVat').value  = parsed.vatRate;
 
       if(parsed.items && parsed.items.length){
         document.getElementById('serviceItems').innerHTML='';
@@ -1382,7 +1491,7 @@ async function runAiScan(){
         });
         updateFormTotal();
       }
-      alert(`✅ AI กรอกข้อมูลสำเร็จ!\nพบ ${(parsed.items||[]).length} รายการ\nกรุณาตรวจสอบและแก้ไขก่อนบันทึก`);
+      alert(`✅ AI กรอกข้อมูลสำเร็จ!\nพบ ${(parsed.items||[]).length} รายการ\nส่วนลด: ${parsed.discount||0} บาท, VAT: ${parsed.vatRate||0}%\nกรุณาตรวจสอบและแก้ไขก่อนบันทึก`);
     }, 200);
 
   } catch(err){
