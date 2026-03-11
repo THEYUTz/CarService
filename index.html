@@ -567,7 +567,10 @@
   <div class="modal fuel-modal">
     <div class="modal-header">
       <div class="modal-title">⛽ บันทึกการเติมน้ำมัน</div>
-      <button class="close-btn" onclick="closeFuelModal()">✕</button>
+      <div style="display:flex;gap:6px;align-items:center">
+        <button class="btn btn-sm" onclick="openFuelAiScanModal()" style="background:linear-gradient(135deg,rgba(245,158,11,0.15),rgba(239,68,68,0.15));border:1px solid rgba(245,158,11,0.35);color:var(--fuel);">📸 AI สแกนใบเสร็จ</button>
+        <button class="close-btn" onclick="closeFuelModal()">✕</button>
+      </div>
     </div>
     <div class="form-grid fuel-form">
       <div class="form-group full">
@@ -657,6 +660,49 @@
     <div style="display:flex;gap:7px;margin-top:16px;justify-content:flex-end">
       <button class="btn btn-danger btn-sm" onclick="deleteFuelRecord()">🗑 ลบ</button>
       <button class="btn btn-ghost" onclick="closeFuelDetail()">ปิด</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ FUEL AI SCAN MODAL ════ -->
+<div class="modal-overlay" id="fuelAiScanOverlay" onclick="if(event.target===this)closeFuelAiScanModal()">
+  <div class="modal ai-modal" style="max-width:560px;">
+    <div class="modal-header" style="border-bottom:1px solid rgba(245,158,11,0.2);padding-bottom:16px;">
+      <div class="modal-title" style="background:linear-gradient(135deg,var(--fuel),#ef4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">📸 AI สแกนใบเสร็จน้ำมัน</div>
+      <button class="close-btn" onclick="closeFuelAiScanModal()">✕</button>
+    </div>
+    <p style="font-size:13px;color:var(--text-dim);margin-bottom:16px">ถ่ายรูปหรืออัปโหลดใบเสร็จปั๊มน้ำมัน — AI จะอ่านและกรอกข้อมูลให้อัตโนมัติ ⛽✨</p>
+
+    <div class="ai-drop-zone" id="fuelAiDropZone"
+      ondragover="event.preventDefault();this.classList.add('drag-over')"
+      ondragleave="this.classList.remove('drag-over')"
+      ondrop="handleFuelAiDrop(event)"
+      style="border-color:rgba(245,158,11,0.3);">
+      <input type="file" id="fuelAiFileInput" accept="image/*" onchange="handleFuelAiFile(event)">
+      <div class="ai-drop-icon" id="fuelAiDropIcon">⛽</div>
+      <div class="ai-drop-title">แตะเพื่อถ่ายรูปใบเสร็จ หรือลากไฟล์มาวาง</div>
+      <div class="ai-drop-sub">รองรับ JPG, PNG • ใบเสร็จจากปั๊มทุกแบรนด์</div>
+      <img class="ai-img-preview" id="fuelAiImgPreview" alt="">
+    </div>
+
+    <div class="ai-status-box" id="fuelAiStatusBox"></div>
+
+    <!-- Preview ข้อมูลที่ AI อ่านได้ ก่อนกรอก -->
+    <div id="fuelAiPreviewBox" style="display:none;margin-top:12px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:12px;padding:14px;">
+      <div style="font-size:12px;font-weight:700;color:var(--fuel);margin-bottom:10px;letter-spacing:0.5px;">✅ AI อ่านข้อมูลได้ — ตรวจสอบก่อนกรอก</div>
+      <div id="fuelAiPreviewContent" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"></div>
+    </div>
+
+    <div class="api-key-row">
+      <label>🔑 Gemini API Key</label>
+      <input type="password" id="fuelAiApiKey" placeholder="AIzaSy..." style="width:100%;margin-top:6px;font-size:13px">
+      <div class="api-key-note">เก็บเฉพาะใน browser ของคุณเท่านั้น ไม่ส่งไปไหนนอกจาก Gemini API</div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-top:18px;justify-content:flex-end;flex-wrap:wrap">
+      <button class="btn btn-ghost" onclick="closeFuelAiScanModal()">ยกเลิก</button>
+      <button class="btn btn-sm" id="fuelAiRunBtn" onclick="runFuelAiScan()" disabled style="opacity:0.5;background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;border:none;padding:9px 15px;border-radius:10px;font-family:'Sarabun',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">🤖 วิเคราะห์ใบเสร็จ</button>
+      <button class="btn btn-fuel" id="fuelAiFillBtn" onclick="fillFuelFormFromAi()" style="display:none;">⛽ กรอกข้อมูลเลย</button>
     </div>
   </div>
 </div>
@@ -1480,26 +1526,322 @@ function clearAllData(){
   closeExportModal();
 }
 
-// =========================================================================
-// 💾 LOCAL STORAGE INDICATOR
-// =========================================================================
-(function initLocalBadge() {
-  const headerActions = document.querySelector('.header-actions');
-  const badge = document.createElement('button');
-  badge.className = 'btn btn-ghost';
-  badge.innerHTML = '💾 บันทึกในเครื่อง';
-  badge.style.cssText = 'color:var(--green);border-color:rgba(34,197,94,0.3);cursor:default;';
-  badge.title = 'ข้อมูลทั้งหมดบันทึกใน localStorage ของ browser นี้';
-  headerActions.insertBefore(badge, headerActions.firstChild);
 
-  // Flash "saved" after every saveAll
-  const origSaveAll = saveAll;
-  window.saveAll = saveAll = function() {
-    origSaveAll();
-    badge.innerHTML = '✅ บันทึกแล้ว';
-    clearTimeout(badge._t);
-    badge._t = setTimeout(() => { badge.innerHTML = '💾 บันทึกในเครื่อง'; }, 1200);
+// ════════════════════════════════════
+//  ⛽ FUEL AI SCAN
+// ════════════════════════════════════
+let fuelAiImageBase64 = null;
+let fuelAiImageMimeType = null;
+let fuelAiParsedData = null;
+
+function openFuelAiScanModal(){
+  fuelAiImageBase64 = null; fuelAiImageMimeType = null; fuelAiParsedData = null;
+  document.getElementById('fuelAiImgPreview').style.display = 'none';
+  document.getElementById('fuelAiStatusBox').className = 'ai-status-box';
+  document.getElementById('fuelAiDropIcon').textContent = '⛽';
+  document.getElementById('fuelAiRunBtn').disabled = true;
+  document.getElementById('fuelAiRunBtn').style.opacity = '0.5';
+  document.getElementById('fuelAiFillBtn').style.display = 'none';
+  document.getElementById('fuelAiPreviewBox').style.display = 'none';
+  document.getElementById('fuelAiFileInput').value = '';
+  // restore saved API key
+  document.getElementById('fuelAiApiKey').value = localStorage.getItem('csGeminiApiKey') || '';
+  document.getElementById('fuelAiScanOverlay').classList.add('open');
+}
+function closeFuelAiScanModal(){ document.getElementById('fuelAiScanOverlay').classList.remove('open'); }
+
+function handleFuelAiDrop(e){
+  e.preventDefault();
+  document.getElementById('fuelAiDropZone').classList.remove('drag-over');
+  const f = e.dataTransfer.files[0];
+  if(f && f.type.startsWith('image/')) processFuelAiFile(f);
+}
+function handleFuelAiFile(e){ const f = e.target.files[0]; if(f) processFuelAiFile(f); }
+
+function processFuelAiFile(file){
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const d = e.target.result;
+    fuelAiImageMimeType = d.split(';')[0].split(':')[1];
+    fuelAiImageBase64   = d.split(',')[1];
+    const img = document.getElementById('fuelAiImgPreview');
+    img.src = d; img.style.display = 'block';
+    document.getElementById('fuelAiDropIcon').textContent = '✅';
+    const sb = document.getElementById('fuelAiStatusBox');
+    sb.className = 'ai-status-box success';
+    sb.innerHTML = '<span>✅</span> โหลดรูปสำเร็จ — กด "วิเคราะห์ใบเสร็จ" เพื่อให้ AI อ่านข้อมูล';
+    document.getElementById('fuelAiRunBtn').disabled = false;
+    document.getElementById('fuelAiRunBtn').style.opacity = '1';
   };
+  reader.readAsDataURL(file);
+}
+
+async function runFuelAiScan(){
+  const apiKey = document.getElementById('fuelAiApiKey').value.trim();
+  if(!apiKey){ alert('กรุณากรอก Gemini API Key ก่อน'); return; }
+  if(!fuelAiImageBase64){ alert('กรุณาเลือกรูปภาพก่อน'); return; }
+  localStorage.setItem('csGeminiApiKey', apiKey);
+
+  const sb  = document.getElementById('fuelAiStatusBox');
+  const btn = document.getElementById('fuelAiRunBtn');
+  const fillBtn = document.getElementById('fuelAiFillBtn');
+  btn.disabled = true; btn.style.opacity = '0.6';
+  document.getElementById('fuelAiPreviewBox').style.display = 'none';
+  fillBtn.style.display = 'none';
+  sb.className = 'ai-status-box loading';
+  sb.innerHTML = '<div class="spinner"></div> AI กำลังอ่านใบเสร็จปั๊มน้ำมัน... กรุณารอสักครู่';
+
+  const prompt = `คุณคือผู้เชี่ยวชาญอ่านใบเสร็จปั๊มน้ำมัน (ไทย/อังกฤษ)
+กรุณาอ่านข้อมูลจากรูปนี้แล้วตอบกลับเป็น JSON เท่านั้น ไม่มีข้อความอื่น
+
+รูปแบบ JSON ที่ต้องการ:
+{
+  "station": "ชื่อปั๊มน้ำมัน เช่น PTT, Shell, Bangchak",
+  "date": "YYYY-MM-DD หรือ null ถ้าไม่มี",
+  "mileage": จำนวน km เป็นตัวเลขหรือ null,
+  "fuelType": "91|95|E20|E85|ดีเซล|ดีเซล B7|NGV",
+  "liters": ปริมาณลิตรเป็นตัวเลขทศนิยม หรือ null,
+  "pricePerLiter": ราคาต่อลิตรเป็นตัวเลขทศนิยม หรือ null,
+  "totalAmount": ยอดรวมเป็นตัวเลขทศนิยม หรือ null,
+  "note": "ข้อมูลอื่นที่น่าสนใจ เช่น เลขที่ใบเสร็จ หรือ null"
+}
+
+หมายเหตุ: ถ้าหาราคาต่อลิตรไม่ได้ แต่มียอดรวมและปริมาณลิตร ให้คำนวณ pricePerLiter = totalAmount / liters`;
+
+  try {
+    const resp = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+      { method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          contents:[{ parts:[
+            { text: prompt },
+            { inlineData:{ mimeType: fuelAiImageMimeType||'image/jpeg', data: fuelAiImageBase64 } }
+          ]}],
+          generationConfig:{ responseMimeType:'application/json' }
+        })
+      }
+    );
+    if(!resp.ok){ const err=await resp.json().catch(()=>({})); throw new Error(err.error?.message||`HTTP ${resp.status}`); }
+    const data = await resp.json();
+    const raw  = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const parsed = JSON.parse(raw.replace(/```json|```/g,'').trim());
+    fuelAiParsedData = parsed;
+
+    // Show preview
+    sb.className = 'ai-status-box success';
+    sb.innerHTML = '<span>✅</span> AI อ่านข้อมูลสำเร็จ! ตรวจสอบข้อมูลด้านล่างก่อนกรอก';
+
+    const previewItems = [
+      { label:'🏪 ปั๊ม',          val: parsed.station      || '-' },
+      { label:'📅 วันที่',         val: parsed.date         || '-' },
+      { label:'⛽ ประเภทน้ำมัน',  val: parsed.fuelType     || '-' },
+      { label:'🪣 ปริมาณ',        val: parsed.liters       ? parsed.liters+' ลิตร' : '-' },
+      { label:'💰 ราคา/ลิตร',     val: parsed.pricePerLiter? '฿'+Number(parsed.pricePerLiter).toFixed(2) : '-' },
+      { label:'💸 ยอดรวม',        val: parsed.totalAmount  ? '฿'+Number(parsed.totalAmount).toFixed(2) : '-' },
+      { label:'🏎 เลขไมล์',       val: parsed.mileage      ? parsed.mileage.toLocaleString()+' km' : '-' },
+      { label:'📝 หมายเหตุ',      val: parsed.note         || '-' },
+    ];
+    document.getElementById('fuelAiPreviewContent').innerHTML = previewItems.map(item=>`
+      <div style="background:var(--surface);border-radius:8px;padding:8px 10px;">
+        <div style="font-size:10px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px">${item.label}</div>
+        <div style="font-size:13px;font-weight:600;color:${item.val==='-'?'var(--text-muted)':'var(--text)'}">${item.val}</div>
+      </div>`).join('');
+    document.getElementById('fuelAiPreviewBox').style.display = 'block';
+    fillBtn.style.display = 'inline-flex';
+    btn.disabled = false; btn.style.opacity = '1';
+    btn.innerHTML = '🔄 สแกนใหม่';
+
+  } catch(err) {
+    sb.className = 'ai-status-box error';
+    sb.innerHTML = `<span>❌</span> เกิดข้อผิดพลาด: ${err.message}`;
+    btn.disabled = false; btn.style.opacity = '1';
+  }
+}
+
+function fillFuelFormFromAi(){
+  if(!fuelAiParsedData) return;
+  const p = fuelAiParsedData;
+  closeFuelAiScanModal();
+
+  setTimeout(()=>{
+    if(p.station)        document.getElementById('ffStation').value = p.station;
+    if(p.date)           document.getElementById('ffDate').value    = p.date;
+    if(p.mileage)        document.getElementById('ffMileage').value = p.mileage;
+    if(p.liters)         document.getElementById('ffLiters').value  = p.liters;
+    if(p.note)           document.getElementById('ffNote').value    = p.note;
+
+    // ราคา/ลิตร: ใช้จาก parsed โดยตรง หรือคำนวณจากยอดรวม
+    let ppl = p.pricePerLiter;
+    if(!ppl && p.totalAmount && p.liters) ppl = (p.totalAmount / p.liters);
+    if(ppl) document.getElementById('ffPricePerLiter').value = Number(ppl).toFixed(2);
+
+    // เลือกประเภทน้ำมัน
+    if(p.fuelType){
+      const typeMap = {'91':'91','95':'95','E20':'E20','E85':'E85','ดีเซล':'ดีเซล','diesel':'ดีเซล','B7':'ดีเซล B7','NGV':'NGV'};
+      const mapped = typeMap[p.fuelType] || p.fuelType;
+      const btns = document.querySelectorAll('#fuelTypeToggle .fuel-type-btn');
+      btns.forEach(b=>{ if(b.textContent.trim()===mapped || mapped.includes(b.textContent.trim())){ setFuelType(b, mapped); } });
+    }
+
+    calcFuelEfficiency();
+    alert(`✅ กรอกข้อมูลจากใบเสร็จสำเร็จ!
+กรุณาตรวจสอบและแก้ไขก่อนบันทึก`);
+  }, 150);
+}
+
+// =========================================================================
+// 🚀 FIREBASE LOGIN & CLOUD SYNC
+// =========================================================================
+(async function initFirebaseSync() {
+  const headerActions = document.querySelector('.header-actions');
+  const authBtn = document.createElement('button');
+  authBtn.className = 'btn btn-ghost';
+  authBtn.innerHTML = '☁️ กำลังเชื่อมต่อคลาวด์...';
+  headerActions.insertBefore(authBtn, headerActions.firstChild);
+
+  try {
+    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js");
+    const { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
+    const { getFirestore, doc, setDoc, getDoc } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAFv6HXwFrRzC2xaXII9KAjwfX5aOP9QKo",
+      authDomain: "theyut-b279b.firebaseapp.com",
+      projectId: "theyut-b279b",
+      storageBucket: "theyut-b279b.firebasestorage.app",
+      messagingSenderId: "74767945998",
+      appId: "1:74767945998:web:2721e02a9d2c77af00075f",
+      measurementId: "G-N86SZ2ZE1G"
+    };
+
+    const appId = "theyut-b279b";
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+
+    const originalSaveAll = window.saveAll || saveAll;
+    const originalSaveReminders = window.saveReminders || saveReminders;
+
+    const saveToFirebase = async () => {
+      if (!auth.currentUser) return;
+      try {
+        authBtn.innerHTML = '☁️ กำลังซิงค์...';
+        const docRef = doc(db, 'artifacts', appId, 'users', auth.currentUser.uid, 'car_service_data', 'main_data');
+        await setDoc(docRef, {
+          vehicles, records, serviceTypes, reminders, fuelRecords,
+          updatedAt: new Date().toISOString()
+        });
+        const isAnon = auth.currentUser.isAnonymous;
+        const dispName = isAnon ? 'ชั่วคราว' : (auth.currentUser.email ? auth.currentUser.email.split('@')[0] : auth.currentUser.uid.substring(0,5));
+        authBtn.innerHTML = `✅ ซิงค์แล้ว (${dispName})`;
+      } catch(e) {
+        console.error("Firebase save error", e);
+        authBtn.innerHTML = '❌ ซิงค์ล้มเหลว';
+      }
+    };
+
+    window.saveAll = saveAll = function() {
+      originalSaveAll();
+      saveToFirebase();
+    };
+    window.saveReminders = saveReminders = function() {
+      originalSaveReminders();
+      saveToFirebase();
+    };
+
+    const initAuth = async () => {
+      try {
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
+        }
+      } catch (err) {
+        console.warn("Custom token failed, fallback to anonymous:", err);
+        await signInAnonymously(auth);
+      }
+    };
+    await initAuth();
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        authBtn.innerHTML = '☁️ โหลดข้อมูลคลาวด์...';
+        try {
+          const docRef = doc(db, 'artifacts', appId, 'users', user.uid, 'car_service_data', 'main_data');
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            let hasChanges = false;
+            if (data.vehicles    && data.vehicles.length > 0)     { vehicles     = data.vehicles;     hasChanges = true; }
+            if (data.records     && data.records.length > 0)      { records      = data.records;      hasChanges = true; }
+            if (data.serviceTypes&& data.serviceTypes.length > 0) { serviceTypes = data.serviceTypes; hasChanges = true; }
+            if (data.reminders)                                    { reminders    = data.reminders;    hasChanges = true; }
+            if (data.fuelRecords && data.fuelRecords.length > 0)  { fuelRecords  = data.fuelRecords;  hasChanges = true; }
+            if (hasChanges) {
+              originalSaveAll(); originalSaveReminders();
+              renderVehicleChips(); renderSummaryVehicleFilter(); populateVehicleSelect(); populateFuelVehicleFilter();
+              updateStats(); renderRecords(); populateSummaryYear(); renderSummary();
+              updateCenterDatalist(); checkReminders(); renderFuelRecords(); updateFuelStats(); renderFuelCharts();
+            }
+          } else if ((records && records.length > 0) || (fuelRecords && fuelRecords.length > 0)) {
+            await saveToFirebase();
+          }
+
+          const isAnon = user.isAnonymous;
+          const dispName = isAnon ? 'ชั่วคราว' : (user.email ? user.email.split('@')[0] : user.uid.substring(0,5));
+          authBtn.innerHTML = `✅ ซิงค์แล้ว (${dispName})`;
+
+          authBtn.onclick = () => {
+            const overlay = document.createElement('div');
+            overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(3px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:14px;';
+            let actionButtons = '';
+            if (isAnon) {
+              actionButtons = `
+                <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;padding:8px;background:rgba(234,179,8,0.1);border-radius:8px;border:1px solid rgba(234,179,8,0.2);">
+                  ⚠️ ขณะนี้ใช้งานแบบ "ไม่ระบุตัวตน" หากเปลี่ยนอุปกรณ์ ข้อมูลอาจสูญหาย แนะนำให้ล็อกอินเพื่อบันทึกข้อมูลถาวร
+                </div>
+                <button class="btn" id="googleLoginBtn" style="width:100%;justify-content:center;background:#db4437;color:white;margin-bottom:8px;font-size:14px;padding:12px;">🔴 ล็อกอินด้วย Google</button>`;
+            } else {
+              actionButtons = `
+                <div style="font-size:13px;color:var(--green);margin-bottom:12px;font-weight:bold;">
+                  ✅ ล็อกอินด้วย ${user.email} แล้ว
+                </div>
+                <button class="btn btn-ghost" id="googleLogoutBtn" style="width:100%;justify-content:center;margin-bottom:8px;border:1px solid var(--border);">ออกจากระบบ</button>`;
+            }
+            const box = document.createElement('div');
+            box.style.cssText = 'background:var(--surface);padding:24px;border-radius:16px;border:1px solid var(--border);text-align:center;max-width:320px;width:100%;color:var(--text);font-family:"Sarabun",sans-serif;box-shadow:0 10px 30px rgba(0,0,0,0.5);';
+            box.innerHTML = `<div style="font-size:46px;margin-bottom:10px;">☁️</div>
+              <h3 style="margin-bottom:10px;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;color:var(--accent);">CLOUD SYNC ACTIVE</h3>
+              <p style="font-size:13px;color:var(--text-dim);margin-bottom:18px;line-height:1.5;">ระบบได้เข้าสู่ระบบอย่างปลอดภัย และซิงค์ข้อมูลทั้งหมดขึ้น Firebase Firestore แบบ Real-time เรียบร้อยแล้ว</p>
+              ${actionButtons}
+              <button class="btn btn-primary" id="closeCloudAlert" style="width:100%;justify-content:center;">ปิดหน้าต่าง</button>`;
+            overlay.appendChild(box);
+            document.body.appendChild(overlay);
+            document.getElementById('closeCloudAlert').onclick = () => overlay.remove();
+            document.getElementById('googleLoginBtn')?.addEventListener('click', async () => {
+              try { overlay.remove(); authBtn.innerHTML = '☁️ กำลังล็อกอิน...'; await signInWithPopup(auth, provider); }
+              catch (error) { alert('ล็อกอิน Google ล้มเหลว: ' + error.message); authBtn.innerHTML = '❌ ล็อกอินล้มเหลว'; }
+            });
+            document.getElementById('googleLogoutBtn')?.addEventListener('click', async () => {
+              overlay.remove(); authBtn.innerHTML = '☁️ กำลังออกจากระบบ...';
+              await signOut(auth); await signInAnonymously(auth);
+            });
+          };
+
+        } catch(e) {
+          console.error("Firebase load error", e);
+          authBtn.innerHTML = '✅ ซิงค์แล้ว (Local Mode)';
+        }
+      } else {
+        authBtn.innerHTML = '❌ ไม่ได้ล็อกอิน';
+      }
+    });
+
+  } catch(e) {
+    console.error("Firebase module load error", e);
+    authBtn.innerHTML = '☁️ บันทึกในเครื่อง (Local)';
+  }
 })();
 </script>
 </body>
