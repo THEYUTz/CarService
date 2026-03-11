@@ -23,6 +23,8 @@
     --yellow: #eab308;
     --purple: #a855f7;
     --teal: #14b8a6;
+    --fuel: #f59e0b;
+    --fuel-glow: rgba(245,158,11,0.15);
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
@@ -35,7 +37,6 @@
   }
   .app { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 0 20px 60px; }
 
-  /* HEADER */
   header { padding: 26px 0 18px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); margin-bottom: 18px; flex-wrap: wrap; gap: 10px; }
   .logo { display: flex; align-items: center; gap: 12px; }
   .logo-icon { width: 44px; height: 44px; background: var(--accent); border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 0 20px var(--accent-glow); }
@@ -43,32 +44,17 @@
   .logo-text p { font-size: 11px; color: var(--text-dim); letter-spacing: 1px; margin-top: 2px; }
   .header-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 
-  /* VEHICLE BAR */
   .vehicle-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
   .vehicle-label { font-size: 11px; color: var(--text-dim); font-weight: 600; white-space: nowrap; letter-spacing: 0.5px; text-transform: uppercase; }
   .vehicle-chips { display: flex; gap: 7px; flex-wrap: wrap; flex: 1; }
-  .vehicle-chip {
-    display: flex; align-items: center; gap: 7px;
-    padding: 7px 15px; border-radius: 40px;
-    border: 1.5px solid var(--border); background: var(--surface);
-    cursor: pointer; transition: all 0.2s; white-space: nowrap;
-    font-family: 'Sarabun', sans-serif; font-size: 13px; font-weight: 600; color: var(--text-dim);
-  }
+  .vehicle-chip { display: flex; align-items: center; gap: 7px; padding: 7px 15px; border-radius: 40px; border: 1.5px solid var(--border); background: var(--surface); cursor: pointer; transition: all 0.2s; white-space: nowrap; font-family: 'Sarabun', sans-serif; font-size: 13px; font-weight: 600; color: var(--text-dim); }
   .vehicle-chip:hover { border-color: var(--accent); color: var(--text); }
   .vehicle-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 2px 14px var(--accent-glow); }
   .vehicle-chip.all-chip.active { background: linear-gradient(135deg,var(--blue),var(--purple)); border-color: var(--blue); box-shadow: 0 2px 14px rgba(59,130,246,0.25); }
   .chip-plate { font-size: 10px; opacity: 0.75; font-weight: 400; }
-  .add-vehicle-btn {
-    display: flex; align-items: center; gap: 5px;
-    padding: 7px 13px; border-radius: 40px;
-    border: 1.5px dashed var(--border); background: transparent;
-    color: var(--text-muted); cursor: pointer;
-    font-family: 'Sarabun', sans-serif; font-size: 12px; font-weight: 600;
-    transition: all 0.2s; white-space: nowrap;
-  }
+  .add-vehicle-btn { display: flex; align-items: center; gap: 5px; padding: 7px 13px; border-radius: 40px; border: 1.5px dashed var(--border); background: transparent; color: var(--text-muted); cursor: pointer; font-family: 'Sarabun', sans-serif; font-size: 12px; font-weight: 600; transition: all 0.2s; white-space: nowrap; }
   .add-vehicle-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-  /* STATS */
   .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 13px; margin-bottom: 20px; }
   @media(max-width:768px){ .stats-grid { grid-template-columns: repeat(2,1fr); } }
   .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 17px; position: relative; overflow: hidden; transition: transform 0.2s, border-color 0.2s; }
@@ -81,28 +67,37 @@
   .stat-value.orange{color:var(--accent)}.stat-value.green{color:var(--green)}.stat-value.blue{color:var(--blue)}.stat-value.purple{color:var(--purple)}
   .stat-sub { font-size: 10px; color: var(--text-muted); margin-top: 3px; }
 
-  /* TABS */
+  /* FUEL STATS */
+  .fuel-stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 13px; margin-bottom: 20px; }
+  @media(max-width:768px){ .fuel-stats-grid { grid-template-columns: repeat(2,1fr); } }
+  .fuel-stat-card { background: var(--surface); border: 1px solid rgba(245,158,11,0.2); border-radius: 14px; padding: 17px; position: relative; overflow: hidden; transition: transform 0.2s, border-color 0.2s; }
+  .fuel-stat-card:hover { transform: translateY(-2px); border-color: var(--fuel); }
+  .fuel-stat-card::after { content:''; position:absolute; top:0; right:0; width:54px; height:54px; border-radius:0 14px 0 54px; opacity:0.08; background: var(--fuel); }
+  .fuel-stat-card:nth-child(2)::after{background:var(--green)}.fuel-stat-card:nth-child(3)::after{background:var(--blue)}.fuel-stat-card:nth-child(4)::after{background:var(--teal)}
+  .fuel-stat-value { font-family: 'Space Mono', monospace; font-size: 19px; font-weight: 700; }
+  .fuel-stat-value.yellow{color:var(--fuel)}.fuel-stat-value.green{color:var(--green)}.fuel-stat-value.blue{color:var(--blue)}.fuel-stat-value.teal{color:var(--teal)}
+
   .tabs { display:flex; gap:3px; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:4px; margin-bottom:20px; overflow-x:auto; }
   .tab { flex:1; min-width:110px; padding:9px 16px; background:transparent; border:none; border-radius:8px; color:var(--text-dim); font-family:'Sarabun',sans-serif; font-size:13px; font-weight:500; cursor:pointer; transition:all 0.2s; white-space:nowrap; }
   .tab.active { background:var(--accent); color:#fff; box-shadow:0 2px 12px var(--accent-glow); }
+  .tab.fuel-tab.active { background: linear-gradient(135deg, #f59e0b, #ef4444); box-shadow: 0 2px 12px var(--fuel-glow); }
   .tab:not(.active):hover { color:var(--text); background:var(--border); }
 
-  /* PANEL */
   .panel { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:20px; margin-bottom:16px; }
   .panel-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px; }
   .panel-title { font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:1.5px; }
 
-  /* BUTTONS */
   .btn { display:inline-flex; align-items:center; gap:5px; padding:9px 15px; border-radius:10px; font-family:'Sarabun',sans-serif; font-size:13px; font-weight:600; cursor:pointer; border:none; transition:all 0.2s; }
   .btn-primary { background:var(--accent); color:#fff; box-shadow:0 2px 12px var(--accent-glow); }
   .btn-primary:hover { background:var(--accent2); transform:translateY(-1px); }
+  .btn-fuel { background: linear-gradient(135deg, #f59e0b, #ef4444); color:#fff; box-shadow:0 2px 12px var(--fuel-glow); }
+  .btn-fuel:hover { opacity: 0.9; transform:translateY(-1px); }
   .btn-ghost { background:transparent; color:var(--text-dim); border:1px solid var(--border); }
   .btn-ghost:hover { color:var(--text); border-color:var(--text-dim); }
   .btn-danger { background:rgba(239,68,68,0.12); color:var(--red); border:1px solid rgba(239,68,68,0.2); }
   .btn-danger:hover { background:rgba(239,68,68,0.22); }
   .btn-sm { padding:5px 10px; font-size:12px; border-radius:8px; }
 
-  /* FORM */
   .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:13px; }
   @media(max-width:600px){ .form-grid{grid-template-columns:1fr} }
   .form-group { display:flex; flex-direction:column; gap:5px; }
@@ -113,18 +108,43 @@
   select option { background:var(--surface2); }
   textarea { resize:vertical; min-height:70px; }
 
-  /* SERVICE ITEMS */
+  /* FUEL FORM INPUT FOCUS */
+  .fuel-form input:focus, .fuel-form select:focus { border-color: var(--fuel); box-shadow: 0 0 0 3px var(--fuel-glow); }
+
+  /* FUEL RECORDS */
+  .fuel-record-card { background:var(--surface2); border:1px solid var(--border); border-radius:13px; padding:15px; display:grid; grid-template-columns:auto 1fr auto; gap:13px; align-items:start; transition:border-color 0.2s,transform 0.2s; cursor:pointer; margin-bottom:9px; }
+  .fuel-record-card:hover { border-color: var(--fuel); transform:translateX(3px); }
+  .fuel-date-block { text-align:center; background:var(--surface); border:1px solid rgba(245,158,11,0.25); border-radius:10px; padding:8px 12px; min-width:54px; }
+  .fuel-date-day { font-family:'Bebas Neue',sans-serif; font-size:24px; line-height:1; color:var(--fuel); }
+  .fuel-date-month { font-size:10px; color:var(--text-dim); letter-spacing:1px; text-transform:uppercase; }
+  .fuel-date-year { font-size:9px; color:var(--text-muted); }
+  .fuel-record-body h3 { font-size:14px; font-weight:600; margin-bottom:3px; }
+  .fuel-record-body p { font-size:12px; color:var(--text-dim); }
+  .fuel-badges { display:flex; flex-wrap:wrap; gap:5px; margin-top:6px; }
+  .fuel-badge { padding:2px 9px; border-radius:20px; font-size:11px; font-weight:700; }
+  .badge-liters { background:rgba(245,158,11,0.15); color:var(--fuel); }
+  .badge-efficiency { background:rgba(34,197,94,0.12); color:var(--green); }
+  .badge-full { background:rgba(59,130,246,0.12); color:var(--blue); }
+  .badge-partial { background:rgba(168,85,247,0.12); color:var(--purple); }
+  .fuel-record-cost { text-align:right; }
+  .fuel-record-cost-value { font-family:'Space Mono',monospace; font-size:16px; font-weight:700; color:var(--fuel); }
+  .fuel-record-cost-label { font-size:10px; color:var(--text-muted); }
+  .fuel-record-eff { font-family:'Space Mono',monospace; font-size:12px; color:var(--green); margin-top:3px; }
+
+  /* EFFICIENCY INDICATOR */
+  .eff-bar-wrap { margin-top:12px; }
+  .eff-label-row { display:flex; justify-content:space-between; font-size:11px; margin-bottom:5px; }
+  .eff-track { height:8px; background:var(--surface2); border-radius:4px; overflow:hidden; }
+  .eff-fill { height:100%; border-radius:4px; transition: width 0.6s ease; }
+
+  /* FUEL CHART */
+  .fuel-trend-chart { display:flex; align-items:flex-end; gap:6px; height:100px; padding-top:10px; }
+  .fuel-bar-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; }
+  .fuel-bar-visual { width:100%; border-radius:4px 4px 0 0; transition:height 0.5s ease; min-height:4px; background:linear-gradient(180deg,var(--fuel),#ef4444); }
+  .fuel-bar-label { font-size:9px; color:var(--text-muted); white-space:nowrap; }
+
   .service-items { display:flex; flex-direction:column; gap:8px; }
-  .service-item-row {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 12px;
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 8px;
-    align-items: start;
-  }
+  .service-item-row { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: start; }
   .svc-row-left { display:flex; flex-direction:column; gap:7px; }
   .svc-row-fields { display:grid; grid-template-columns: 70px 120px 1fr; gap:7px; align-items:center; }
   @media(max-width:560px){ .svc-row-fields{ grid-template-columns: 70px 1fr 1fr; } }
@@ -132,13 +152,10 @@
   .svc-qty-wrap input { padding:8px 26px 8px 8px; text-align:center; font-size:13px; width:100%; }
   .svc-unit { position:absolute; right:6px; top:50%; transform:translateY(-50%); font-size:10px; color:var(--text-muted); pointer-events:none; }
   .svc-name-select { font-size:13px; width:100%; }
-  .item-row-header { display:none; } /* replaced by card labels */
   .svc-field-label { font-size:10px; color:var(--text-muted); font-weight:600; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:3px; }
-  .svc-subtotal { font-size:11px; color:var(--accent); font-family:'Space Mono',monospace; text-align:right; padding-top:2px; }
   .remove-btn { width:30px; height:30px; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.2); border-radius:8px; color:var(--red); cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; transition:all 0.2s; flex-shrink:0; margin-top:2px; }
   .remove-btn:hover { background:rgba(239,68,68,0.22); }
 
-  /* RECORDS */
   .record-card { background:var(--surface2); border:1px solid var(--border); border-radius:13px; padding:15px; display:grid; grid-template-columns:auto 1fr auto; gap:13px; align-items:start; transition:border-color 0.2s,transform 0.2s; cursor:pointer; margin-bottom:9px; }
   .record-card:hover { border-color:var(--accent); transform:translateX(3px); }
   .record-date-block { text-align:center; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:8px 12px; min-width:54px; }
@@ -149,18 +166,11 @@
   .record-body p { font-size:12px; color:var(--text-dim); }
   .record-tags { display:flex; flex-wrap:wrap; gap:4px; margin-top:6px; }
   .tag { padding:2px 8px; border-radius:20px; font-size:11px; font-weight:600; }
-  .tag-oil{background:rgba(249,115,22,0.15);color:var(--accent)}
-  .tag-tire{background:rgba(34,197,94,0.12);color:var(--green)}
-  .tag-brake{background:rgba(239,68,68,0.12);color:var(--red)}
-  .tag-ac{background:rgba(59,130,246,0.12);color:var(--blue)}
-  .tag-filter{background:rgba(234,179,8,0.12);color:var(--yellow)}
-  .tag-other{background:rgba(168,85,247,0.12);color:var(--purple)}
-  .tag-check{background:rgba(20,184,166,0.12);color:var(--teal)}
+  .tag-oil{background:rgba(249,115,22,0.15);color:var(--accent)} .tag-tire{background:rgba(34,197,94,0.12);color:var(--green)} .tag-brake{background:rgba(239,68,68,0.12);color:var(--red)} .tag-ac{background:rgba(59,130,246,0.12);color:var(--blue)} .tag-filter{background:rgba(234,179,8,0.12);color:var(--yellow)} .tag-other{background:rgba(168,85,247,0.12);color:var(--purple)} .tag-check{background:rgba(20,184,166,0.12);color:var(--teal)}
   .record-cost { text-align:right; }
   .record-cost-value { font-family:'Space Mono',monospace; font-size:16px; font-weight:700; color:var(--accent); }
   .record-cost-label { font-size:10px; color:var(--text-muted); }
 
-  /* MODAL */
   .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.76); backdrop-filter:blur(4px); z-index:100; display:none; align-items:center; justify-content:center; padding:14px; }
   .modal-overlay.open { display:flex; animation:fadeIn 0.18s ease; }
   @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -172,7 +182,23 @@
   .close-btn:hover { color:var(--text); border-color:var(--text-dim); }
   .vehicle-modal { max-width:460px; }
 
-  /* VEHICLE LIST */
+  /* FUEL MODAL */
+  .fuel-modal { max-width: 520px; }
+  .fuel-modal .modal-header { border-bottom: 1px solid rgba(245,158,11,0.2); padding-bottom: 16px; }
+  .fuel-input-highlight { border-color: rgba(245,158,11,0.4) !important; }
+  .fuel-input-highlight:focus { border-color: var(--fuel) !important; box-shadow: 0 0 0 3px var(--fuel-glow) !important; }
+  .fuel-type-toggle { display: flex; gap: 8px; }
+  .fuel-type-btn { flex: 1; padding: 10px; border-radius: 10px; border: 1.5px solid var(--border); background: transparent; color: var(--text-dim); font-family:'Sarabun',sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; text-align: center; }
+  .fuel-type-btn.active { border-color: var(--fuel); background: rgba(245,158,11,0.12); color: var(--fuel); }
+  .fuel-calc-box { background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.2); border-radius: 12px; padding: 14px; margin-top: 12px; }
+  .fuel-calc-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid rgba(245,158,11,0.1); }
+  .fuel-calc-row:last-child { border-bottom: none; padding-top: 10px; margin-top: 5px; }
+  .fuel-calc-label { font-size: 12px; color: var(--text-dim); }
+  .fuel-calc-value { font-family: 'Space Mono', monospace; font-size: 13px; font-weight: 700; color: var(--text); }
+  .fuel-calc-value.highlight { color: var(--fuel); font-size: 16px; }
+  .fuel-calc-value.good { color: var(--green); }
+  .fuel-calc-value.bad { color: var(--red); }
+
   .vehicle-list { display:flex; flex-direction:column; gap:9px; margin-bottom:18px; }
   .vehicle-list-item { display:flex; align-items:center; gap:11px; background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:13px 15px; }
   .v-icon-big { font-size:26px; }
@@ -181,7 +207,6 @@
   .v-plate { font-size:11px; color:var(--text-dim); font-family:'Space Mono',monospace; margin-top:2px; }
   .v-color-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
 
-  /* SUMMARY */
   .summary-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
   @media(max-width:700px){ .summary-grid{grid-template-columns:1fr} }
   .filter-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; align-items:center; }
@@ -235,20 +260,16 @@
 
   .v-dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:5px; vertical-align:middle; }
 
-  /* MANAGE SERVICE TYPES */
   .stype-modal { max-width:540px; }
   .stype-list { display:flex; flex-direction:column; gap:6px; max-height:300px; overflow-y:auto; margin-bottom:14px; }
   .stype-item { display:flex; align-items:center; gap:8px; background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:9px 12px; transition:border-color 0.2s; }
-  .stype-item:hover { border-color:var(--border); }
   .stype-badge { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
   .stype-name { flex:1; font-size:13px; font-weight:500; }
   .stype-cat { font-size:11px; color:var(--text-muted); font-family:'Space Mono',monospace; }
   .stype-edit-row { display:grid; grid-template-columns:1fr 130px 34px; gap:6px; align-items:center; }
   .stype-actions { display:flex; gap:5px; }
   .edit-inline-row { display:grid; grid-template-columns:1fr 130px 60px 60px; gap:6px; align-items:center; background:rgba(249,115,22,0.06); border:1px solid rgba(249,115,22,0.25); border-radius:10px; padding:8px 10px; }
-  @media(max-width:520px){ .edit-inline-row{grid-template-columns:1fr 110px 50px 50px} }
 
-  /* AI SCAN */
   .ai-modal { max-width:580px; }
   .ai-drop-zone { border:2px dashed var(--border); border-radius:14px; padding:30px 20px; text-align:center; cursor:pointer; transition:all 0.25s; position:relative; overflow:hidden; }
   .ai-drop-zone:hover,.ai-drop-zone.drag-over { border-color:var(--accent); background:var(--accent-glow); }
@@ -264,27 +285,22 @@
   @keyframes spin { to { transform:rotate(360deg); } }
   .spinner { display:inline-block; width:16px; height:16px; border:2px solid currentColor; border-top-color:transparent; border-radius:50%; animation:spin 0.7s linear infinite; flex-shrink:0; }
   .ai-result-box { background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:12px 14px; margin-top:12px; font-size:12px; color:var(--text-dim); max-height:150px; overflow-y:auto; display:none; font-family:'Space Mono',monospace; line-height:1.6; }
-
-  /* แสดงช่องกรอก API Key เพื่อความปลอดภัย */
   .api-key-row { margin-top:14px; }
   .api-key-row label { font-size:11px; font-weight:600; color:var(--text-dim); letter-spacing:0.5px; text-transform:uppercase; }
   .api-key-note { font-size:10px; color:var(--text-muted); margin-top:3px; }
+  .modal-scan-btn { background:linear-gradient(135deg,rgba(59,130,246,0.15),rgba(168,85,247,0.15)); border:1px solid rgba(59,130,246,0.3); color:var(--blue); }
+  .modal-scan-btn:hover { background:linear-gradient(135deg,rgba(59,130,246,0.25),rgba(168,85,247,0.25)); border-color:var(--blue); }
 
-  /* REMINDER */
   .reminder-badge { display:inline-flex; align-items:center; gap:3px; padding:2px 7px; border-radius:20px; font-size:10px; font-weight:700; margin-left:5px; }
   .reminder-due  { background:rgba(239,68,68,0.15); color:var(--red); }
   .reminder-soon { background:rgba(234,179,8,0.15);  color:var(--yellow); }
   .remind-modal  { max-width:520px; }
   .remind-list   { display:flex; flex-direction:column; gap:8px; max-height:280px; overflow-y:auto; margin-bottom:14px; }
   .remind-item   { background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:11px 13px; }
-  .remind-row1   { display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center; margin-bottom:8px; }
-  .remind-fields { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-  .remind-name   { font-size:13px; font-weight:600; }
   .alert-banner  { display:none; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.25); border-radius:12px; padding:11px 15px; margin-bottom:14px; cursor:pointer; }
   .alert-banner.show { display:flex; align-items:center; gap:10px; }
   .alert-text    { flex:1; font-size:13px; }
 
-  /* EXPORT */
   .export-grid { display:grid; grid-template-columns:1fr 1fr; gap:11px; margin-top:6px; }
   .export-card { background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:18px 14px; text-align:center; cursor:pointer; transition:all 0.2s; }
   .export-card:hover { border-color:var(--accent); transform:translateY(-2px); }
@@ -293,18 +309,18 @@
   .export-card-sub { font-size:11px; color:var(--text-dim); line-height:1.4; }
   .export-info { margin-top:14px; background:var(--surface2); border-radius:10px; padding:11px 14px; font-size:12px; color:var(--text-dim); }
 
-  /* AI scan button in modal */
-  .modal-scan-btn { background:linear-gradient(135deg,rgba(59,130,246,0.15),rgba(168,85,247,0.15)); border:1px solid rgba(59,130,246,0.3); color:var(--blue); }
-  .modal-scan-btn:hover { background:linear-gradient(135deg,rgba(59,130,246,0.25),rgba(168,85,247,0.25)); border-color:var(--blue); }
+  /* FUEL SUMMARY SECTION */
+  .fuel-summary-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+  @media(max-width:700px){ .fuel-summary-grid{grid-template-columns:1fr} }
 
   ::-webkit-scrollbar { width:5px; height:5px; }
   ::-webkit-scrollbar-track { background:var(--surface); }
   ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
 
   @media(max-width:480px){
-    .record-card{grid-template-columns:1fr}
-    .record-date-block{display:flex;gap:8px;align-items:center;border-radius:8px;padding:7px 11px}
-    .record-day{font-size:18px}
+    .record-card,.fuel-record-card{grid-template-columns:1fr}
+    .record-date-block,.fuel-date-block{display:flex;gap:8px;align-items:center;border-radius:8px;padding:7px 11px}
+    .record-day,.fuel-date-day{font-size:18px}
   }
 </style>
 </head>
@@ -320,32 +336,27 @@
       </div>
     </div>
     <div class="header-actions">
-      <!-- 
-        ปุ่มคลาวด์จะถูกแทรกอัตโนมัติที่นี่ผ่าน Script ล่าสุด
-      -->
       <button class="btn btn-ghost" onclick="openExportModal()">💾 Export</button>
       <button id="reminderBtn" class="btn btn-ghost" onclick="openReminderModal()">🔔 แจ้งเตือน</button>
       <button class="btn btn-ghost" onclick="openServiceTypesModal()">🔩 รายการงาน</button>
       <button class="btn btn-ghost" onclick="openVehicleModal()">🚗 จัดการรถ</button>
+      <button class="btn btn-fuel" onclick="openFuelModal()">⛽ เติมน้ำมัน</button>
       <button class="btn btn-primary" onclick="openModal()">＋ เพิ่มรายการ</button>
     </div>
   </header>
 
-  <!-- Alert Banner -->
   <div class="alert-banner" id="alertBanner" onclick="openReminderModal()">
     <span style="font-size:20px">🔔</span>
     <span class="alert-text" id="alertText"></span>
     <span style="font-size:11px;color:var(--text-dim)">ดูรายละเอียด →</span>
   </div>
 
-  <!-- Vehicle selector -->
   <div class="vehicle-bar">
     <span class="vehicle-label">🔑 รถ:</span>
     <div class="vehicle-chips" id="vehicleChips"></div>
     <button class="add-vehicle-btn" onclick="openVehicleModal()">＋ เพิ่มรถ</button>
   </div>
 
-  <!-- Stats -->
   <div class="stats-grid">
     <div class="stat-card"><div class="stat-icon">🔧</div><div class="stat-label">รายการทั้งหมด</div><div class="stat-value orange" id="statTotal">0</div><div class="stat-sub">ครั้ง</div></div>
     <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-label">ค่าใช้จ่ายรวม</div><div class="stat-value green" id="statCost">฿0</div><div class="stat-sub">บาท</div></div>
@@ -353,9 +364,9 @@
     <div class="stat-card"><div class="stat-icon">🏆</div><div class="stat-label">งานบ่อยที่สุด</div><div class="stat-value purple" id="statTop" style="font-size:13px">-</div><div class="stat-sub" id="statTopCount"></div></div>
   </div>
 
-  <!-- Tabs -->
   <div class="tabs">
-    <button class="tab active" onclick="switchTab('records',this)">📋 รายการ</button>
+    <button class="tab active" onclick="switchTab('records',this)">📋 รายการ Service</button>
+    <button class="tab fuel-tab" onclick="switchTab('fuel',this)">⛽ เติมน้ำมัน</button>
     <button class="tab" onclick="switchTab('summary',this)">📊 สรุปรายงาน</button>
   </div>
 
@@ -382,6 +393,55 @@
     </div>
   </div>
 
+  <!-- FUEL TAB -->
+  <div class="tab-content" id="tab-fuel">
+    <!-- Fuel Stats -->
+    <div class="fuel-stats-grid">
+      <div class="fuel-stat-card"><div class="stat-icon">⛽</div><div class="stat-label">เติมน้ำมันทั้งหมด</div><div class="fuel-stat-value yellow" id="fuelStatCount">0</div><div class="stat-sub">ครั้ง</div></div>
+      <div class="fuel-stat-card"><div class="stat-icon">🪣</div><div class="stat-label">ปริมาณรวม</div><div class="fuel-stat-value green" id="fuelStatLiters">0</div><div class="stat-sub">ลิตร</div></div>
+      <div class="fuel-stat-card"><div class="stat-icon">💸</div><div class="stat-label">ค่าน้ำมันรวม</div><div class="fuel-stat-value blue" id="fuelStatCost">฿0</div><div class="stat-sub">บาท</div></div>
+      <div class="fuel-stat-card"><div class="stat-icon">📈</div><div class="stat-label">อัตราสิ้นเปลือง (เฉลี่ย)</div><div class="fuel-stat-value teal" id="fuelStatEff">-</div><div class="stat-sub">กม./ลิตร</div></div>
+    </div>
+
+    <!-- Fuel Chart & Trend -->
+    <div class="fuel-summary-grid">
+      <div class="panel">
+        <div class="panel-title" style="margin-bottom:4px">📊 ค่าน้ำมันรายเดือน</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-bottom:12px" id="fuelChartYear"></div>
+        <div class="bar-chart" id="fuelCostChart"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title" style="margin-bottom:4px">📈 อัตราสิ้นเปลืองรายครั้ง</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-bottom:12px">5 รายการล่าสุด</div>
+        <div id="fuelEffChart"></div>
+      </div>
+    </div>
+
+    <!-- Fuel Records -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">⛽ ประวัติการเติมน้ำมัน</div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">
+          <select id="fuelVehicleFilter" onchange="renderFuelRecords()" style="padding:7px 11px;font-size:13px">
+            <option value="all">ทุกคัน</option>
+          </select>
+          <select id="fuelTypeFilter" onchange="renderFuelRecords()" style="padding:7px 11px;font-size:13px">
+            <option value="">ทุกประเภท</option>
+            <option value="91">ออกเทน 91</option>
+            <option value="95">ออกเทน 95</option>
+            <option value="E20">E20</option>
+            <option value="E85">E85</option>
+            <option value="ดีเซล">ดีเซล</option>
+            <option value="ดีเซล B7">ดีเซล B7</option>
+            <option value="NGV">NGV</option>
+          </select>
+          <button class="btn btn-fuel btn-sm" onclick="openFuelModal()">⛽ เติมน้ำมัน</button>
+        </div>
+      </div>
+      <div id="fuelRecordsList"></div>
+    </div>
+  </div>
+
   <!-- Summary Tab -->
   <div class="tab-content" id="tab-summary">
     <div class="panel" style="margin-bottom:14px">
@@ -398,8 +458,12 @@
       <select id="summaryYear" onchange="renderSummary()" style="padding:7px 11px;font-size:13px"></select>
     </div>
     <div class="summary-grid">
-      <div class="panel"><div class="panel-title" style="margin-bottom:13px">💸 ค่าใช้จ่าย</div><div class="bar-chart" id="costChart"></div></div>
-      <div class="panel"><div class="panel-title" style="margin-bottom:13px">🔧 จำนวนครั้ง</div><div class="bar-chart" id="countChart"></div></div>
+      <div class="panel"><div class="panel-title" style="margin-bottom:13px">💸 ค่า Service</div><div class="bar-chart" id="costChart"></div></div>
+      <div class="panel"><div class="panel-title" style="margin-bottom:13px">⛽ ค่าน้ำมัน</div><div class="bar-chart" id="fuelSumChart"></div></div>
+    </div>
+    <div class="summary-grid" style="margin-top:14px">
+      <div class="panel"><div class="panel-title" style="margin-bottom:13px">🔧 จำนวนครั้ง Service</div><div class="bar-chart" id="countChart"></div></div>
+      <div class="panel"><div class="panel-title" style="margin-bottom:13px">📈 อัตราสิ้นเปลือง รายเดือน</div><div class="bar-chart" id="effChartSummary"></div></div>
     </div>
     <div class="panel" style="margin-top:14px">
       <div class="panel-title" style="margin-bottom:13px">🏆 งานที่ทำบ่อยที่สุด</div>
@@ -422,15 +486,12 @@
       <div class="modal-title">🔩 จัดการรายการงาน / อะไหล่</div>
       <button class="close-btn" onclick="closeServiceTypesModal()">✕</button>
     </div>
-
     <div style="font-size:12px;color:var(--text-dim);margin-bottom:12px">รายการเหล่านี้จะแสดงใน dropdown เมื่อเพิ่มรายการ service</div>
-
     <div class="stype-list" id="stypeList"></div>
-
     <div class="divider"></div>
     <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px">➕ เพิ่มรายการใหม่</div>
     <div class="stype-edit-row">
-      <input type="text" id="stNewName" placeholder="ชื่องาน / อะไหล่ เช่น เปลี่ยนโอริ่ง">
+      <input type="text" id="stNewName" placeholder="ชื่องาน / อะไหล่">
       <select id="stNewCat" style="font-size:13px">
         <option value="ค่าบริการ">ค่าบริการ</option>
         <option value="อะไหล่">อะไหล่</option>
@@ -439,15 +500,14 @@
       </select>
       <button class="btn btn-primary btn-sm" onclick="addServiceType()" style="height:42px">➕ เพิ่ม</button>
     </div>
-
     <div style="display:flex;gap:7px;margin-top:16px;justify-content:flex-end">
-      <button class="btn btn-ghost btn-sm" onclick="resetServiceTypes()" style="color:var(--text-muted)">↺ รีเซ็ตเป็นค่าเริ่มต้น</button>
+      <button class="btn btn-ghost btn-sm" onclick="resetServiceTypes()" style="color:var(--text-muted)">↺ รีเซ็ต</button>
       <button class="btn btn-primary" onclick="closeServiceTypesModal()">✓ เสร็จสิ้น</button>
     </div>
   </div>
 </div>
 
-<!-- ADD/EDIT MODAL -->
+<!-- ADD/EDIT SERVICE MODAL -->
 <div class="modal-overlay" id="modalOverlay" onclick="closeOnOverlay(event)">
   <div class="modal">
     <div class="modal-header">
@@ -458,10 +518,7 @@
       </div>
     </div>
     <div class="form-grid">
-      <div class="form-group full">
-        <label>🚗 รถที่เข้าศูนย์</label>
-        <select id="fVehicle"><option value="">-- เลือกรถ --</option></select>
-      </div>
+      <div class="form-group full"><label>🚗 รถที่เข้าศูนย์</label><select id="fVehicle"><option value="">-- เลือกรถ --</option></select></div>
       <div class="form-group"><label>📅 วันที่</label><input type="date" id="fDate" required></div>
       <div class="form-group"><label>📍 ศูนย์ / อู่</label><input type="text" id="fCenter" placeholder="เช่น Honda Dream Wing" list="centerList"><datalist id="centerList"></datalist></div>
       <div class="form-group"><label>🏎 เลขไมล์ (km)</label><input type="number" id="fMileage" placeholder="km"></div>
@@ -473,29 +530,15 @@
       <button class="btn btn-ghost btn-sm" onclick="addServiceItem()">＋ เพิ่ม</button>
     </div>
     <div class="service-items" id="serviceItems"></div>
-    
-    <!-- เพิ่มส่วนลด -->
     <div style="margin-top:13px; background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:12px;">
       <div style="margin-bottom:12px;">
-        <div>
-          <label style="font-size:10px; color:var(--text-muted);">ส่วนลด (บาท)</label>
-          <input type="number" id="fDiscount" placeholder="0" min="0" oninput="updateFormTotal()" style="width:100%; font-size:13px; padding:8px;">
-        </div>
+        <label style="font-size:10px; color:var(--text-muted);">ส่วนลด (บาท)</label>
+        <input type="number" id="fDiscount" placeholder="0" min="0" oninput="updateFormTotal()" style="width:100%; font-size:13px; padding:8px; margin-top:4px;">
       </div>
-      
-      <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-dim); margin-bottom:4px;">
-        <span>ยอดรวมรายการ:</span><span id="formSubtotal">฿0.00</span>
-      </div>
-      <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--red); margin-bottom:8px; display:none;" id="formDiscountRow">
-        <span>ส่วนลด:</span><span id="formDiscountVal">-฿0.00</span>
-      </div>
-      
-      <div class="form-total">
-        <span class="form-total-label">ยอดสุทธิ</span>
-        <span class="form-total-value" id="formTotal">฿0.00</span>
-      </div>
+      <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-dim); margin-bottom:4px;"><span>ยอดรวมรายการ:</span><span id="formSubtotal">฿0.00</span></div>
+      <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--red); margin-bottom:8px; display:none;" id="formDiscountRow"><span>ส่วนลด:</span><span id="formDiscountVal">-฿0.00</span></div>
+      <div class="form-total"><span class="form-total-label">ยอดสุทธิ</span><span class="form-total-value" id="formTotal">฿0.00</span></div>
     </div>
-
     <div style="display:flex;gap:7px;margin-top:16px;justify-content:flex-end">
       <button class="btn btn-ghost" onclick="closeModal()">ยกเลิก</button>
       <button class="btn btn-primary" onclick="saveRecord()">💾 บันทึก</button>
@@ -515,6 +558,105 @@
       <button class="btn btn-danger btn-sm" onclick="deleteCurrentRecord()">🗑 ลบ</button>
       <button class="btn btn-ghost btn-sm" onclick="editCurrentRecord()">✏️ แก้ไข</button>
       <button class="btn btn-ghost" onclick="closeDetail()">ปิด</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ FUEL ADD/EDIT MODAL ════ -->
+<div class="modal-overlay" id="fuelOverlay" onclick="if(event.target===this)closeFuelModal()">
+  <div class="modal fuel-modal">
+    <div class="modal-header">
+      <div class="modal-title">⛽ บันทึกการเติมน้ำมัน</div>
+      <button class="close-btn" onclick="closeFuelModal()">✕</button>
+    </div>
+    <div class="form-grid fuel-form">
+      <div class="form-group full">
+        <label>🚗 รถที่เติม</label>
+        <select id="ffVehicle" class="fuel-input-highlight" onchange="onFuelVehicleChange()"><option value="">-- เลือกรถ --</option></select>
+      </div>
+      <div class="form-group"><label>📅 วันที่</label><input type="date" id="ffDate" class="fuel-input-highlight" required></div>
+      <div class="form-group"><label>🏎 เลขไมล์ (km)</label><input type="number" id="ffMileage" class="fuel-input-highlight" placeholder="เช่น 12345" oninput="calcFuelEfficiency()"></div>
+      
+      <div class="form-group full">
+        <label>⛽ ประเภทน้ำมัน</label>
+        <div class="fuel-type-toggle" id="fuelTypeToggle">
+          <button class="fuel-type-btn active" onclick="setFuelType(this,'91')">91</button>
+          <button class="fuel-type-btn" onclick="setFuelType(this,'95')">95</button>
+          <button class="fuel-type-btn" onclick="setFuelType(this,'E20')">E20</button>
+          <button class="fuel-type-btn" onclick="setFuelType(this,'E85')">E85</button>
+          <button class="fuel-type-btn" onclick="setFuelType(this,'ดีเซล')">ดีเซล</button>
+          <button class="fuel-type-btn" onclick="setFuelType(this,'ดีเซล B7')">B7</button>
+          <button class="fuel-type-btn" onclick="setFuelType(this,'NGV')">NGV</button>
+        </div>
+        <input type="hidden" id="ffFuelType" value="91">
+      </div>
+
+      <div class="form-group">
+        <label>🪣 ปริมาณ (ลิตร)</label>
+        <input type="number" id="ffLiters" class="fuel-input-highlight" placeholder="เช่น 20.5" step="0.01" min="0" oninput="calcFuelEfficiency()">
+      </div>
+      <div class="form-group">
+        <label>💰 ราคา/ลิตร (บาท)</label>
+        <input type="number" id="ffPricePerLiter" class="fuel-input-highlight" placeholder="เช่น 40.50" step="0.01" min="0" oninput="calcFuelEfficiency()">
+      </div>
+      
+      <div class="form-group full">
+        <label>🏪 ปั๊มน้ำมัน</label>
+        <input type="text" id="ffStation" placeholder="เช่น PTT, Shell, Bangchak..." list="stationList">
+        <datalist id="stationList">
+          <option value="PTT"><option value="Shell"><option value="Bangchak"><option value="Esso"><option value="Caltex"><option value="Susco"><option value="ปตท."><option value="บางจาก">
+        </datalist>
+      </div>
+
+      <div class="form-group full">
+        <label>เติมเต็มถัง?</label>
+        <div style="display:flex;gap:8px;margin-top:4px">
+          <button class="fuel-type-btn active" id="fullTankYes" onclick="setFullTank(true)">✅ เต็มถัง</button>
+          <button class="fuel-type-btn" id="fullTankNo" onclick="setFullTank(false)">🔋 เติมบางส่วน</button>
+        </div>
+        <input type="hidden" id="ffFullTank" value="true">
+      </div>
+
+      <div class="form-group full">
+        <label>📝 หมายเหตุ</label>
+        <input type="text" id="ffNote" placeholder="เช่น เติมระหว่างทาง, ราคาโปรโมชั่น">
+      </div>
+    </div>
+
+    <!-- Calculation Result -->
+    <div class="fuel-calc-box" id="fuelCalcBox">
+      <div class="fuel-calc-row">
+        <span class="fuel-calc-label">💰 ค่าน้ำมันครั้งนี้</span>
+        <span class="fuel-calc-value highlight" id="calcTotal">฿ 0.00</span>
+      </div>
+      <div class="fuel-calc-row">
+        <span class="fuel-calc-label">📏 ระยะจากการเติมครั้งก่อน</span>
+        <span class="fuel-calc-value" id="calcDistance">- กม.</span>
+      </div>
+      <div class="fuel-calc-row" id="calcEffRow">
+        <span class="fuel-calc-label">📈 อัตราสิ้นเปลือง (คำนวณ)</span>
+        <span class="fuel-calc-value" id="calcEff">- กม./ลิตร</span>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:7px;margin-top:16px;justify-content:flex-end">
+      <button class="btn btn-ghost" onclick="closeFuelModal()">ยกเลิก</button>
+      <button class="btn btn-fuel" onclick="saveFuelRecord()">⛽ บันทึกการเติม</button>
+    </div>
+  </div>
+</div>
+
+<!-- FUEL DETAIL MODAL -->
+<div class="modal-overlay" id="fuelDetailOverlay" onclick="if(event.target===this)closeFuelDetail()">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-header">
+      <div class="modal-title">⛽ รายละเอียดการเติมน้ำมัน</div>
+      <button class="close-btn" onclick="closeFuelDetail()">✕</button>
+    </div>
+    <div id="fuelDetailContent"></div>
+    <div style="display:flex;gap:7px;margin-top:16px;justify-content:flex-end">
+      <button class="btn btn-danger btn-sm" onclick="deleteFuelRecord()">🗑 ลบ</button>
+      <button class="btn btn-ghost" onclick="closeFuelDetail()">ปิด</button>
     </div>
   </div>
 </div>
@@ -552,43 +694,36 @@
   </div>
 </div>
 
-<!-- ════ AI SCAN MODAL ════ -->
+<!-- AI SCAN MODAL -->
 <div class="modal-overlay" id="aiScanOverlay" onclick="if(event.target===this)closeAiScanModal()">
   <div class="modal ai-modal">
     <div class="modal-header">
       <div class="modal-title">📸 AI สแกนใบงาน</div>
       <button class="close-btn" onclick="closeAiScanModal()">✕</button>
     </div>
-    <p style="font-size:13px;color:var(--text-dim);margin-bottom:16px">ถ่ายรูปหรืออัปโหลดใบงาน/ใบเสร็จจากศูนย์บริการ — AI จะอ่านและกรอกข้อมูลให้อัตโนมัติ ✨</p>
-
-    <div class="ai-drop-zone" id="aiDropZone"
-      ondragover="event.preventDefault();this.classList.add('drag-over')"
-      ondragleave="this.classList.remove('drag-over')"
-      ondrop="handleAiDrop(event)">
+    <p style="font-size:13px;color:var(--text-dim);margin-bottom:16px">ถ่ายรูปหรืออัปโหลดใบงาน/ใบเสร็จ — AI จะอ่านและกรอกข้อมูลให้อัตโนมัติ ✨</p>
+    <div class="ai-drop-zone" id="aiDropZone" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleAiDrop(event)">
       <input type="file" id="aiFileInput" accept="image/*" onchange="handleAiFile(event)">
       <div class="ai-drop-icon" id="aiDropIcon">📷</div>
       <div class="ai-drop-title">แตะเพื่อถ่ายรูป หรือลากไฟล์มาวาง</div>
-      <div class="ai-drop-sub">รองรับ JPG, PNG • ใบงาน ใบเสร็จ หรือรูปถ่ายหน้าจอ</div>
+      <div class="ai-drop-sub">รองรับ JPG, PNG</div>
       <img class="ai-img-preview" id="aiImgPreview" alt="">
     </div>
-
     <div class="ai-status-box" id="aiStatusBox"></div>
     <div class="ai-result-box" id="aiResultBox"></div>
-
     <div class="api-key-row">
       <label>🔑 Gemini API Key</label>
       <input type="password" id="aiApiKey" placeholder="AIzaSy..." style="width:100%;margin-top:6px;font-size:13px">
-      <div class="api-key-note">เก็บเฉพาะใน browser ของคุณเท่านั้น ไม่ส่งไปไหนนอกจาก Gemini API</div>
+      <div class="api-key-note">เก็บเฉพาะใน browser ของคุณเท่านั้น</div>
     </div>
-
     <div style="display:flex;gap:8px;margin-top:18px;justify-content:flex-end;flex-wrap:wrap">
       <button class="btn btn-ghost" onclick="closeAiScanModal()">ยกเลิก</button>
-      <button class="btn btn-primary modal-scan-btn" id="aiRunBtn" onclick="runAiScan()" disabled style="opacity:0.5">🤖 วิเคราะห์ใบงาน</button>
+      <button class="btn btn-ghost modal-scan-btn" id="aiRunBtn" onclick="runAiScan()" disabled style="opacity:0.5">🤖 วิเคราะห์ใบงาน</button>
     </div>
   </div>
 </div>
 
-<!-- ════ REMINDER MODAL ════ -->
+<!-- REMINDER MODAL -->
 <div class="modal-overlay" id="reminderOverlay" onclick="if(event.target===this)closeReminderModal()">
   <div class="modal remind-modal">
     <div class="modal-header">
@@ -599,19 +734,10 @@
     <div class="remind-list" id="remindList"></div>
     <div class="divider"></div>
     <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px">➕ เพิ่มการแจ้งเตือน</div>
-    <div class="remind-add-grid">
-      <div>
-        <div style="font-size:10px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">งาน / รายการ</div>
-        <select id="remNewService" style="width:100%;font-size:13px"></select>
-      </div>
-      <div>
-        <div style="font-size:10px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">ทุก กม.</div>
-        <input type="number" id="remNewKm" placeholder="3000" min="0" style="width:100%;font-size:13px">
-      </div>
-      <div>
-        <div style="font-size:10px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">ทุก เดือน</div>
-        <input type="number" id="remNewMonth" placeholder="3" min="0" style="width:100%;font-size:13px">
-      </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+      <div><div style="font-size:10px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">งาน</div><select id="remNewService" style="width:100%;font-size:13px"></select></div>
+      <div><div style="font-size:10px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">ทุก กม.</div><input type="number" id="remNewKm" placeholder="3000" min="0" style="width:100%;font-size:13px"></div>
+      <div><div style="font-size:10px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">ทุก เดือน</div><input type="number" id="remNewMonth" placeholder="3" min="0" style="width:100%;font-size:13px"></div>
     </div>
     <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
       <button class="btn btn-ghost" onclick="closeReminderModal()">ปิด</button>
@@ -620,41 +746,22 @@
   </div>
 </div>
 
-<!-- ════ EXPORT MODAL ════ -->
+<!-- EXPORT MODAL -->
 <div class="modal-overlay" id="exportOverlay" onclick="if(event.target===this)closeExportModal()">
-  <div class="modal export-modal">
+  <div class="modal">
     <div class="modal-header">
       <div class="modal-title">💾 Export / Import</div>
       <button class="close-btn" onclick="closeExportModal()">✕</button>
     </div>
-    <p style="font-size:12px;color:var(--text-dim);margin-bottom:14px">สำรองข้อมูลไว้ใน device หรือโอนย้ายระหว่าง browser</p>
+    <p style="font-size:12px;color:var(--text-dim);margin-bottom:14px">สำรองข้อมูลหรือโอนย้ายระหว่าง browser</p>
     <div class="export-grid">
-      <div class="export-card" onclick="exportJSON()">
-        <div class="export-card-icon">📤</div>
-        <div class="export-card-title">Export JSON</div>
-        <div class="export-card-sub">ดาวน์โหลดข้อมูลทั้งหมด<br>เป็นไฟล์ .json</div>
-      </div>
-      <div class="export-card" onclick="exportCSV()">
-        <div class="export-card-icon">📊</div>
-        <div class="export-card-title">Export CSV</div>
-        <div class="export-card-sub">เปิดใน Excel หรือ<br>Google Sheets ได้เลย</div>
-      </div>
-      <div class="export-card" onclick="document.getElementById('importFile').click()">
-        <div class="export-card-icon">📥</div>
-        <div class="export-card-title">Import JSON</div>
-        <div class="export-card-sub">นำข้อมูลสำรอง<br>กลับเข้ามา</div>
-        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
-      </div>
-      <div class="export-card" onclick="clearAllData()" style="border-color:rgba(239,68,68,0.2)">
-        <div class="export-card-icon">🗑</div>
-        <div class="export-card-title" style="color:var(--red)">ล้างข้อมูล</div>
-        <div class="export-card-sub">ลบทุกอย่าง<br>เริ่มใหม่จากศูนย์</div>
-      </div>
+      <div class="export-card" onclick="exportJSON()"><div class="export-card-icon">📤</div><div class="export-card-title">Export JSON</div><div class="export-card-sub">ดาวน์โหลดข้อมูลทั้งหมดเป็นไฟล์ .json</div></div>
+      <div class="export-card" onclick="exportCSV()"><div class="export-card-icon">📊</div><div class="export-card-title">Export CSV</div><div class="export-card-sub">เปิดใน Excel หรือ Google Sheets ได้เลย</div></div>
+      <div class="export-card" onclick="document.getElementById('importFile').click()"><div class="export-card-icon">📥</div><div class="export-card-title">Import JSON</div><div class="export-card-sub">นำข้อมูลสำรองกลับเข้ามา</div><input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)"></div>
+      <div class="export-card" onclick="clearAllData()" style="border-color:rgba(239,68,68,0.2)"><div class="export-card-icon">🗑</div><div class="export-card-title" style="color:var(--red)">ล้างข้อมูล</div><div class="export-card-sub">ลบทุกอย่าง เริ่มใหม่จากศูนย์</div></div>
     </div>
     <div class="export-info">📦 ข้อมูลปัจจุบัน: <strong id="dataSize" style="color:var(--text)">-</strong></div>
-    <div style="display:flex;justify-content:flex-end;margin-top:14px">
-      <button class="btn btn-ghost" onclick="closeExportModal()">ปิด</button>
-    </div>
+    <div style="display:flex;justify-content:flex-end;margin-top:14px"><button class="btn btn-ghost" onclick="closeExportModal()">ปิด</button></div>
   </div>
 </div>
 
@@ -663,29 +770,7 @@
 //  CONSTANTS
 // ════════════════════════════════════
 const DEFAULT_SERVICE_TYPES = [
-  {name:'เปลี่ยนถ่ายน้ำมันเครื่อง', cat:'ค่าบริการ'},
-  {name:'เปลี่ยนยาง',               cat:'อะไหล่'},
-  {name:'ตรวจเช็คเบรก',             cat:'ค่าบริการ'},
-  {name:'เปลี่ยนผ้าเบรก',           cat:'อะไหล่'},
-  {name:'ล้างแอร์',                 cat:'ค่าบริการ'},
-  {name:'เติมน้ำยาแอร์',            cat:'อะไหล่'},
-  {name:'เปลี่ยนไส้กรองอากาศ',      cat:'อะไหล่'},
-  {name:'เปลี่ยนไส้กรองน้ำมัน',     cat:'อะไหล่'},
-  {name:'ตรวจเช็คระยะ',             cat:'ค่าบริการ'},
-  {name:'ล้างห้องเครื่อง',           cat:'ค่าบริการ'},
-  {name:'เปลี่ยนน้ำมันเกียร์',       cat:'ค่าบริการ'},
-  {name:'เปลี่ยนน้ำยาหม้อน้ำ',      cat:'อะไหล่'},
-  {name:'ตรวจเช็คแบตเตอรี่',        cat:'ค่าบริการ'},
-  {name:'เปลี่ยนแบตเตอรี่',         cat:'อะไหล่'},
-  {name:'ตรวจเช็คไฟ',               cat:'ค่าบริการ'},
-  {name:'เปลี่ยนหัวเทียน',          cat:'อะไหล่'},
-  {name:'เปลี่ยนโซ่-สเตอร์',        cat:'อะไหล่'},
-  {name:'ตั้งโซ่',                   cat:'ค่าแรง'},
-  {name:'ปรับวาล์ว',                cat:'ค่าแรง'},
-  {name:'เปลี่ยนน้ำมันโช้ค',        cat:'อะไหล่'},
-  {name:'ตรวจเช็คน้ำมันเบรก',       cat:'ค่าบริการ'},
-  {name:'ซ่อมทั่วไป',               cat:'ค่าแรง'},
-  {name:'อื่นๆ',                     cat:'อื่นๆ'},
+  {name:'เปลี่ยนถ่ายน้ำมันเครื่อง',cat:'ค่าบริการ'},{name:'เปลี่ยนยาง',cat:'อะไหล่'},{name:'ตรวจเช็คเบรก',cat:'ค่าบริการ'},{name:'เปลี่ยนผ้าเบรก',cat:'อะไหล่'},{name:'ล้างแอร์',cat:'ค่าบริการ'},{name:'เติมน้ำยาแอร์',cat:'อะไหล่'},{name:'เปลี่ยนไส้กรองอากาศ',cat:'อะไหล่'},{name:'เปลี่ยนไส้กรองน้ำมัน',cat:'อะไหล่'},{name:'ตรวจเช็คระยะ',cat:'ค่าบริการ'},{name:'ล้างห้องเครื่อง',cat:'ค่าบริการ'},{name:'เปลี่ยนน้ำมันเกียร์',cat:'ค่าบริการ'},{name:'เปลี่ยนน้ำยาหม้อน้ำ',cat:'อะไหล่'},{name:'ตรวจเช็คแบตเตอรี่',cat:'ค่าบริการ'},{name:'เปลี่ยนแบตเตอรี่',cat:'อะไหล่'},{name:'ตรวจเช็คไฟ',cat:'ค่าบริการ'},{name:'เปลี่ยนหัวเทียน',cat:'อะไหล่'},{name:'เปลี่ยนโซ่-สเตอร์',cat:'อะไหล่'},{name:'ตั้งโซ่',cat:'ค่าแรง'},{name:'ปรับวาล์ว',cat:'ค่าแรง'},{name:'เปลี่ยนน้ำมันโช้ค',cat:'อะไหล่'},{name:'ตรวจเช็คน้ำมันเบรก',cat:'ค่าบริการ'},{name:'ซ่อมทั่วไป',cat:'ค่าแรง'},{name:'อื่นๆ',cat:'อื่นๆ'},
 ];
 const CAT_UNITS = {'ค่าบริการ':'ครั้ง','อะไหล่':'ชิ้น','ค่าแรง':'ครั้ง','อื่นๆ':'รายการ'};
 const TAG_MAP = {'น้ำมัน':'tag-oil','เปลี่ยน':'tag-oil','ยาง':'tag-tire','เบรก':'tag-brake','ผ้าเบรก':'tag-brake','แอร์':'tag-ac','ไส้กรอง':'tag-filter','ตรวจ':'tag-check'};
@@ -696,40 +781,37 @@ function getUnit(cat){ return CAT_UNITS[cat]||'รายการ'; }
 // ════════════════════════════════════
 //  STATE
 // ════════════════════════════════════
-let vehicles = JSON.parse(localStorage.getItem('csVehicles2')||'null');
-let records  = JSON.parse(localStorage.getItem('csRecords2') ||'null');
+let vehicles     = JSON.parse(localStorage.getItem('csVehicles2')||'null');
+let records      = JSON.parse(localStorage.getItem('csRecords2') ||'null');
 let serviceTypes = JSON.parse(localStorage.getItem('csServiceTypes')||'null');
-let reminders = JSON.parse(localStorage.getItem('csReminders')||'[]');
-let selectedVehicleId   = 'all';
+let reminders    = JSON.parse(localStorage.getItem('csReminders')||'[]');
+let fuelRecords  = JSON.parse(localStorage.getItem('csFuelRecords')||'[]');
+let selectedVehicleId    = 'all';
 let summaryVehicleFilter = 'all';
-let editingId = null, viewingId = null, summaryPeriod = 'month';
+let editingId = null, viewingId = null, viewingFuelId = null, summaryPeriod = 'month';
 let editingStypeId = null;
 
 function saveAll(){
   localStorage.setItem('csVehicles2',    JSON.stringify(vehicles));
   localStorage.setItem('csRecords2',     JSON.stringify(records));
   localStorage.setItem('csServiceTypes', JSON.stringify(serviceTypes));
+  localStorage.setItem('csFuelRecords',  JSON.stringify(fuelRecords));
 }
+function saveReminders(){ localStorage.setItem('csReminders', JSON.stringify(reminders)); }
 
 // ════════════════════════════════════
 //  INIT
 // ════════════════════════════════════
 window.onload = () => {
-  if (!vehicles) {
-    vehicles = [];
-  }
-  if (!serviceTypes) {
-    serviceTypes = DEFAULT_SERVICE_TYPES.map((s,i)=>({id:'st'+i, ...s}));
-  }
-
-  if (!records) {
-    records = [];
-  }
-
-  document.getElementById('fDate').value = new Date().toISOString().split('T')[0];
+  if (!vehicles)     vehicles = [];
+  if (!serviceTypes) serviceTypes = DEFAULT_SERVICE_TYPES.map((s,i)=>({id:'st'+i,...s}));
+  if (!records)      records = [];
+  document.getElementById('fDate').value  = new Date().toISOString().split('T')[0];
+  document.getElementById('ffDate').value = new Date().toISOString().split('T')[0];
   renderVehicleChips(); renderSummaryVehicleFilter();
   updateStats(); renderRecords(); populateSummaryYear(); renderSummary();
   updateCenterDatalist(); populateVehicleSelect();
+  populateFuelVehicleFilter(); renderFuelRecords(); updateFuelStats(); renderFuelCharts();
   checkReminders();
 };
 
@@ -745,15 +827,8 @@ function renderVehicleChips(){
   });
   c.innerHTML = h;
 }
-
-function selectVehicle(id){
-  selectedVehicleId=id;
-  renderVehicleChips(); updateStats(); renderRecords();
-}
-
-function getFilteredRecords(){
-  return selectedVehicleId==='all' ? records : records.filter(r=>r.vehicleId===selectedVehicleId);
-}
+function selectVehicle(id){ selectedVehicleId=id; renderVehicleChips(); updateStats(); renderRecords(); }
+function getFilteredRecords(){ return selectedVehicleId==='all'?records:records.filter(r=>r.vehicleId===selectedVehicleId); }
 
 // ════════════════════════════════════
 //  STATS
@@ -789,20 +864,13 @@ function renderRecords(){
     const d=new Date(r.date);
     const tags=[...new Set(r.items.map(it=>it.name))].slice(0,3);
     return `<div class="record-card" onclick="openDetail(${r.id})">
-      <div class="record-date-block">
-        <div class="record-day">${d.getDate()}</div>
-        <div class="record-month">${MONTHS_TH[d.getMonth()]}</div>
-        <div class="record-year">${d.getFullYear()}</div>
-      </div>
+      <div class="record-date-block"><div class="record-day">${d.getDate()}</div><div class="record-month">${MONTHS_TH[d.getMonth()]}</div><div class="record-year">${d.getFullYear()}</div></div>
       <div class="record-body">
         <h3><span class="v-dot" style="background:${v.color||'#f97316'}"></span>${r.center}</h3>
         <p>${v.icon||''} ${v.name||''} ${v.plate?'· '+v.plate:''} ${r.mileage?'· '+r.mileage.toLocaleString()+' km':''} ${r.note?'· '+r.note:''}</p>
         <div class="record-tags">${tags.map(t=>`<span class="tag ${getTagClass(t)}">${t}</span>`).join('')}${r.items.length>3?`<span class="tag tag-other">+${r.items.length-3}</span>`:''}</div>
       </div>
-      <div class="record-cost">
-        <div class="record-cost-value">฿${(r.total||0).toLocaleString(undefined,{maximumFractionDigits:2})}</div>
-        <div class="record-cost-label">${r.items.length} รายการ</div>
-      </div>
+      <div class="record-cost"><div class="record-cost-value">฿${(r.total||0).toLocaleString(undefined,{maximumFractionDigits:2})}</div><div class="record-cost-label">${r.items.length} รายการ</div></div>
     </div>`;
   }).join('');
 }
@@ -813,17 +881,14 @@ function renderRecords(){
 function openDetail(id){
   viewingId=String(id);
   const r=records.find(x=>String(x.id)===String(id)), v=vehicles.find(x=>x.id===r.vehicleId)||{}, d=new Date(r.date);
-  
-  let summaryRows = '';
-  const subtotal = r.subtotal !== undefined ? r.subtotal : r.total; // กรณีข้อมูลเก่าไม่มี field subtotal
+  const subtotal = r.subtotal !== undefined ? r.subtotal : r.total;
   const discount = r.discount || 0;
-
-  if (discount > 0) {
-      summaryRows += `<tr><td colspan="4" style="text-align:right; color:var(--text-dim)">ยอดรวมรายการ</td><td style="text-align:right">฿${subtotal.toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2})}</td></tr>`;
-      summaryRows += `<tr><td colspan="4" style="text-align:right; color:var(--red)">ส่วนลด</td><td style="text-align:right; color:var(--red)">-฿${discount.toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2})}</td></tr>`;
+  let summaryRows = '';
+  if(discount>0){
+    summaryRows+=`<tr><td colspan="4" style="text-align:right;color:var(--text-dim)">ยอดรวมรายการ</td><td style="text-align:right">฿${subtotal.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</td></tr>`;
+    summaryRows+=`<tr><td colspan="4" style="text-align:right;color:var(--red)">ส่วนลด</td><td style="text-align:right;color:var(--red)">-฿${discount.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</td></tr>`;
   }
-  summaryRows += `<tr class="total-row"><td colspan="4">ยอดสุทธิ</td><td style="text-align:right">฿${(r.total||0).toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2})}</td></tr>`;
-
+  summaryRows+=`<tr class="total-row"><td colspan="4">ยอดสุทธิ</td><td style="text-align:right">฿${(r.total||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</td></tr>`;
   document.getElementById('detailContent').innerHTML=`
     <div class="detail-row"><span class="detail-label">🚗 รถ</span><span class="detail-value">${v.icon||''} ${v.name||'-'} <span style="color:var(--text-dim);font-size:11px">${v.plate||''}</span></span></div>
     <div class="detail-row"><span class="detail-label">📅 วันที่</span><span class="detail-value">${d.getDate()} ${MONTHS_TH[d.getMonth()]} ${d.getFullYear()+543}</span></div>
@@ -833,13 +898,7 @@ function openDetail(id){
     <table class="items-table" style="margin-top:13px">
       <thead><tr><th>งาน / อะไหล่</th><th style="text-align:center">จำนวน</th><th>ประเภท</th><th style="text-align:right">ราคา/หน่วย</th><th style="text-align:right">รวม</th></tr></thead>
       <tbody>
-        ${r.items.map(it=>`<tr>
-          <td>${it.name}</td>
-          <td style="text-align:center;font-family:'Space Mono',monospace">${it.qty||1} ${it.unit||'รายการ'}</td>
-          <td style="color:var(--text-dim)">${it.type}</td>
-          <td style="text-align:right;font-family:'Space Mono',monospace">${it.cost>0?'฿'+it.cost.toLocaleString():'<span style="color:var(--text-muted)">ฟรี</span>'}</td>
-          <td style="text-align:right;font-family:'Space Mono',monospace;color:var(--accent)">${it.cost>0?'฿'+((it.qty||1)*it.cost).toLocaleString():'<span style="color:var(--text-muted)">ฟรี</span>'}</td>
-        </tr>`).join('')}
+        ${r.items.map(it=>`<tr><td>${it.name}</td><td style="text-align:center;font-family:'Space Mono',monospace">${it.qty||1} ${it.unit||'รายการ'}</td><td style="color:var(--text-dim)">${it.type}</td><td style="text-align:right;font-family:'Space Mono',monospace">${it.cost>0?'฿'+it.cost.toLocaleString():'<span style="color:var(--text-muted)">ฟรี</span>'}</td><td style="text-align:right;font-family:'Space Mono',monospace;color:var(--accent)">${it.cost>0?'฿'+((it.qty||1)*it.cost).toLocaleString():'<span style="color:var(--text-muted)">ฟรี</span>'}</td></tr>`).join('')}
         ${summaryRows}
       </tbody>
     </table>`;
@@ -848,21 +907,12 @@ function openDetail(id){
 function closeDetail(){ document.getElementById('detailOverlay').classList.remove('open'); viewingId=null; }
 function closeDetailOnOverlay(e){ if(e.target===document.getElementById('detailOverlay')) closeDetail(); }
 function deleteCurrentRecord(){
-  const idToDelete = viewingId;
-  if(!idToDelete){ alert('ไม่พบรายการที่จะลบ'); return; }
+  if(!viewingId){ alert('ไม่พบรายการ'); return; }
   if(!confirm('ต้องการลบรายการนี้?')) return;
-  records = records.filter(r => String(r.id) !== String(idToDelete));
-  saveAll();
-  document.getElementById('detailOverlay').classList.remove('open');
-  viewingId = null;
-  updateStats(); renderRecords(); renderSummary();
+  records=records.filter(r=>String(r.id)!==String(viewingId));
+  saveAll(); closeDetail(); updateStats(); renderRecords(); renderSummary();
 }
-function editCurrentRecord(){
-  const id = viewingId;
-  document.getElementById('detailOverlay').classList.remove('open');
-  viewingId = null;
-  openModal(id);
-}
+function editCurrentRecord(){ const id=viewingId; closeDetail(); openModal(id); }
 
 // ════════════════════════════════════
 //  ADD/EDIT MODAL
@@ -899,151 +949,284 @@ function closeOnOverlay(e){ if(e.target===document.getElementById('modalOverlay'
 function addServiceItem(data=null){
   const row=document.createElement('div'); row.className='service-item-row';
   const opts=serviceTypes.map(t=>`<option value="${t.name}" data-cat="${t.cat}">${t.name}</option>`).join('');
-  const selName = data?data.name:'';
-  const selType = data?data.type:'ค่าบริการ';
-  const selQty  = data?(data.qty||1):1;
-  const selUnit = data?(data.unit||getUnit(selType)):getUnit(selType);
-  const selCost = data?(data.cost||0):0;
-
+  const selName=data?data.name:'', selType=data?data.type:'ค่าบริการ', selQty=data?(data.qty||1):1, selCost=data?(data.cost||0):0;
+  const selUnit=data?(data.unit||getUnit(selType)):getUnit(selType);
   row.innerHTML=`
     <div class="svc-row-left">
-      <div>
-        <div class="svc-field-label">งาน / ชื่ออะไหล่</div>
-        <select class="svc-name svc-name-select" style="width:100%;font-size:13px" onchange="onSvcNameChange(this)">${opts}</select>
-      </div>
+      <div><div class="svc-field-label">งาน / ชื่ออะไหล่</div><select class="svc-name svc-name-select" style="width:100%;font-size:13px" onchange="onSvcNameChange(this)">${opts}</select></div>
       <div class="svc-row-fields">
-        <div>
-          <div class="svc-field-label">จำนวน</div>
-          <div class="svc-qty-wrap">
-            <input type="number" class="svc-qty" min="0.01" step="0.01" value="${selQty}" oninput="updateFormTotal()">
-            <span class="svc-unit">${selUnit}</span>
-          </div>
-        </div>
-        <div>
-          <div class="svc-field-label">ประเภท</div>
-          <select class="svc-type" style="font-size:13px;width:100%" onchange="onSvcTypeChange(this)">
-            <option ${selType==='ค่าบริการ'?'selected':''}>ค่าบริการ</option>
-            <option ${selType==='อะไหล่'?'selected':''}>อะไหล่</option>
-            <option ${selType==='ค่าแรง'?'selected':''}>ค่าแรง</option>
-            <option ${selType==='อื่นๆ'?'selected':''}>อื่นๆ</option>
-          </select>
-        </div>
-        <div>
-          <div class="svc-field-label">ราคา/หน่วย (฿)</div>
-          <input type="number" class="svc-cost" placeholder="0" min="0" step="0.01" oninput="updateFormTotal()" value="${selCost}" style="width:100%">
-        </div>
+        <div><div class="svc-field-label">จำนวน</div><div class="svc-qty-wrap"><input type="number" class="svc-qty" min="0.01" step="0.01" value="${selQty}" oninput="updateFormTotal()"><span class="svc-unit">${selUnit}</span></div></div>
+        <div><div class="svc-field-label">ประเภท</div><select class="svc-type" style="font-size:13px;width:100%" onchange="onSvcTypeChange(this)"><option ${selType==='ค่าบริการ'?'selected':''}>ค่าบริการ</option><option ${selType==='อะไหล่'?'selected':''}>อะไหล่</option><option ${selType==='ค่าแรง'?'selected':''}>ค่าแรง</option><option ${selType==='อื่นๆ'?'selected':''}>อื่นๆ</option></select></div>
+        <div><div class="svc-field-label">ราคา/หน่วย (฿)</div><input type="number" class="svc-cost" placeholder="0" min="0" step="0.01" oninput="updateFormTotal()" value="${selCost}" style="width:100%"></div>
       </div>
     </div>
     <button class="remove-btn" onclick="removeServiceItem(this)" title="ลบ">−</button>`;
-
-  if(data){ row.querySelector('.svc-name').value = selName; }
-  const unitSpan = row.querySelector('.svc-unit');
-  const typeEl   = row.querySelector('.svc-type');
-  if(!data){
-    const st = serviceTypes[0];
-    if(st){ typeEl.value = st.cat; unitSpan.textContent = getUnit(st.cat); }
-  }
+  if(data) row.querySelector('.svc-name').value=selName;
+  if(!data){ const st=serviceTypes[0]; if(st){ row.querySelector('.svc-type').value=st.cat; row.querySelector('.svc-unit').textContent=getUnit(st.cat); } }
   document.getElementById('serviceItems').appendChild(row);
   updateFormTotal();
 }
-
-function onSvcNameChange(sel){
-  const row = sel.closest('.service-item-row');
-  const name = sel.value;
-  const st = serviceTypes.find(s=>s.name===name);
-  if(st){
-    row.querySelector('.svc-type').value = st.cat;
-    row.querySelector('.svc-unit').textContent = getUnit(st.cat);
-  }
-  updateFormTotal();
-}
-
-function onSvcTypeChange(sel){
-  const row = sel.closest('.service-item-row');
-  row.querySelector('.svc-unit').textContent = getUnit(sel.value);
-  updateFormTotal();
-}
-
+function onSvcNameChange(sel){ const row=sel.closest('.service-item-row'), st=serviceTypes.find(s=>s.name===sel.value); if(st){ row.querySelector('.svc-type').value=st.cat; row.querySelector('.svc-unit').textContent=getUnit(st.cat); } updateFormTotal(); }
+function onSvcTypeChange(sel){ sel.closest('.service-item-row').querySelector('.svc-unit').textContent=getUnit(sel.value); updateFormTotal(); }
 function removeServiceItem(btn){ btn.closest('.service-item-row').remove(); updateFormTotal(); }
-
 function updateFormTotal(){
   let subtotal=0;
-  document.querySelectorAll('.service-item-row').forEach(row=>{
-    const qty  = parseFloat(row.querySelector('.svc-qty').value)||1;
-    const cost = parseFloat(row.querySelector('.svc-cost').value)||0;
-    subtotal += qty*cost;
-  });
-
-  const discount = parseFloat(document.getElementById('fDiscount').value) || 0;
-
-  let afterDiscount = subtotal - discount;
-  if(afterDiscount < 0) afterDiscount = 0;
-
-  const netTotal = afterDiscount;
-
-  document.getElementById('formSubtotal').textContent = '฿' + subtotal.toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2});
-
-  const discountRow = document.getElementById('formDiscountRow');
-  if(discount > 0) {
-    discountRow.style.display = 'flex';
-    document.getElementById('formDiscountVal').textContent = '-฿' + discount.toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2});
-  } else {
-    discountRow.style.display = 'none';
-  }
-
-  document.getElementById('formTotal').textContent = '฿' + netTotal.toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2});
+  document.querySelectorAll('.service-item-row').forEach(row=>{ const qty=parseFloat(row.querySelector('.svc-qty').value)||1, cost=parseFloat(row.querySelector('.svc-cost').value)||0; subtotal+=qty*cost; });
+  const discount=parseFloat(document.getElementById('fDiscount').value)||0;
+  const net=Math.max(0,subtotal-discount);
+  document.getElementById('formSubtotal').textContent='฿'+subtotal.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+  const discRow=document.getElementById('formDiscountRow');
+  if(discount>0){ discRow.style.display='flex'; document.getElementById('formDiscountVal').textContent='-฿'+discount.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}); } else { discRow.style.display='none'; }
+  document.getElementById('formTotal').textContent='฿'+net.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
 }
-
 function saveRecord(){
-  const vid=document.getElementById('fVehicle').value;
-  const date=document.getElementById('fDate').value;
-  const center=document.getElementById('fCenter').value.trim();
+  const vid=document.getElementById('fVehicle').value, date=document.getElementById('fDate').value, center=document.getElementById('fCenter').value.trim();
   if(!vid){alert('กรุณาเลือกรถ');return;}
   if(!date||!center){alert('กรุณากรอกวันที่และชื่อศูนย์/อู่');return;}
-  
-  let subtotal = 0;
-  const items=Array.from(document.querySelectorAll('.service-item-row')).map(row=>{
-    const qty  = parseFloat(row.querySelector('.svc-qty').value)||1;
-    const cost = parseFloat(row.querySelector('.svc-cost').value)||0;
-    const type = row.querySelector('.svc-type').value;
-    const itemSubtotal = qty*cost;
-    subtotal += itemSubtotal;
-    return {
-      name: row.querySelector('.svc-name').value,
-      type, qty, unit: getUnit(type), cost,
-      subtotal: itemSubtotal
-    };
-  });
-
-  const discount = parseFloat(document.getElementById('fDiscount').value) || 0;
-  let afterDiscount = subtotal - discount;
-  if(afterDiscount < 0) afterDiscount = 0;
-  const total = afterDiscount;
-
-  const rec={
-    id:editingId||Date.now(),
-    vehicleId:vid,
-    date,
-    center,
-    mileage:parseInt(document.getElementById('fMileage').value)||0,
-    note:document.getElementById('fNote').value.trim(),
-    items, 
-    subtotal, 
-    discount, 
-    total
-  };
-
-  if(editingId){const i=records.findIndex(r=>String(r.id)===String(editingId));records[i]=rec;}
-  else records.push(rec);
+  let subtotal=0;
+  const items=Array.from(document.querySelectorAll('.service-item-row')).map(row=>{ const qty=parseFloat(row.querySelector('.svc-qty').value)||1, cost=parseFloat(row.querySelector('.svc-cost').value)||0, type=row.querySelector('.svc-type').value, s=qty*cost; subtotal+=s; return {name:row.querySelector('.svc-name').value,type,qty,unit:getUnit(type),cost,subtotal:s}; });
+  const discount=parseFloat(document.getElementById('fDiscount').value)||0;
+  const total=Math.max(0,subtotal-discount);
+  const rec={id:editingId||Date.now(),vehicleId:vid,date,center,mileage:parseInt(document.getElementById('fMileage').value)||0,note:document.getElementById('fNote').value.trim(),items,subtotal,discount,total};
+  if(editingId){ const i=records.findIndex(r=>String(r.id)===String(editingId)); records[i]=rec; } else records.push(rec);
   saveAll(); closeModal(); updateStats(); renderRecords(); renderSummary();
   updateCenterDatalist(); populateSummaryYear();
 }
 function populateVehicleSelect(){
-  document.getElementById('fVehicle').innerHTML='<option value="">-- เลือกรถ --</option>'+
-    vehicles.map(v=>`<option value="${v.id}">${v.icon} ${v.name} (${v.plate})</option>`).join('');
+  document.getElementById('fVehicle').innerHTML='<option value="">-- เลือกรถ --</option>'+vehicles.map(v=>`<option value="${v.id}">${v.icon} ${v.name} (${v.plate})</option>`).join('');
 }
-function updateCenterDatalist(){
-  document.getElementById('centerList').innerHTML=[...new Set(records.map(r=>r.center))].map(c=>`<option value="${c}">`).join('');
+function updateCenterDatalist(){ document.getElementById('centerList').innerHTML=[...new Set(records.map(r=>r.center))].map(c=>`<option value="${c}">`).join(''); }
+
+// ════════════════════════════════════
+//  ⛽ FUEL RECORDS
+// ════════════════════════════════════
+let currentFuelType = '91';
+let isFullTank = true;
+
+function openFuelModal(id=null){
+  populateFuelVehicleSelect();
+  document.getElementById('ffDate').value = new Date().toISOString().split('T')[0];
+  document.getElementById('ffMileage').value='';
+  document.getElementById('ffLiters').value='';
+  document.getElementById('ffPricePerLiter').value='';
+  document.getElementById('ffStation').value='';
+  document.getElementById('ffNote').value='';
+  // reset full tank
+  isFullTank=true;
+  document.getElementById('fullTankYes').className='fuel-type-btn active';
+  document.getElementById('fullTankNo').className='fuel-type-btn';
+  // reset fuel type
+  setFuelType(document.querySelector('#fuelTypeToggle .fuel-type-btn'), '91');
+  // pre-select vehicle if filter active
+  if(selectedVehicleId!=='all') document.getElementById('ffVehicle').value=selectedVehicleId;
+  calcFuelEfficiency();
+  document.getElementById('fuelOverlay').classList.add('open');
+}
+function closeFuelModal(){ document.getElementById('fuelOverlay').classList.remove('open'); }
+
+function setFuelType(btn, type){
+  document.querySelectorAll('#fuelTypeToggle .fuel-type-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  currentFuelType = type;
+  document.getElementById('ffFuelType').value = type;
+}
+function setFullTank(val){
+  isFullTank = val;
+  document.getElementById('ffFullTank').value = val;
+  document.getElementById('fullTankYes').className='fuel-type-btn'+(val?' active':'');
+  document.getElementById('fullTankNo').className='fuel-type-btn'+(!val?' active':'');
+  calcFuelEfficiency();
+}
+
+function populateFuelVehicleSelect(){
+  document.getElementById('ffVehicle').innerHTML='<option value="">-- เลือกรถ --</option>'+vehicles.map(v=>`<option value="${v.id}">${v.icon} ${v.name} (${v.plate})</option>`).join('');
+}
+function populateFuelVehicleFilter(){
+  const sel=document.getElementById('fuelVehicleFilter');
+  sel.innerHTML='<option value="all">ทุกคัน</option>'+vehicles.map(v=>`<option value="${v.id}">${v.icon} ${v.name}</option>`).join('');
+}
+
+function onFuelVehicleChange(){ calcFuelEfficiency(); }
+
+function getLastFuelRecord(vehicleId){
+  return fuelRecords.filter(r=>r.vehicleId===vehicleId && r.fullTank).sort((a,b)=>new Date(b.date)-new Date(a.date))[0] || null;
+}
+
+function calcFuelEfficiency(){
+  const liters  = parseFloat(document.getElementById('ffLiters').value)||0;
+  const ppl     = parseFloat(document.getElementById('ffPricePerLiter').value)||0;
+  const mileage = parseFloat(document.getElementById('ffMileage').value)||0;
+  const total   = liters * ppl;
+  document.getElementById('calcTotal').textContent = '฿ '+total.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+
+  const vid = document.getElementById('ffVehicle').value;
+  if(vid && mileage>0 && isFullTank){
+    const last = getLastFuelRecord(vid);
+    if(last && last.mileage>0 && mileage>last.mileage){
+      const dist = mileage - last.mileage;
+      document.getElementById('calcDistance').textContent = dist.toLocaleString()+' กม.';
+      if(liters>0){
+        const eff = dist/liters;
+        const effEl = document.getElementById('calcEff');
+        effEl.textContent = eff.toFixed(2)+' กม./ลิตร';
+        effEl.className = 'fuel-calc-value '+(eff>=15?'good':eff>=10?'':'bad');
+      } else {
+        document.getElementById('calcEff').textContent='-';
+        document.getElementById('calcEff').className='fuel-calc-value';
+      }
+      document.getElementById('calcEffRow').style.display='flex';
+    } else {
+      document.getElementById('calcDistance').textContent='ครั้งแรก / ไม่มีข้อมูลก่อนหน้า';
+      document.getElementById('calcEff').textContent='-';
+      document.getElementById('calcEffRow').style.display='none';
+    }
+  } else {
+    document.getElementById('calcDistance').textContent='- กม.';
+    document.getElementById('calcEff').textContent='-';
+    document.getElementById('calcEffRow').style.display = isFullTank ? 'flex' : 'none';
+  }
+}
+
+function saveFuelRecord(){
+  const vid     = document.getElementById('ffVehicle').value;
+  const date    = document.getElementById('ffDate').value;
+  const liters  = parseFloat(document.getElementById('ffLiters').value)||0;
+  const ppl     = parseFloat(document.getElementById('ffPricePerLiter').value)||0;
+  const mileage = parseInt(document.getElementById('ffMileage').value)||0;
+  if(!vid)   { alert('กรุณาเลือกรถ'); return; }
+  if(!date)  { alert('กรุณากรอกวันที่'); return; }
+  if(!liters){ alert('กรุณากรอกปริมาณน้ำมัน'); return; }
+
+  // calc efficiency
+  let efficiency = null;
+  if(isFullTank && mileage>0){
+    const last = getLastFuelRecord(vid);
+    if(last && last.mileage>0 && mileage>last.mileage && liters>0){
+      efficiency = (mileage - last.mileage) / liters;
+    }
+  }
+
+  const rec = {
+    id:       Date.now(),
+    vehicleId: vid,
+    date,
+    fuelType:  document.getElementById('ffFuelType').value,
+    liters,
+    pricePerLiter: ppl,
+    total:    liters*ppl,
+    mileage,
+    station:  document.getElementById('ffStation').value.trim(),
+    fullTank: isFullTank,
+    note:     document.getElementById('ffNote').value.trim(),
+    efficiency
+  };
+  fuelRecords.push(rec);
+  saveAll(); closeFuelModal();
+  renderFuelRecords(); updateFuelStats(); renderFuelCharts(); renderSummary();
+}
+
+function renderFuelRecords(){
+  const vf  = document.getElementById('fuelVehicleFilter').value;
+  const tf  = document.getElementById('fuelTypeFilter').value;
+  let f = fuelRecords.slice().sort((a,b)=>new Date(b.date)-new Date(a.date));
+  if(vf!=='all') f=f.filter(r=>r.vehicleId===vf);
+  if(tf) f=f.filter(r=>r.fuelType===tf);
+  const el=document.getElementById('fuelRecordsList');
+  if(!f.length){ el.innerHTML=`<div class="empty"><div class="empty-icon">⛽</div><h3>ยังไม่มีรายการเติมน้ำมัน</h3><p>กดปุ่ม "⛽ เติมน้ำมัน" เพื่อเริ่มบันทึก</p></div>`; return; }
+  el.innerHTML=f.map(r=>{
+    const v=vehicles.find(x=>x.id===r.vehicleId)||{};
+    const d=new Date(r.date);
+    return `<div class="fuel-record-card" onclick="openFuelDetail(${r.id})">
+      <div class="fuel-date-block"><div class="fuel-date-day">${d.getDate()}</div><div class="fuel-date-month">${MONTHS_TH[d.getMonth()]}</div><div class="fuel-date-year">${d.getFullYear()}</div></div>
+      <div class="fuel-record-body">
+        <h3><span class="v-dot" style="background:${v.color||'#f59e0b'}"></span>${r.station||'ปั๊มน้ำมัน'} <span style="font-size:11px;color:var(--text-dim);font-weight:400">${r.fuelType}</span></h3>
+        <p>${v.icon||''} ${v.name||''} ${r.mileage?'· '+r.mileage.toLocaleString()+' km':''} ${r.note?'· '+r.note:''}</p>
+        <div class="fuel-badges">
+          <span class="fuel-badge badge-liters">🪣 ${r.liters} ลิตร</span>
+          ${r.fullTank?'<span class="fuel-badge badge-full">⛽ เต็มถัง</span>':'<span class="fuel-badge badge-partial">🔋 บางส่วน</span>'}
+          ${r.efficiency?`<span class="fuel-badge badge-efficiency">📈 ${r.efficiency.toFixed(1)} กม./ลิตร</span>`:''}
+        </div>
+      </div>
+      <div class="fuel-record-cost">
+        <div class="fuel-record-cost-value">฿${(r.total||0).toLocaleString(undefined,{maximumFractionDigits:2})}</div>
+        <div class="fuel-record-cost-label">฿${r.pricePerLiter||0}/ลิตร</div>
+        ${r.efficiency?`<div class="fuel-record-eff">${r.efficiency.toFixed(1)} กม./ล.</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openFuelDetail(id){
+  viewingFuelId = id;
+  const r = fuelRecords.find(x=>x.id===id);
+  const v = vehicles.find(x=>x.id===r.vehicleId)||{};
+  const d = new Date(r.date);
+  document.getElementById('fuelDetailContent').innerHTML=`
+    <div class="detail-row"><span class="detail-label">🚗 รถ</span><span class="detail-value">${v.icon||''} ${v.name||'-'} <span style="color:var(--text-dim);font-size:11px">${v.plate||''}</span></span></div>
+    <div class="detail-row"><span class="detail-label">📅 วันที่</span><span class="detail-value">${d.getDate()} ${MONTHS_TH[d.getMonth()]} ${d.getFullYear()+543}</span></div>
+    <div class="detail-row"><span class="detail-label">⛽ ประเภทน้ำมัน</span><span class="detail-value">${r.fuelType}</span></div>
+    <div class="detail-row"><span class="detail-label">🏪 ปั๊ม</span><span class="detail-value">${r.station||'-'}</span></div>
+    <div class="detail-row"><span class="detail-label">🪣 ปริมาณ</span><span class="detail-value" style="color:var(--fuel);font-family:'Space Mono',monospace">${r.liters} ลิตร</span></div>
+    <div class="detail-row"><span class="detail-label">💰 ราคา/ลิตร</span><span class="detail-value">฿${r.pricePerLiter||0}</span></div>
+    <div class="detail-row"><span class="detail-label">💸 ค่าน้ำมันรวม</span><span class="detail-value" style="color:var(--fuel);font-family:'Space Mono',monospace;font-size:18px">฿${(r.total||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</span></div>
+    ${r.mileage?`<div class="detail-row"><span class="detail-label">🏎 เลขไมล์</span><span class="detail-value">${r.mileage.toLocaleString()} km</span></div>`:''}
+    <div class="detail-row"><span class="detail-label">⛽ เติมเต็มถัง?</span><span class="detail-value">${r.fullTank?'✅ เต็มถัง':'🔋 บางส่วน'}</span></div>
+    ${r.efficiency?`<div class="detail-row"><span class="detail-label">📈 อัตราสิ้นเปลือง</span><span class="detail-value" style="color:var(--green);font-family:'Space Mono',monospace">${r.efficiency.toFixed(2)} กม./ลิตร</span></div>`:''}
+    ${r.note?`<div class="detail-row"><span class="detail-label">📝 หมายเหตุ</span><span class="detail-value">${r.note}</span></div>`:''}`;
+  document.getElementById('fuelDetailOverlay').classList.add('open');
+}
+function closeFuelDetail(){ document.getElementById('fuelDetailOverlay').classList.remove('open'); viewingFuelId=null; }
+function deleteFuelRecord(){
+  if(!viewingFuelId){return;}
+  if(!confirm('ต้องการลบรายการนี้?')) return;
+  fuelRecords=fuelRecords.filter(r=>r.id!==viewingFuelId);
+  saveAll(); closeFuelDetail(); renderFuelRecords(); updateFuelStats(); renderFuelCharts(); renderSummary();
+}
+
+function updateFuelStats(){
+  const vf = document.getElementById('fuelVehicleFilter') ? document.getElementById('fuelVehicleFilter').value : 'all';
+  const f = vf==='all' ? fuelRecords : fuelRecords.filter(r=>r.vehicleId===vf);
+  const totalLiters = f.reduce((s,r)=>s+r.liters,0);
+  const totalCost   = f.reduce((s,r)=>s+r.total,0);
+  const effRecs     = f.filter(r=>r.efficiency&&r.efficiency>0);
+  const avgEff      = effRecs.length ? effRecs.reduce((s,r)=>s+r.efficiency,0)/effRecs.length : null;
+  document.getElementById('fuelStatCount').textContent  = f.length;
+  document.getElementById('fuelStatLiters').textContent = totalLiters.toLocaleString(undefined,{maximumFractionDigits:1})+' ล.';
+  document.getElementById('fuelStatCost').textContent   = '฿'+totalCost.toLocaleString(undefined,{maximumFractionDigits:0});
+  document.getElementById('fuelStatEff').textContent    = avgEff ? avgEff.toFixed(1)+' กม./ล.' : '-';
+}
+
+function renderFuelCharts(){
+  const yr = new Date().getFullYear();
+  document.getElementById('fuelChartYear').textContent = 'ปี '+yr;
+  const monthly = Array.from({length:12},(_,m)=>({
+    label:MONTHS_TH[m],
+    cost:fuelRecords.filter(r=>new Date(r.date).getFullYear()===yr&&new Date(r.date).getMonth()===m).reduce((s,r)=>s+r.total,0),
+    liters:fuelRecords.filter(r=>new Date(r.date).getFullYear()===yr&&new Date(r.date).getMonth()===m).reduce((s,r)=>s+r.liters,0),
+  }));
+  const mxC=Math.max(...monthly.map(d=>d.cost),1);
+  document.getElementById('fuelCostChart').innerHTML=monthly.map(d=>`<div class="bar-item"><div class="bar-label"><span>${d.label}</span><span style="color:var(--fuel)">${d.cost?'฿'+d.cost.toLocaleString(undefined,{maximumFractionDigits:0}):'-'}</span></div><div class="bar-track"><div class="bar-fill" style="width:${(d.cost/mxC*100).toFixed(1)}%;background:linear-gradient(90deg,var(--fuel),#ef4444)"></div></div></div>`).join('');
+
+  // Efficiency trend (last 10 full-tank records)
+  const effRecs = fuelRecords.filter(r=>r.efficiency&&r.fullTank).sort((a,b)=>new Date(a.date)-new Date(b.date)).slice(-10);
+  if(!effRecs.length){ document.getElementById('fuelEffChart').innerHTML='<p style="color:var(--text-dim);font-size:12px;text-align:center;padding:20px">เติมน้ำมันเต็มถัง 2 ครั้งขึ้นไปจึงจะแสดงกราฟ</p>'; return; }
+  const mxE=Math.max(...effRecs.map(r=>r.efficiency),1);
+  const minE=Math.min(...effRecs.map(r=>r.efficiency));
+  document.getElementById('fuelEffChart').innerHTML=`
+    <div style="display:flex;align-items:flex-end;gap:5px;height:80px;padding-bottom:4px;">
+      ${effRecs.map(r=>{
+        const pct=(r.efficiency/mxE*100).toFixed(1);
+        const good=r.efficiency>=15, ok=r.efficiency>=10;
+        const color=good?'var(--green)':ok?'var(--fuel)':'var(--red)';
+        const d=new Date(r.date);
+        return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;height:100%;justify-content:flex-end">
+          <div style="font-size:9px;color:${color};font-family:'Space Mono',monospace">${r.efficiency.toFixed(1)}</div>
+          <div style="width:100%;border-radius:3px 3px 0 0;background:${color};opacity:0.8;height:${pct}%;min-height:4px;transition:height 0.5s"></div>
+          <div style="font-size:8px;color:var(--text-muted);white-space:nowrap">${d.getDate()}/${d.getMonth()+1}</div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div style="font-size:10px;color:var(--text-dim);text-align:center;margin-top:4px">กม./ลิตร — <span style="color:var(--green)">●</span>ดี <span style="color:var(--fuel)">●</span>ปานกลาง <span style="color:var(--red)">●</span>ต่ำ</div>`;
 }
 
 // ════════════════════════════════════
@@ -1052,34 +1235,26 @@ function updateCenterDatalist(){
 function openVehicleModal(){ renderVehicleList(); document.getElementById('vehicleOverlay').classList.add('open'); }
 function closeVehicleModal(){ document.getElementById('vehicleOverlay').classList.remove('open'); }
 function closeVehicleOnOverlay(e){ if(e.target===document.getElementById('vehicleOverlay')) closeVehicleModal(); }
-
 function renderVehicleList(){
   const el=document.getElementById('vehicleList');
   if(!vehicles.length){el.innerHTML='<p style="color:var(--text-dim);font-size:13px">ยังไม่มีรถ กรอกข้อมูลด้านล่างเพื่อเพิ่ม</p>';return;}
-  el.innerHTML=vehicles.map(v=>`
-    <div class="vehicle-list-item">
-      <div class="v-icon-big">${v.icon}</div>
-      <div class="v-info"><div class="v-name">${v.name}</div><div class="v-plate">${v.plate}</div></div>
-      <div class="v-color-dot" style="background:${v.color}"></div>
-      <button class="btn btn-danger btn-sm" onclick="removeVehicle('${v.id}')">🗑</button>
-    </div>`).join('');
+  el.innerHTML=vehicles.map(v=>`<div class="vehicle-list-item"><div class="v-icon-big">${v.icon}</div><div class="v-info"><div class="v-name">${v.name}</div><div class="v-plate">${v.plate}</div></div><div class="v-color-dot" style="background:${v.color}"></div><button class="btn btn-danger btn-sm" onclick="removeVehicle('${v.id}')">🗑</button></div>`).join('');
 }
 function addVehicle(){
   const name=document.getElementById('vName').value.trim();
   if(!name){alert('กรุณากรอกชื่อรถ');return;}
   vehicles.push({id:'v'+Date.now(),name,plate:document.getElementById('vPlate').value.trim(),icon:document.getElementById('vIcon').value,color:document.getElementById('vColor').value});
   document.getElementById('vName').value=''; document.getElementById('vPlate').value='';
-  saveAll(); renderVehicleList(); renderVehicleChips(); renderSummaryVehicleFilter(); populateVehicleSelect();
+  saveAll(); renderVehicleList(); renderVehicleChips(); renderSummaryVehicleFilter(); populateVehicleSelect(); populateFuelVehicleFilter(); populateFuelVehicleSelect();
 }
 function removeVehicle(id){
-  const has=records.some(r=>r.vehicleId===id);
-  if(has&&!confirm('มีรายการ service ของรถคันนี้ ต้องการลบทั้งหมดใช่ไหม?')) return;
-  vehicles=vehicles.filter(v=>v.id!==id);
-  records=records.filter(r=>r.vehicleId!==id);
+  const has=records.some(r=>r.vehicleId===id)||fuelRecords.some(r=>r.vehicleId===id);
+  if(has&&!confirm('มีรายการของรถคันนี้ ต้องการลบทั้งหมดใช่ไหม?')) return;
+  vehicles=vehicles.filter(v=>v.id!==id); records=records.filter(r=>r.vehicleId!==id); fuelRecords=fuelRecords.filter(r=>r.vehicleId!==id);
   if(selectedVehicleId===id) selectedVehicleId='all';
   if(summaryVehicleFilter===id) summaryVehicleFilter='all';
   saveAll(); renderVehicleList(); renderVehicleChips(); renderSummaryVehicleFilter();
-  updateStats(); renderRecords(); renderSummary(); populateVehicleSelect();
+  updateStats(); renderRecords(); renderSummary(); populateVehicleSelect(); populateFuelVehicleFilter(); renderFuelRecords(); updateFuelStats(); renderFuelCharts();
 }
 
 // ════════════════════════════════════
@@ -1089,6 +1264,7 @@ function switchTab(id,btn){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
   btn.classList.add('active'); document.getElementById('tab-'+id).classList.add('active');
+  if(id==='fuel'){ updateFuelStats(); renderFuelCharts(); }
 }
 
 // ════════════════════════════════════
@@ -1097,715 +1273,233 @@ function switchTab(id,btn){
 function renderSummaryVehicleFilter(){
   const el=document.getElementById('summaryVehicleFilter');
   let h=`<button class="sv-chip all ${summaryVehicleFilter==='all'?'active':''}" onclick="setSummaryVehicle('all')">🚦 ทั้งหมด</button>`;
-  vehicles.forEach(v=>{
-    const act=summaryVehicleFilter===v.id;
-    h+=`<button class="sv-chip ${act?'active':''}" onclick="setSummaryVehicle('${v.id}')" ${act?`style="background:${v.color};border-color:${v.color};color:#fff"`:''}>
-      ${v.icon} ${v.name}</button>`;
-  });
+  vehicles.forEach(v=>{ const act=summaryVehicleFilter===v.id; h+=`<button class="sv-chip ${act?'active':''}" onclick="setSummaryVehicle('${v.id}')" ${act?`style="background:${v.color};border-color:${v.color};color:#fff"`:''}>${v.icon} ${v.name}</button>`; });
   el.innerHTML=h;
 }
 function setSummaryVehicle(id){ summaryVehicleFilter=id; renderSummaryVehicleFilter(); populateSummaryYear(); renderSummary(); }
 function getSummaryRecords(){ return summaryVehicleFilter==='all'?records:records.filter(r=>r.vehicleId===summaryVehicleFilter); }
-
+function getSummaryFuelRecords(){ return summaryVehicleFilter==='all'?fuelRecords:fuelRecords.filter(r=>r.vehicleId===summaryVehicleFilter); }
 function populateSummaryYear(){
-  const recs=getSummaryRecords();
+  const recs=[...getSummaryRecords(),...getSummaryFuelRecords()];
   const years=[...new Set(recs.map(r=>new Date(r.date).getFullYear()))].sort((a,b)=>b-a);
   if(!years.length) years.push(new Date().getFullYear());
-  const sel=document.getElementById('summaryYear');
-  const cur=parseInt(sel.value);
+  const sel=document.getElementById('summaryYear'), cur=parseInt(sel.value);
   sel.innerHTML=years.map(y=>`<option value="${y}" ${y===cur?'selected':''}>${y}</option>`).join('');
 }
 function setPeriod(p,btn){ summaryPeriod=p; document.querySelectorAll('.period-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderSummary(); }
-
 function renderSummary(){
   const year=parseInt(document.getElementById('summaryYear').value);
-  const base=getSummaryRecords();
+  const base=getSummaryRecords(); const baseFuel=getSummaryFuelRecords();
   const yr=base.filter(r=>new Date(r.date).getFullYear()===year);
-  summaryPeriod==='month'?renderMonthChart(yr):renderYearChart(base);
+  const yrFuel=baseFuel.filter(r=>new Date(r.date).getFullYear()===year);
+  summaryPeriod==='month'?renderMonthChart(yr,yrFuel):renderYearChart(base,baseFuel);
   renderServiceTable(yr); renderPodium(yr);
+  renderEfficiencySummary(yrFuel);
 }
-
-function renderMonthChart(yr){
-  const data=Array.from({length:12},(_,i)=>i).map(m=>({
-    label:MONTHS_TH[m],
-    cost:yr.filter(r=>new Date(r.date).getMonth()===m).reduce((s,r)=>s+(r.total||0),0),
-    count:yr.filter(r=>new Date(r.date).getMonth()===m).length
-  }));
-  const mxC=Math.max(...data.map(d=>d.cost),1), mxN=Math.max(...data.map(d=>d.count),1);
-  document.getElementById('costChart').innerHTML=data.map(d=>`<div class="bar-item"><div class="bar-label"><span>${d.label}</span><span>${d.cost?'฿'+d.cost.toLocaleString(undefined,{maximumFractionDigits:2}):'-'}</span></div><div class="bar-track"><div class="bar-fill" style="width:${(d.cost/mxC*100).toFixed(1)}%"></div></div></div>`).join('');
+function renderMonthChart(yr,yrFuel){
+  const data=Array.from({length:12},(_,i)=>i).map(m=>({label:MONTHS_TH[m],cost:yr.filter(r=>new Date(r.date).getMonth()===m).reduce((s,r)=>s+(r.total||0),0),count:yr.filter(r=>new Date(r.date).getMonth()===m).length,fuel:yrFuel.filter(r=>new Date(r.date).getMonth()===m).reduce((s,r)=>s+r.total,0)}));
+  const mxC=Math.max(...data.map(d=>d.cost),1),mxN=Math.max(...data.map(d=>d.count),1),mxF=Math.max(...data.map(d=>d.fuel),1);
+  document.getElementById('costChart').innerHTML=data.map(d=>`<div class="bar-item"><div class="bar-label"><span>${d.label}</span><span>${d.cost?'฿'+d.cost.toLocaleString(undefined,{maximumFractionDigits:0}):'-'}</span></div><div class="bar-track"><div class="bar-fill" style="width:${(d.cost/mxC*100).toFixed(1)}%"></div></div></div>`).join('');
+  document.getElementById('fuelSumChart').innerHTML=data.map(d=>`<div class="bar-item"><div class="bar-label"><span>${d.label}</span><span style="color:var(--fuel)">${d.fuel?'฿'+d.fuel.toLocaleString(undefined,{maximumFractionDigits:0}):'-'}</span></div><div class="bar-track"><div class="bar-fill" style="width:${(d.fuel/mxF*100).toFixed(1)}%;background:linear-gradient(90deg,var(--fuel),#ef4444)"></div></div></div>`).join('');
   document.getElementById('countChart').innerHTML=data.map(d=>`<div class="bar-item"><div class="bar-label"><span>${d.label}</span><span>${d.count?d.count+' ครั้ง':'-'}</span></div><div class="bar-track"><div class="bar-fill" style="width:${(d.count/mxN*100).toFixed(1)}%;background:linear-gradient(90deg,var(--blue),var(--purple))"></div></div></div>`).join('');
 }
-
-function renderYearChart(base){
-  const years=[...new Set(base.map(r=>new Date(r.date).getFullYear()))].sort();
-  if(!years.length){document.getElementById('costChart').innerHTML='';document.getElementById('countChart').innerHTML='';return;}
-  const data=years.map(y=>({label:y,cost:base.filter(r=>new Date(r.date).getFullYear()===y).reduce((s,r)=>s+(r.total||0),0),count:base.filter(r=>new Date(r.date).getFullYear()===y).length}));
-  const mxC=Math.max(...data.map(d=>d.cost),1), mxN=Math.max(...data.map(d=>d.count),1);
-  document.getElementById('costChart').innerHTML=data.map(d=>`<div class="bar-item"><div class="bar-label"><span>${d.label}</span><span>฿${d.cost.toLocaleString(undefined,{maximumFractionDigits:2})}</span></div><div class="bar-track"><div class="bar-fill" style="width:${(d.cost/mxC*100).toFixed(1)}%"></div></div></div>`).join('');
+function renderYearChart(base,baseFuel){
+  const allYears=[...new Set([...base,...baseFuel].map(r=>new Date(r.date).getFullYear()))].sort();
+  if(!allYears.length){['costChart','fuelSumChart','countChart'].forEach(id=>document.getElementById(id).innerHTML='');return;}
+  const data=allYears.map(y=>({label:y,cost:base.filter(r=>new Date(r.date).getFullYear()===y).reduce((s,r)=>s+(r.total||0),0),count:base.filter(r=>new Date(r.date).getFullYear()===y).length,fuel:baseFuel.filter(r=>new Date(r.date).getFullYear()===y).reduce((s,r)=>s+r.total,0)}));
+  const mxC=Math.max(...data.map(d=>d.cost),1),mxN=Math.max(...data.map(d=>d.count),1),mxF=Math.max(...data.map(d=>d.fuel),1);
+  document.getElementById('costChart').innerHTML=data.map(d=>`<div class="bar-item"><div class="bar-label"><span>${d.label}</span><span>฿${d.cost.toLocaleString(undefined,{maximumFractionDigits:0})}</span></div><div class="bar-track"><div class="bar-fill" style="width:${(d.cost/mxC*100).toFixed(1)}%"></div></div></div>`).join('');
+  document.getElementById('fuelSumChart').innerHTML=data.map(d=>`<div class="bar-item"><div class="bar-label"><span>${d.label}</span><span style="color:var(--fuel)">฿${d.fuel.toLocaleString(undefined,{maximumFractionDigits:0})}</span></div><div class="bar-track"><div class="bar-fill" style="width:${(d.fuel/mxF*100).toFixed(1)}%;background:linear-gradient(90deg,var(--fuel),#ef4444)"></div></div></div>`).join('');
   document.getElementById('countChart').innerHTML=data.map(d=>`<div class="bar-item"><div class="bar-label"><span>${d.label}</span><span>${d.count} ครั้ง</span></div><div class="bar-track"><div class="bar-fill" style="width:${(d.count/mxN*100).toFixed(1)}%;background:linear-gradient(90deg,var(--blue),var(--purple))"></div></div></div>`).join('');
 }
-
+function renderEfficiencySummary(yrFuel){
+  const data=Array.from({length:12},(_,m)=>{
+    const recs=yrFuel.filter(r=>new Date(r.date).getMonth()===m&&r.efficiency&&r.efficiency>0);
+    const avg=recs.length?recs.reduce((s,r)=>s+r.efficiency,0)/recs.length:0;
+    return {label:MONTHS_TH[m],avg};
+  });
+  const mx=Math.max(...data.map(d=>d.avg),1);
+  document.getElementById('effChartSummary').innerHTML=data.map(d=>`<div class="bar-item"><div class="bar-label"><span>${d.label}</span><span style="color:var(--teal)">${d.avg?d.avg.toFixed(1)+' กม./ล.':'-'}</span></div><div class="bar-track"><div class="bar-fill" style="width:${(d.avg/mx*100).toFixed(1)}%;background:linear-gradient(90deg,var(--teal),var(--green))"></div></div></div>`).join('');
+}
 function renderPodium(recs){
   const counts={},costs={};
-  recs.forEach(r=>r.items.forEach(it=>{
-    counts[it.name]=(counts[it.name]||0)+1;
-    costs[it.name]=(costs[it.name]||0)+(it.subtotal!=null?it.subtotal:(it.qty||1)*it.cost);
-  }));
+  recs.forEach(r=>r.items.forEach(it=>{ counts[it.name]=(counts[it.name]||0)+1; costs[it.name]=(costs[it.name]||0)+(it.subtotal!=null?it.subtotal:(it.qty||1)*it.cost); }));
   const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,5);
   const medals=['🥇','🥈','🥉','4️⃣','5️⃣'];
   document.getElementById('podiumChart').innerHTML=!sorted.length?'<p style="color:var(--text-dim);font-size:13px">ไม่มีข้อมูล</p>':
     sorted.map(([name,count],i)=>`<div class="podium-item"><div class="podium-rank">${medals[i]}</div><div class="podium-name">${name}</div><div class="podium-count">${count} ครั้ง</div><div class="podium-cost">฿${(costs[name]||0).toLocaleString(undefined,{maximumFractionDigits:2})}</div></div>`).join('');
 }
-
 function renderServiceTable(recs){
   const counts={},costs={};
-  recs.forEach(r=>r.items.forEach(it=>{
-    counts[it.name]=(counts[it.name]||0)+1;
-    costs[it.name]=(costs[it.name]||0)+(it.subtotal!=null?it.subtotal:(it.qty||1)*it.cost);
-  }));
+  recs.forEach(r=>r.items.forEach(it=>{ counts[it.name]=(counts[it.name]||0)+1; costs[it.name]=(costs[it.name]||0)+(it.subtotal!=null?it.subtotal:(it.qty||1)*it.cost); }));
   const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
   document.getElementById('serviceTable').innerHTML=!sorted.length?`<tr><td colspan="4" style="text-align:center;color:var(--text-dim);padding:18px">ไม่มีข้อมูล</td></tr>`:
-    sorted.map(([name,count])=>`<tr><td><span class="tag ${getTagClass(name)}" style="margin-right:5px">●</span>${name}</td><td><span style="font-family:'Space Mono',monospace">${count}</span> ครั้ง</td><td style="font-family:'Space Mono',monospace;color:var(--accent)">฿${(costs[name]||0).toLocaleString(undefined,{maximumFractionDigits:2})}</td><td style="font-family:'Space Mono',monospace;color:var(--text-dim)">฿${Math.round((costs[name]||0)/count).toLocaleString(undefined,{maximumFractionDigits:2})}</td></tr>`).join('');
+    sorted.map(([name,count])=>`<tr><td><span class="tag ${getTagClass(name)}" style="margin-right:5px">●</span>${name}</td><td><span style="font-family:'Space Mono',monospace">${count}</span> ครั้ง</td><td style="font-family:'Space Mono',monospace;color:var(--accent)">฿${(costs[name]||0).toLocaleString(undefined,{maximumFractionDigits:2})}</td><td style="font-family:'Space Mono',monospace;color:var(--text-dim)">฿${Math.round((costs[name]||0)/count).toLocaleString()}</td></tr>`).join('');
 }
+
 // ════════════════════════════════════
 //  MANAGE SERVICE TYPES
 // ════════════════════════════════════
-function openServiceTypesModal(){
-  editingStypeId = null;
-  renderStypeList();
-  document.getElementById('serviceTypesOverlay').classList.add('open');
-}
-function closeServiceTypesModal(){
-  document.getElementById('serviceTypesOverlay').classList.remove('open');
-  editingStypeId = null;
-  // refresh dropdown in open add/edit modal if present
-  if(document.getElementById('modalOverlay').classList.contains('open')){
-    // rebuild all dropdowns
-    document.querySelectorAll('.svc-name').forEach(sel=>{
-      const cur = sel.value;
-      const opts = serviceTypes.map(t=>`<option value="${t.name}" ${t.name===cur?'selected':''}>${t.name}</option>`).join('');
-      sel.innerHTML = opts;
-    });
-  }
-}
+function openServiceTypesModal(){ editingStypeId=null; renderStypeList(); document.getElementById('serviceTypesOverlay').classList.add('open'); }
+function closeServiceTypesModal(){ document.getElementById('serviceTypesOverlay').classList.remove('open'); editingStypeId=null; if(document.getElementById('modalOverlay').classList.contains('open')){ document.querySelectorAll('.svc-name').forEach(sel=>{ const cur=sel.value; sel.innerHTML=serviceTypes.map(t=>`<option value="${t.name}" ${t.name===cur?'selected':''}>${t.name}</option>`).join(''); }); } }
 function closeSTOnOverlay(e){ if(e.target===document.getElementById('serviceTypesOverlay')) closeServiceTypesModal(); }
-
-const CAT_COLORS = {'ค่าบริการ':'#f97316','อะไหล่':'#22c55e','ค่าแรง':'#3b82f6','อื่นๆ':'#a855f7'};
-
+const CAT_COLORS={'ค่าบริการ':'#f97316','อะไหล่':'#22c55e','ค่าแรง':'#3b82f6','อื่นๆ':'#a855f7'};
 function renderStypeList(){
-  const el = document.getElementById('stypeList');
-  if(!serviceTypes.length){ el.innerHTML='<p style="color:var(--text-dim);font-size:13px">ยังไม่มีรายการ</p>'; return; }
-  el.innerHTML = serviceTypes.map((st,i)=>{
-    if(editingStypeId===st.id){
-      return `<div class="edit-inline-row" id="strow_${st.id}">
-        <input type="text" id="stedit_name_${st.id}" value="${st.name}" style="font-size:13px">
-        <select id="stedit_cat_${st.id}" style="font-size:13px">
-          ${['ค่าบริการ','อะไหล่','ค่าแรง','อื่นๆ'].map(c=>`<option ${c===st.cat?'selected':''}>${c}</option>`).join('')}
-        </select>
-        <button class="btn btn-primary btn-sm" onclick="saveStypeEdit('${st.id}')">✓</button>
-        <button class="btn btn-ghost btn-sm" onclick="cancelStypeEdit()">✕</button>
-      </div>`;
-    }
-    return `<div class="stype-item">
-      <div class="stype-badge" style="background:${CAT_COLORS[st.cat]||'#888'}"></div>
-      <div class="stype-name">${st.name}</div>
-      <div class="stype-cat">${st.cat}</div>
-      <div class="stype-actions">
-        <button class="btn btn-ghost btn-sm" onclick="startStypeEdit('${st.id}')">✏️</button>
-        <button class="btn btn-danger btn-sm" onclick="deleteStypeItem('${st.id}')">🗑</button>
-        ${i>0?`<button class="btn btn-ghost btn-sm" onclick="moveStypeItem('${st.id}',-1)" title="ขึ้น">↑</button>`:''}
-        ${i<serviceTypes.length-1?`<button class="btn btn-ghost btn-sm" onclick="moveStypeItem('${st.id}',1)" title="ลง">↓</button>`:''}
-      </div>
-    </div>`;
+  const el=document.getElementById('stypeList');
+  if(!serviceTypes.length){el.innerHTML='<p style="color:var(--text-dim);font-size:13px">ยังไม่มีรายการ</p>';return;}
+  el.innerHTML=serviceTypes.map((st,i)=>{
+    if(editingStypeId===st.id) return `<div class="edit-inline-row"><input type="text" id="stedit_name_${st.id}" value="${st.name}" style="font-size:13px"><select id="stedit_cat_${st.id}" style="font-size:13px">${['ค่าบริการ','อะไหล่','ค่าแรง','อื่นๆ'].map(c=>`<option ${c===st.cat?'selected':''}>${c}</option>`).join('')}</select><button class="btn btn-primary btn-sm" onclick="saveStypeEdit('${st.id}')">✓</button><button class="btn btn-ghost btn-sm" onclick="cancelStypeEdit()">✕</button></div>`;
+    return `<div class="stype-item"><div class="stype-badge" style="background:${CAT_COLORS[st.cat]||'#888'}"></div><div class="stype-name">${st.name}</div><div class="stype-cat">${st.cat}</div><div class="stype-actions"><button class="btn btn-ghost btn-sm" onclick="startStypeEdit('${st.id}')">✏️</button><button class="btn btn-danger btn-sm" onclick="deleteStypeItem('${st.id}')">🗑</button>${i>0?`<button class="btn btn-ghost btn-sm" onclick="moveStypeItem('${st.id}',-1)">↑</button>`:''}${i<serviceTypes.length-1?`<button class="btn btn-ghost btn-sm" onclick="moveStypeItem('${st.id}',1)">↓</button>`:''}</div></div>`;
   }).join('');
 }
-
 function startStypeEdit(id){ editingStypeId=id; renderStypeList(); }
 function cancelStypeEdit(){ editingStypeId=null; renderStypeList(); }
-
-function saveStypeEdit(id){
-  const name = document.getElementById('stedit_name_'+id).value.trim();
-  const cat  = document.getElementById('stedit_cat_'+id).value;
-  if(!name){ alert('กรุณากรอกชื่อรายการ'); return; }
-  const st = serviceTypes.find(s=>s.id===id);
-  if(st){ st.name=name; st.cat=cat; }
-  editingStypeId=null;
-  saveAll(); renderStypeList();
-}
-
-function deleteStypeItem(id){
-  if(!confirm('ต้องการลบรายการนี้?')) return;
-  serviceTypes = serviceTypes.filter(s=>s.id!==id);
-  saveAll(); renderStypeList();
-}
-
-function moveStypeItem(id, dir){
-  const i = serviceTypes.findIndex(s=>s.id===id);
-  const j = i+dir;
-  if(j<0||j>=serviceTypes.length) return;
-  [serviceTypes[i],serviceTypes[j]]=[serviceTypes[j],serviceTypes[i]];
-  saveAll(); renderStypeList();
-}
-
-function addServiceType(){
-  const name = document.getElementById('stNewName').value.trim();
-  const cat  = document.getElementById('stNewCat').value;
-  if(!name){ alert('กรุณากรอกชื่อรายการ'); return; }
-  if(serviceTypes.find(s=>s.name===name)){ alert('มีรายการนี้อยู่แล้ว'); return; }
-  serviceTypes.push({id:'st'+Date.now(), name, cat});
-  document.getElementById('stNewName').value='';
-  saveAll(); renderStypeList();
-}
-
-function resetServiceTypes(){
-  if(!confirm('รีเซ็ตรายการงานกลับเป็นค่าเริ่มต้น? รายการที่คุณเพิ่มเองจะหายไป')) return;
-  serviceTypes = DEFAULT_SERVICE_TYPES.map((s,i)=>({id:'st'+i,...s}));
-  saveAll(); renderStypeList();
-}
+function saveStypeEdit(id){ const name=document.getElementById('stedit_name_'+id).value.trim(), cat=document.getElementById('stedit_cat_'+id).value; if(!name){alert('กรุณากรอกชื่อ');return;} const st=serviceTypes.find(s=>s.id===id); if(st){st.name=name;st.cat=cat;} editingStypeId=null; saveAll(); renderStypeList(); }
+function deleteStypeItem(id){ if(!confirm('ต้องการลบ?')) return; serviceTypes=serviceTypes.filter(s=>s.id!==id); saveAll(); renderStypeList(); }
+function moveStypeItem(id,dir){ const i=serviceTypes.findIndex(s=>s.id===id),j=i+dir; if(j<0||j>=serviceTypes.length)return; [serviceTypes[i],serviceTypes[j]]=[serviceTypes[j],serviceTypes[i]]; saveAll(); renderStypeList(); }
+function addServiceType(){ const name=document.getElementById('stNewName').value.trim(), cat=document.getElementById('stNewCat').value; if(!name){alert('กรุณากรอกชื่อ');return;} if(serviceTypes.find(s=>s.name===name)){alert('มีรายการนี้แล้ว');return;} serviceTypes.push({id:'st'+Date.now(),name,cat}); document.getElementById('stNewName').value=''; saveAll(); renderStypeList(); }
+function resetServiceTypes(){ if(!confirm('รีเซ็ตรายการงาน?')) return; serviceTypes=DEFAULT_SERVICE_TYPES.map((s,i)=>({id:'st'+i,...s})); saveAll(); renderStypeList(); }
 
 // ════════════════════════════════════
 //  AI SCAN
 // ════════════════════════════════════
-let aiImageBase64 = null;
-let aiImageMimeType = null;
-
-function openAiScanModal(){
-  aiImageBase64 = null;
-  aiImageMimeType = null;
-  document.getElementById('aiImgPreview').style.display='none';
-  document.getElementById('aiStatusBox').className='ai-status-box';
-  document.getElementById('aiResultBox').style.display='none';
-  document.getElementById('aiDropIcon').textContent='📷';
-  document.getElementById('aiRunBtn').disabled=true;
-  document.getElementById('aiRunBtn').style.opacity='0.5';
-  
-  // เรียกคืนค่า API Key จาก LocalStorage ถ้าเคยกรอกไว้
-  document.getElementById('aiApiKey').value = localStorage.getItem('csGeminiApiKey') || '';
-  document.getElementById('aiFileInput').value='';
-  document.getElementById('aiScanOverlay').classList.add('open');
-}
+let aiImageBase64=null,aiImageMimeType=null;
+function openAiScanModal(){ aiImageBase64=null;aiImageMimeType=null;document.getElementById('aiImgPreview').style.display='none';document.getElementById('aiStatusBox').className='ai-status-box';document.getElementById('aiResultBox').style.display='none';document.getElementById('aiDropIcon').textContent='📷';document.getElementById('aiRunBtn').disabled=true;document.getElementById('aiRunBtn').style.opacity='0.5';document.getElementById('aiApiKey').value=localStorage.getItem('csGeminiApiKey')||'';document.getElementById('aiFileInput').value='';document.getElementById('aiScanOverlay').classList.add('open'); }
 function closeAiScanModal(){ document.getElementById('aiScanOverlay').classList.remove('open'); }
-
-function handleAiDrop(e){
-  e.preventDefault();
-  document.getElementById('aiDropZone').classList.remove('drag-over');
-  const file = e.dataTransfer.files[0];
-  if(file && file.type.startsWith('image/')) processAiFile(file);
-}
-function handleAiFile(e){ const f=e.target.files[0]; if(f) processAiFile(f); }
-
-function processAiFile(file){
-  const reader = new FileReader();
-  reader.onload = (e)=>{
-    const dataUrl = e.target.result;
-    aiImageMimeType = dataUrl.split(';')[0].split(':')[1];
-    aiImageBase64 = dataUrl.split(',')[1];
-    const img = document.getElementById('aiImgPreview');
-    img.src = dataUrl; img.style.display='block';
-    document.getElementById('aiDropIcon').textContent='✅';
-    document.getElementById('aiStatusBox').className='ai-status-box success';
-    document.getElementById('aiStatusBox').innerHTML='<span>✅</span> โหลดรูปสำเร็จ — กด "วิเคราะห์ใบงาน" เพื่อให้ AI อ่านข้อมูล';
-    document.getElementById('aiRunBtn').disabled=false;
-    document.getElementById('aiRunBtn').style.opacity='1';
-  };
-  reader.readAsDataURL(file);
-}
-
+function handleAiDrop(e){ e.preventDefault();document.getElementById('aiDropZone').classList.remove('drag-over');const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/'))processAiFile(f); }
+function handleAiFile(e){ const f=e.target.files[0];if(f)processAiFile(f); }
+function processAiFile(file){ const reader=new FileReader();reader.onload=(e)=>{const d=e.target.result;aiImageMimeType=d.split(';')[0].split(':')[1];aiImageBase64=d.split(',')[1];const img=document.getElementById('aiImgPreview');img.src=d;img.style.display='block';document.getElementById('aiDropIcon').textContent='✅';document.getElementById('aiStatusBox').className='ai-status-box success';document.getElementById('aiStatusBox').innerHTML='<span>✅</span> โหลดรูปสำเร็จ';document.getElementById('aiRunBtn').disabled=false;document.getElementById('aiRunBtn').style.opacity='1';};reader.readAsDataURL(file); }
 async function runAiScan(){
-  const apiKey = document.getElementById('aiApiKey').value.trim();
-  if(!apiKey){ alert('กรุณากรอก Gemini API Key ก่อน'); return; }
-  if(!aiImageBase64){ alert('กรุณาเลือกรูปภาพก่อน'); return; }
-  
-  // เซฟ API Key ไว้ในเครื่อง จะได้ไม่ต้องกรอกใหม่รอบหน้า
-  localStorage.setItem('csGeminiApiKey', apiKey);
-
-  const statusBox = document.getElementById('aiStatusBox');
-  const resultBox = document.getElementById('aiResultBox');
-  const btn = document.getElementById('aiRunBtn');
-  btn.disabled=true; btn.style.opacity='0.6';
-  statusBox.className='ai-status-box loading';
-  statusBox.innerHTML='<div class="spinner"></div> AI กำลังอ่านใบงาน... กรุณารอสักครู่';
-  resultBox.style.display='none';
-
-  try {
-    const prompt = `คุณคือผู้เชี่ยวชาญอ่านใบงานศูนย์บริการรถยนต์/มอเตอร์ไซค์
-กรุณาอ่านข้อมูลจากรูปนี้แล้วตอบกลับเป็น JSON เท่านั้น ไม่มีข้อความอื่น
-
-รูปแบบ JSON ที่ต้องการ:
-{
-  "center": "ชื่อศูนย์หรืออู่",
-  "date": "YYYY-MM-DD หรือ null ถ้าไม่มี",
-  "mileage": จำนวนกิโลเมตรเป็นตัวเลขหรือ null,
-  "note": "หมายเหตุเพิ่มเติมถ้ามี",
-  "discount": ส่วนลดที่ปรากฏในบิลเป็นตัวเลข (ถ้าไม่มีให้ใส่ 0),
-  "items": [
-    { "name": "ชื่อรายการงาน/อะไหล่", "type": "ค่าบริการ|อะไหล่|ค่าแรง|อื่นๆ", "qty": จำนวน, "cost": ราคาต่อหน่วยเป็นตัวเลข }
-  ]
-}
-
-หมายเหตุ: cost ให้ใส่ราคาต่อหน่วย (ไม่ใช่รวม) ถ้าไม่มีราคาให้ใส่ 0`;
-
-    const payload = {
-      contents: [{
-        parts: [
-          { text: prompt },
-          { inlineData: { mimeType: aiImageMimeType || "image/jpeg", data: aiImageBase64 } }
-        ]
-      }],
-      generationConfig: {
-        responseMimeType: "application/json"
-      }
-    };
-
-    const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    });
-
-    if(!resp.ok){
-      const err = await resp.json().catch(()=>({}));
-      throw new Error(err.error?.message || `HTTP ${resp.status}`);
-    }
-
-    const data = await resp.json();
-    const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    resultBox.style.display='block';
-    resultBox.textContent = raw;
-
-    // Parse JSON
-    const jsonStr = raw.replace(/```json|```/g,'').trim();
-    const parsed = JSON.parse(jsonStr);
-
-    // Populate form
+  const apiKey=document.getElementById('aiApiKey').value.trim();
+  if(!apiKey){alert('กรุณากรอก Gemini API Key');return;}
+  if(!aiImageBase64){alert('กรุณาเลือกรูป');return;}
+  localStorage.setItem('csGeminiApiKey',apiKey);
+  const sb=document.getElementById('aiStatusBox'),rb=document.getElementById('aiResultBox'),btn=document.getElementById('aiRunBtn');
+  btn.disabled=true;btn.style.opacity='0.6';sb.className='ai-status-box loading';sb.innerHTML='<div class="spinner"></div> AI กำลังอ่านใบงาน...';rb.style.display='none';
+  try{
+    const prompt=`คุณคือผู้เชี่ยวชาญอ่านใบงานศูนย์บริการรถยนต์/มอเตอร์ไซค์\nตอบกลับเป็น JSON เท่านั้น:\n{"center":"ชื่อศูนย์","date":"YYYY-MM-DD หรือ null","mileage":km หรือ null,"note":"","discount":0,"items":[{"name":"","type":"ค่าบริการ|อะไหล่|ค่าแรง|อื่นๆ","qty":1,"cost":0}]}`;
+    const resp=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt},{inlineData:{mimeType:aiImageMimeType||"image/jpeg",data:aiImageBase64}}]}],generationConfig:{responseMimeType:"application/json"}})});
+    if(!resp.ok){const err=await resp.json().catch(()=>({}));throw new Error(err.error?.message||`HTTP ${resp.status}`);}
+    const data=await resp.json();const raw=data.candidates?.[0]?.content?.parts?.[0]?.text||'';
+    rb.style.display='block';rb.textContent=raw;
+    const parsed=JSON.parse(raw.replace(/```json|```/g,'').trim());
     closeAiScanModal();
-    // make sure add/edit modal is open
-    if(!document.getElementById('modalOverlay').classList.contains('open')) openModal();
-
+    if(!document.getElementById('modalOverlay').classList.contains('open'))openModal();
     setTimeout(()=>{
-      if(parsed.center) document.getElementById('fCenter').value = parsed.center;
-      if(parsed.date)   document.getElementById('fDate').value   = parsed.date;
-      if(parsed.mileage) document.getElementById('fMileage').value = parsed.mileage;
-      if(parsed.note)   document.getElementById('fNote').value   = parsed.note;
-      
-      // อัปเดตส่วนลด
-      if(parsed.discount) document.getElementById('fDiscount').value = parsed.discount;
-
-      if(parsed.items && parsed.items.length){
-        document.getElementById('serviceItems').innerHTML='';
-        parsed.items.forEach(it=>{
-          // Add to serviceTypes if not exists
-          if(!serviceTypes.find(s=>s.name===it.name)){
-            serviceTypes.push({id:'st'+Date.now()+Math.random(), name:it.name, cat:it.type||'อื่นๆ'});
-            saveAll();
-          }
-          addServiceItem({ name:it.name, type:it.type||'ค่าบริการ', qty:it.qty||1, cost:it.cost||0, unit: getUnit(it.type||'ค่าบริการ') });
-        });
-        updateFormTotal();
-      }
-      alert(`✅ AI กรอกข้อมูลสำเร็จ!\nพบ ${(parsed.items||[]).length} รายการ\nส่วนลด: ${parsed.discount||0} บาท\nกรุณาตรวจสอบและแก้ไขก่อนบันทึก`);
-    }, 200);
-
-  } catch(err){
-    statusBox.className='ai-status-box error';
-    statusBox.innerHTML=`<span>❌</span> เกิดข้อผิดพลาด: ${err.message}`;
-    btn.disabled=false; btn.style.opacity='1';
-  }
+      if(parsed.center)document.getElementById('fCenter').value=parsed.center;
+      if(parsed.date)document.getElementById('fDate').value=parsed.date;
+      if(parsed.mileage)document.getElementById('fMileage').value=parsed.mileage;
+      if(parsed.note)document.getElementById('fNote').value=parsed.note;
+      if(parsed.discount)document.getElementById('fDiscount').value=parsed.discount;
+      if(parsed.items&&parsed.items.length){document.getElementById('serviceItems').innerHTML='';parsed.items.forEach(it=>{if(!serviceTypes.find(s=>s.name===it.name)){serviceTypes.push({id:'st'+Date.now()+Math.random(),name:it.name,cat:it.type||'อื่นๆ'});saveAll();}addServiceItem({name:it.name,type:it.type||'ค่าบริการ',qty:it.qty||1,cost:it.cost||0,unit:getUnit(it.type||'ค่าบริการ')});});updateFormTotal();}
+      alert(`✅ AI กรอกข้อมูลสำเร็จ! พบ ${(parsed.items||[]).length} รายการ`);
+    },200);
+  }catch(err){sb.className='ai-status-box error';sb.innerHTML=`<span>❌</span> ${err.message}`;btn.disabled=false;btn.style.opacity='1';}
 }
 
 // ════════════════════════════════════
 //  REMINDERS
 // ════════════════════════════════════
-function saveReminders(){ localStorage.setItem('csReminders', JSON.stringify(reminders)); }
-
 function checkReminders(){
   if(!reminders.length) return;
-  const due=[], soon=[];
-  reminders.forEach(rem=>{
-    const status = getReminderStatus(rem);
-    if(status.level==='due')  due.push(rem.service);
-    if(status.level==='soon') soon.push(rem.service);
-  });
-  const banner = document.getElementById('alertBanner');
-  const text   = document.getElementById('alertText');
-  const btn    = document.getElementById('reminderBtn');
-  if(due.length || soon.length){
+  const due=[],soon=[];
+  reminders.forEach(rem=>{ const s=getReminderStatus(rem); if(s.level==='due')due.push(rem.service); if(s.level==='soon')soon.push(rem.service); });
+  const banner=document.getElementById('alertBanner'),text=document.getElementById('alertText'),btn=document.getElementById('reminderBtn');
+  if(due.length||soon.length){
     banner.style.display='flex';
     let msg='';
-    if(due.length)  msg += `<strong style="color:var(--red)">⚠️ ถึงเวลา service แล้ว: ${due.join(', ')}</strong> `;
-    if(soon.length) msg += `<span style="color:var(--yellow)">🕐 ใกล้ถึงเวลา: ${soon.join(', ')}</span>`;
-    text.innerHTML = msg;
-    btn.innerHTML  = `🔔 แจ้งเตือน <span style="background:var(--red);color:#fff;border-radius:20px;padding:1px 6px;font-size:10px;margin-left:4px">${due.length+soon.length}</span>`;
-  } else {
-    banner.style.display='none';
-    btn.innerHTML = '🔔 แจ้งเตือน';
-  }
+    if(due.length)msg+=`<strong style="color:var(--red)">⚠️ ถึงเวลา service แล้ว: ${due.join(', ')}</strong> `;
+    if(soon.length)msg+=`<span style="color:var(--yellow)">🕐 ใกล้ถึงเวลา: ${soon.join(', ')}</span>`;
+    text.innerHTML=msg;
+    btn.innerHTML=`🔔 แจ้งเตือน <span style="background:var(--red);color:#fff;border-radius:20px;padding:1px 6px;font-size:10px;margin-left:4px">${due.length+soon.length}</span>`;
+  } else { banner.style.display='none'; btn.innerHTML='🔔 แจ้งเตือน'; }
 }
-
 function getReminderStatus(rem){
-  // Find last record for this service name
-  const lastRec = records
-    .filter(r=>r.items.some(it=>it.name===rem.service))
-    .sort((a,b)=>new Date(b.date)-new Date(a.date))[0];
-
-  if(!lastRec) return {level:'unknown', lastDate:null, lastMileage:null};
-
-  const lastDate    = new Date(lastRec.date);
-  const lastMileage = lastRec.mileage || 0;
-  const now = new Date();
-  const monthsAgo = (now - lastDate)/(1000*60*60*24*30);
-
-  // Find latest mileage from any record
-  const latestMileage = records
-    .filter(r=>r.mileage>0)
-    .sort((a,b)=>b.mileage-a.mileage)[0]?.mileage || lastMileage;
-
-  const kmGap = latestMileage - lastMileage;
-
-  let level = 'ok';
-  const kmDue    = rem.km    && kmGap    >= rem.km;
-  const monthDue = rem.month && monthsAgo >= rem.month;
-  const kmSoon   = rem.km    && kmGap    >= rem.km*0.85;
-  const monthSoon= rem.month && monthsAgo >= rem.month*0.85;
-
-  if(kmDue || monthDue) level='due';
-  else if(kmSoon || monthSoon) level='soon';
-
-  return { level, lastDate:lastRec.date, lastMileage, kmGap:Math.round(kmGap), monthsAgo:Math.round(monthsAgo*10)/10 };
+  const lastRec=records.filter(r=>r.items.some(it=>it.name===rem.service)).sort((a,b)=>new Date(b.date)-new Date(a.date))[0];
+  if(!lastRec)return{level:'unknown',lastDate:null,lastMileage:null};
+  const lastDate=new Date(lastRec.date),lastMileage=lastRec.mileage||0,now=new Date();
+  const monthsAgo=(now-lastDate)/(1000*60*60*24*30);
+  const latestMileage=records.filter(r=>r.mileage>0).sort((a,b)=>b.mileage-a.mileage)[0]?.mileage||lastMileage;
+  const kmGap=latestMileage-lastMileage;
+  let level='ok';
+  if((rem.km&&kmGap>=rem.km)||(rem.month&&monthsAgo>=rem.month))level='due';
+  else if((rem.km&&kmGap>=rem.km*0.85)||(rem.month&&monthsAgo>=rem.month*0.85))level='soon';
+  return{level,lastDate:lastRec.date,lastMileage,kmGap:Math.round(kmGap),monthsAgo:Math.round(monthsAgo*10)/10};
 }
-
-function openReminderModal(){
-  populateRemNewService();
-  renderRemindList();
-  document.getElementById('reminderOverlay').classList.add('open');
-}
+function openReminderModal(){ populateRemNewService(); renderRemindList(); document.getElementById('reminderOverlay').classList.add('open'); }
 function closeReminderModal(){ document.getElementById('reminderOverlay').classList.remove('open'); }
-
-function populateRemNewService(){
-  const sel = document.getElementById('remNewService');
-  sel.innerHTML = serviceTypes.map(s=>`<option value="${s.name}">${s.name}</option>`).join('');
-}
-
+function populateRemNewService(){ document.getElementById('remNewService').innerHTML=serviceTypes.map(s=>`<option value="${s.name}">${s.name}</option>`).join(''); }
 function renderRemindList(){
-  const el = document.getElementById('remindList');
-  if(!reminders.length){
-    el.innerHTML=`<div style="color:var(--text-dim);font-size:13px;text-align:center;padding:20px">ยังไม่มีการแจ้งเตือน<br>เพิ่มรายการด้านล่าง</div>`;
-    return;
-  }
-  const statusLabel = {due:'⚠️ ถึงเวลาแล้ว', soon:'🕐 ใกล้ถึงเวลา', ok:'✅ ปกติ', unknown:'❓ ไม่มีข้อมูล'};
-  const statusCls   = {due:'status-due', soon:'status-soon', ok:'status-ok', unknown:'status-ok'};
-  el.innerHTML = reminders.map((rem,i)=>{
-    const s = getReminderStatus(rem);
-    return `<div class="remind-card">
-      <div class="remind-card-top">
-        <div class="remind-card-name">🔧 ${rem.service}</div>
-        <div style="display:flex;gap:6px;align-items:center">
-          <span class="remind-card-status ${statusCls[s.level]}">${statusLabel[s.level]}</span>
-          <button class="btn btn-danger btn-sm" onclick="deleteReminder(${i})">🗑</button>
-        </div>
-      </div>
-      <div class="remind-card-meta">
-        <div class="remind-meta-item">รอบกิโล<span>${rem.km?rem.km.toLocaleString()+' km':'ไม่ได้ตั้ง'}</span></div>
-        <div class="remind-meta-item">ใช้ไปแล้ว<span style="color:${s.level==='due'?'var(--red)':s.level==='soon'?'var(--yellow)':'var(--green)'}">${s.kmGap!=null?s.kmGap.toLocaleString()+' km':'-'}</span></div>
-        <div class="remind-meta-item">service ล่าสุด<span>${s.lastDate||'-'}</span></div>
-      </div>
-      ${rem.month?`<div style="font-size:11px;color:var(--text-dim);margin-top:6px">รอบเวลา: ทุก ${rem.month} เดือน • ผ่านมา ${s.monthsAgo||0} เดือน</div>`:''}
-    </div>`;
-  }).join('');
+  const el=document.getElementById('remindList');
+  if(!reminders.length){el.innerHTML=`<div style="color:var(--text-dim);font-size:13px;text-align:center;padding:20px">ยังไม่มีการแจ้งเตือน</div>`;return;}
+  const sL={due:'⚠️ ถึงเวลาแล้ว',soon:'🕐 ใกล้ถึงเวลา',ok:'✅ ปกติ',unknown:'❓ ไม่มีข้อมูล'};
+  el.innerHTML=reminders.map((rem,i)=>{const s=getReminderStatus(rem);return `<div class="remind-item" style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:11px 13px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:13px;font-weight:600">🔧 ${rem.service}</span><div style="display:flex;gap:6px;align-items:center"><span style="font-size:11px;color:${s.level==='due'?'var(--red)':s.level==='soon'?'var(--yellow)':'var(--green)'}">${sL[s.level]}</span><button class="btn btn-danger btn-sm" onclick="deleteReminder(${i})">🗑</button></div></div><div style="font-size:11px;color:var(--text-dim)">รอบ: ${rem.km?rem.km.toLocaleString()+' กม.':''} ${rem.month?'/ ทุก '+rem.month+' เดือน':''} • ใช้ไป: ${s.kmGap!=null?s.kmGap.toLocaleString()+' กม.':'-'}</div></div>`;}).join('');
 }
-
-function addReminder(){
-  const service = document.getElementById('remNewService').value;
-  const km      = parseInt(document.getElementById('remNewKm').value)||0;
-  const month   = parseInt(document.getElementById('remNewMonth').value)||0;
-  if(!km && !month){ alert('กรุณากำหนดรอบกิโลเมตร หรือรอบเดือน อย่างน้อย 1 อย่าง'); return; }
-  if(reminders.find(r=>r.service===service)){ alert('มีการแจ้งเตือนของงานนี้อยู่แล้ว'); return; }
-  reminders.push({service, km, month});
-  saveReminders();
-  document.getElementById('remNewKm').value='';
-  document.getElementById('remNewMonth').value='';
-  renderRemindList();
-  checkReminders();
-}
-
-function deleteReminder(i){
-  reminders.splice(i,1);
-  saveReminders();
-  renderRemindList();
-  checkReminders();
-}
+function addReminder(){ const service=document.getElementById('remNewService').value,km=parseInt(document.getElementById('remNewKm').value)||0,month=parseInt(document.getElementById('remNewMonth').value)||0; if(!km&&!month){alert('กรุณากำหนดรอบ');return;} if(reminders.find(r=>r.service===service)){alert('มีการแจ้งเตือนของงานนี้แล้ว');return;} reminders.push({service,km,month}); saveReminders(); document.getElementById('remNewKm').value=''; document.getElementById('remNewMonth').value=''; renderRemindList(); checkReminders(); }
+function deleteReminder(i){ reminders.splice(i,1); saveReminders(); renderRemindList(); checkReminders(); }
 
 // ════════════════════════════════════
 //  EXPORT / IMPORT
 // ════════════════════════════════════
-function openExportModal(){
-  const size = new Blob([JSON.stringify({vehicles,records,serviceTypes,reminders})]).size;
-  document.getElementById('dataSize').textContent =
-    `${records.length} รายการ • ${vehicles.length} คัน • ${(size/1024).toFixed(1)} KB`;
-  document.getElementById('exportOverlay').classList.add('open');
-}
+function openExportModal(){ const size=new Blob([JSON.stringify({vehicles,records,serviceTypes,reminders,fuelRecords})]).size; document.getElementById('dataSize').textContent=`${records.length} service · ${fuelRecords.length} เติมน้ำมัน · ${vehicles.length} คัน · ${(size/1024).toFixed(1)} KB`; document.getElementById('exportOverlay').classList.add('open'); }
 function closeExportModal(){ document.getElementById('exportOverlay').classList.remove('open'); }
-
-function exportJSON(){
-  const data = { version:1, exportedAt: new Date().toISOString(), vehicles, records, serviceTypes, reminders };
-  const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-  const a = document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download=`car-service-backup-${new Date().toISOString().slice(0,10)}.json`;
-  a.click(); URL.revokeObjectURL(a.href);
-}
-
+function exportJSON(){ const data={version:2,exportedAt:new Date().toISOString(),vehicles,records,serviceTypes,reminders,fuelRecords}; const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`car-service-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(a.href); }
 function exportCSV(){
-  const rows=[['วันที่','รถ','ทะเบียน','ศูนย์/อู่','เลขไมล์','งาน/อะไหล่','ประเภท','จำนวน','หน่วย','ราคา/หน่วย','รวม','หมายเหตุ']];
-  records.slice().sort((a,b)=>new Date(a.date)-new Date(b.date)).forEach(r=>{
-    const v=vehicles.find(x=>x.id===r.vehicleId)||{};
-    (r.items||[]).forEach(it=>{
-      rows.push([r.date,v.name||'',v.plate||'',r.center,r.mileage||'',it.name,it.type,it.qty||1,it.unit||'รายการ',it.cost,(it.qty||1)*(it.cost||0),r.note||'']);
-    });
-  });
+  const rows=[['วันที่','ประเภท','รถ','ทะเบียน','ศูนย์/ปั๊ม','เลขไมล์','งาน/น้ำมัน','ปริมาณ','หน่วย','ราคา/หน่วย','รวม','หมายเหตุ']];
+  records.slice().sort((a,b)=>new Date(a.date)-new Date(b.date)).forEach(r=>{const v=vehicles.find(x=>x.id===r.vehicleId)||{};(r.items||[]).forEach(it=>{rows.push([r.date,'Service',v.name||'',v.plate||'',r.center,r.mileage||'',it.name,it.qty||1,it.unit||'รายการ',it.cost,(it.qty||1)*(it.cost||0),r.note||'']);});});
+  fuelRecords.slice().sort((a,b)=>new Date(a.date)-new Date(b.date)).forEach(r=>{const v=vehicles.find(x=>x.id===r.vehicleId)||{};rows.push([r.date,'เติมน้ำมัน',v.name||'',v.plate||'',r.station||'',r.mileage||'',r.fuelType,r.liters,'ลิตร',r.pricePerLiter||0,r.total,r.note||'']);});
   const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
   const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download=`car-service-${new Date().toISOString().slice(0,10)}.csv`;
-  a.click(); URL.revokeObjectURL(a.href);
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`car-service-${new Date().toISOString().slice(0,10)}.csv`;a.click();URL.revokeObjectURL(a.href);
 }
-
 function importJSON(e){
-  const file=e.target.files[0]; if(!file) return;
+  const file=e.target.files[0];if(!file)return;
   const reader=new FileReader();
   reader.onload=(ev)=>{
     try{
       const data=JSON.parse(ev.target.result);
-      if(!confirm(`พบข้อมูล: ${(data.records||[]).length} รายการ • ${(data.vehicles||[]).length} คัน\nต้องการนำเข้า? (จะแทนที่ข้อมูลปัจจุบัน)`)) return;
-      if(data.vehicles)    vehicles=data.vehicles;
-      if(data.records)     records=data.records;
-      if(data.serviceTypes)serviceTypes=data.serviceTypes;
-      if(data.reminders)   reminders=data.reminders;
-      saveAll(); saveReminders();
-      renderVehicleChips(); renderSummaryVehicleFilter(); populateVehicleSelect();
-      updateStats(); renderRecords(); populateSummaryYear(); renderSummary();
-      updateCenterDatalist(); checkReminders();
-      closeExportModal();
-      alert('✅ นำเข้าข้อมูลสำเร็จ!');
-    }catch(err){ alert('❌ ไฟล์ไม่ถูกต้อง: '+err.message); }
+      if(!confirm(`พบข้อมูล: ${(data.records||[]).length} service · ${(data.fuelRecords||[]).length} เติมน้ำมัน · ${(data.vehicles||[]).length} คัน\nนำเข้า?`))return;
+      if(data.vehicles)vehicles=data.vehicles;if(data.records)records=data.records;if(data.serviceTypes)serviceTypes=data.serviceTypes;if(data.reminders)reminders=data.reminders;if(data.fuelRecords)fuelRecords=data.fuelRecords;
+      saveAll();saveReminders();
+      renderVehicleChips();renderSummaryVehicleFilter();populateVehicleSelect();populateFuelVehicleFilter();
+      updateStats();renderRecords();populateSummaryYear();renderSummary();
+      updateCenterDatalist();checkReminders();renderFuelRecords();updateFuelStats();renderFuelCharts();
+      closeExportModal();alert('✅ นำเข้าข้อมูลสำเร็จ!');
+    }catch(err){alert('❌ ไฟล์ไม่ถูกต้อง: '+err.message);}
     e.target.value='';
   };
   reader.readAsText(file);
 }
-
 function clearAllData(){
-  if(!confirm('⚠️ ต้องการลบข้อมูลทั้งหมดใช่ไหม?\nการดำเนินการนี้ไม่สามารถย้อนกลับได้')) return;
-  vehicles=[]; records=[]; serviceTypes=DEFAULT_SERVICE_TYPES.map((s,i)=>({id:'st'+i,...s})); reminders=[];
-  saveAll(); saveReminders();
-  selectedVehicleId='all'; summaryVehicleFilter='all';
-  renderVehicleChips(); renderSummaryVehicleFilter(); populateVehicleSelect();
-  updateStats(); renderRecords(); populateSummaryYear(); renderSummary();
-  updateCenterDatalist(); checkReminders();
+  if(!confirm('⚠️ ต้องการลบข้อมูลทั้งหมด?'))return;
+  vehicles=[];records=[];serviceTypes=DEFAULT_SERVICE_TYPES.map((s,i)=>({id:'st'+i,...s}));reminders=[];fuelRecords=[];
+  saveAll();saveReminders();selectedVehicleId='all';summaryVehicleFilter='all';
+  renderVehicleChips();renderSummaryVehicleFilter();populateVehicleSelect();populateFuelVehicleFilter();
+  updateStats();renderRecords();populateSummaryYear();renderSummary();
+  updateCenterDatalist();checkReminders();renderFuelRecords();updateFuelStats();renderFuelCharts();
   closeExportModal();
 }
 
 // =========================================================================
-// 🚀 ADDED: FIREBASE LOGIN & CLOUD SYNC
+// 💾 LOCAL STORAGE INDICATOR
 // =========================================================================
-(async function initFirebaseSync() {
+(function initLocalBadge() {
   const headerActions = document.querySelector('.header-actions');
-  const authBtn = document.createElement('button');
-  authBtn.className = 'btn btn-ghost';
-  authBtn.innerHTML = '☁️ กำลังเชื่อมต่อคลาวด์...';
-  headerActions.insertBefore(authBtn, headerActions.firstChild);
+  const badge = document.createElement('button');
+  badge.className = 'btn btn-ghost';
+  badge.innerHTML = '💾 บันทึกในเครื่อง';
+  badge.style.cssText = 'color:var(--green);border-color:rgba(34,197,94,0.3);cursor:default;';
+  badge.title = 'ข้อมูลทั้งหมดบันทึกใน localStorage ของ browser นี้';
+  headerActions.insertBefore(badge, headerActions.firstChild);
 
-  try {
-    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js");
-    const { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
-    const { getFirestore, doc, setDoc, getDoc } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyAFv6HXwFrRzC2xaXII9KAjwfX5aOP9QKo",
-      authDomain: "theyut-b279b.firebaseapp.com",
-      projectId: "theyut-b279b",
-      storageBucket: "theyut-b279b.firebasestorage.app",
-      messagingSenderId: "74767945998",
-      appId: "1:74767945998:web:2721e02a9d2c77af00075f",
-      measurementId: "G-N86SZ2ZE1G"
-    };
-    
-    const appId = "theyut-b279b"; 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const provider = new GoogleAuthProvider();
-
-    // เก็บฟังก์ชันบันทึกเดิมไว้
-    const originalSaveAll = window.saveAll || saveAll;
-    const originalSaveReminders = window.saveReminders || saveReminders;
-
-    // ฟังก์ชันใหม่สำหรับบันทึกขึ้น Firebase
-    const saveToFirebase = async () => {
-      if (!auth.currentUser) return;
-      try {
-        authBtn.innerHTML = '☁️ กำลังซิงค์...';
-        const docRef = doc(db, 'artifacts', appId, 'users', auth.currentUser.uid, 'car_service_data', 'main_data');
-        await setDoc(docRef, {
-          vehicles: vehicles,
-          records: records,
-          serviceTypes: serviceTypes,
-          reminders: reminders,
-          updatedAt: new Date().toISOString()
-        });
-        
-        const isAnon = auth.currentUser.isAnonymous;
-        const dispName = isAnon ? 'ชั่วคราว' : (auth.currentUser.email ? auth.currentUser.email.split('@')[0] : auth.currentUser.uid.substring(0,5));
-        authBtn.innerHTML = `✅ ซิงค์แล้ว (${dispName})`;
-      } catch(e) { 
-        console.error("Firebase save error", e); 
-        authBtn.innerHTML = '❌ ซิงค์ล้มเหลว';
-      }
-    };
-
-    // Override (เขียนทับ) ฟังก์ชันเดิม ให้เรียกทั้ง Local และ Cloud
-    window.saveAll = saveAll = function() {
-      originalSaveAll();
-      saveToFirebase();
-    };
-
-    window.saveReminders = saveReminders = function() {
-      originalSaveReminders();
-      saveToFirebase();
-    };
-
-    // ระบบล็อกอินอัตโนมัติตามสถาปัตยกรรมของแพลตฟอร์ม
-    const initAuth = async () => {
-      try {
-        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-          await signInWithCustomToken(auth, __initial_auth_token);
-        } else {
-          await signInAnonymously(auth);
-        }
-      } catch (err) {
-        console.warn("Custom token mismatch (มักเกิดจากการใช้ Firebase Config ของตัวเอง) - กำลังสลับไปใช้ Anonymous Auth แทน...", err);
-        await signInAnonymously(auth);
-      }
-    };
-    await initAuth();
-
-    // ดักจับสถานะล็อกอิน เพื่อดึงข้อมูลครั้งแรก
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        authBtn.innerHTML = `☁️ โหลดข้อมูลคลาวด์...`;
-        try {
-          const docRef = doc(db, 'artifacts', appId, 'users', user.uid, 'car_service_data', 'main_data');
-          const docSnap = await getDoc(docRef);
-          if (docSnap.exists()) {
-            const data = docSnap.data();
-            let hasChanges = false;
-            
-            if (data.vehicles && data.vehicles.length > 0) { vehicles = data.vehicles; hasChanges = true; }
-            if (data.records && data.records.length > 0) { records = data.records; hasChanges = true; }
-            if (data.serviceTypes && data.serviceTypes.length > 0) { serviceTypes = data.serviceTypes; hasChanges = true; }
-            if (data.reminders) { reminders = data.reminders; hasChanges = true; }
-            
-            if (hasChanges) {
-              originalSaveAll();
-              originalSaveReminders();
-              
-              // รีเฟรชหน้าจอทั้งหมดด้วยข้อมูลจากคลาวด์
-              renderVehicleChips(); 
-              renderSummaryVehicleFilter(); 
-              populateVehicleSelect();
-              updateStats(); 
-              renderRecords(); 
-              populateSummaryYear(); 
-              renderSummary();
-              updateCenterDatalist(); 
-              checkReminders();
-            }
-          } else {
-            // หากเป็นการเข้าใช้งานครั้งแรก (ไม่มีข้อมูลบนคลาวด์) ให้ดันข้อมูล Local ขึ้นไป
-            if (records && records.length > 0) {
-              await saveToFirebase();
-            }
-          }
-          
-          const isAnon = user.isAnonymous;
-          const dispName = isAnon ? 'ชั่วคราว' : (user.email ? user.email.split('@')[0] : user.uid.substring(0,5));
-          authBtn.innerHTML = `✅ ซิงค์แล้ว (${dispName})`;
-          
-          // ผูกอีเวนต์คลิกปุ่มเพื่อแสดงรายละเอียดและตัวเลือกล็อกอิน
-          authBtn.onclick = () => {
-             const overlay = document.createElement('div');
-             overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(3px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:14px;';
-             
-             let actionButtons = '';
-             if (isAnon) {
-                 actionButtons = `
-                    <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;padding:8px;background:rgba(234,179,8,0.1);border-radius:8px;border:1px solid rgba(234,179,8,0.2);">
-                        ⚠️ ขณะนี้ใช้งานแบบ "ไม่ระบุตัวตน" หากเปลี่ยนอุปกรณ์ ข้อมูลอาจสูญหาย แนะนำให้ล็อกอินเพื่อบันทึกข้อมูลถาวร
-                    </div>
-                    <button class="btn" id="googleLoginBtn" style="width:100%;justify-content:center;background:#db4437;color:white;margin-bottom:8px;font-size:14px;padding:12px;">🔴 ล็อกอินด้วย Google</button>
-                 `;
-             } else {
-                 actionButtons = `
-                    <div style="font-size:13px;color:var(--green);margin-bottom:12px;font-weight:bold;">
-                        ✅ ล็อกอินด้วย ${user.email} แล้ว
-                    </div>
-                    <button class="btn btn-ghost" id="googleLogoutBtn" style="width:100%;justify-content:center;margin-bottom:8px;border:1px solid var(--border);">ออกจากระบบ</button>
-                 `;
-             }
-             
-             const box = document.createElement('div');
-             box.style.cssText = 'background:var(--surface);padding:24px;border-radius:16px;border:1px solid var(--border);text-align:center;max-width:320px;width:100%;color:var(--text);font-family:"Sarabun",sans-serif;box-shadow:0 10px 30px rgba(0,0,0,0.5);';
-             box.innerHTML = `<div style="font-size:46px;margin-bottom:10px;">☁️</div>
-                              <h3 style="margin-bottom:10px;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;color:var(--accent);">CLOUD SYNC ACTIVE</h3>
-                              <p style="font-size:13px;color:var(--text-dim);margin-bottom:18px;line-height:1.5;">ระบบได้เข้าสู่ระบบอย่างปลอดภัย และซิงค์ข้อมูลทั้งหมดของคุณขึ้น Firebase Firestore แบบ Real-time เรียบร้อยแล้ว</p>
-                              ${actionButtons}
-                              <button class="btn btn-primary" id="closeCloudAlert" style="width:100%;justify-content:center;">ปิดหน้าต่าง</button>`;
-             
-             overlay.appendChild(box);
-             document.body.appendChild(overlay);
-             
-             // Event Listeners for new buttons
-             document.getElementById('closeCloudAlert').onclick = () => overlay.remove();
-             
-             if (document.getElementById('googleLoginBtn')) {
-                 document.getElementById('googleLoginBtn').onclick = async () => {
-                     try {
-                         overlay.remove();
-                         authBtn.innerHTML = '☁️ กำลังล็อกอิน...';
-                         await signInWithPopup(auth, provider);
-                     } catch (error) {
-                         console.error("Google Sign-In Error", error);
-                         alert('ล็อกอิน Google ล้มเหลว: ' + error.message);
-                         authBtn.innerHTML = '❌ ล็อกอินล้มเหลว';
-                     }
-                 };
-             }
-             
-             if (document.getElementById('googleLogoutBtn')) {
-                 document.getElementById('googleLogoutBtn').onclick = async () => {
-                     overlay.remove();
-                     authBtn.innerHTML = '☁️ กำลังออกจากระบบ...';
-                     await signOut(auth);
-                     await signInAnonymously(auth);
-                 };
-             }
-          };
-
-        } catch(e) { 
-          console.error("Firebase load error", e); 
-          authBtn.innerHTML = `✅ ซิงค์แล้ว (Local Mode)`;
-        }
-      } else {
-        authBtn.innerHTML = '❌ ไม่ได้ล็อกอิน';
-      }
-    });
-
-  } catch(e) {
-    console.error("Firebase module load error", e);
-    authBtn.innerHTML = '☁️ บันทึกในเครื่อง (Local)';
-  }
+  // Flash "saved" after every saveAll
+  const origSaveAll = saveAll;
+  window.saveAll = saveAll = function() {
+    origSaveAll();
+    badge.innerHTML = '✅ บันทึกแล้ว';
+    clearTimeout(badge._t);
+    badge._t = setTimeout(() => { badge.innerHTML = '💾 บันทึกในเครื่อง'; }, 1200);
+  };
 })();
 </script>
 </body>
