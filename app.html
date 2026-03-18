@@ -2,20 +2,13 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>🚗 Car Service Log</title>
 
-<!-- ══════════════════════════════════════════
-     🔒 SESSION GUARD — ต้องผ่าน index.html ก่อน
-     ══════════════════════════════════════════ -->
-<script>
-(function(){
-  const SESSION_KEY = 'csl_session';
-  if(sessionStorage.getItem(SESSION_KEY) !== 'unlocked'){
-    window.location.replace('index.html');
-  }
-})();
-</script>
+<!-- ════ PWA Manifest & Meta ════ -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0a0c10">
+<link rel="apple-touch-icon" href="icon-192.png">
 
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -330,7 +323,16 @@
 </style>
 </head>
 <body>
-<div class="app">
+
+<!-- 🔒 In-App Lock Screen -->
+<div id="lockScreenOverlay" style="position:fixed; inset:0; z-index:9999; display:none; flex-direction:column; align-items:center; justify-content:center; background:var(--bg);">
+  <div class="logo-icon" style="margin-bottom:20px; width:70px; height:70px; font-size:34px; box-shadow: 0 0 30px var(--accent-glow);">🏍</div>
+  <h1 style="font-family:'Bebas Neue', sans-serif; font-size:36px; margin-bottom:8px; letter-spacing:2px; color:#fff;">CAR SERVICE LOG</h1>
+  <p style="font-size:13px; color:var(--text-dim); margin-bottom:30px;">กรุณาปลดล็อคเพื่อเข้าใช้งาน</p>
+  <button class="btn btn-primary" onclick="unlockScreen()" style="padding:12px 32px; font-size:16px; border-radius:30px;">🔓 ปลดล็อคเข้าสู่ระบบ</button>
+</div>
+
+<div class="app" id="mainApp" style="display:none;">
 
   <header>
     <div class="logo">
@@ -341,7 +343,6 @@
       </div>
     </div>
     <div class="header-actions">
-      <!-- 🔒 Lock button injected by session guard -->
       <button class="btn btn-ghost" id="lockScreenBtn" onclick="lockScreen()" style="border-color:rgba(239,68,68,0.3);color:var(--text-muted)">🔒 ล็อคหน้าจอ</button>
       <button class="btn btn-ghost" onclick="openExportModal()">💾 Export</button>
       <button id="reminderBtn" class="btn btn-ghost" onclick="openReminderModal()">🔔 แจ้งเตือน</button>
@@ -459,6 +460,20 @@
       </div>
       <select id="summaryYear" onchange="renderSummary()" style="padding:7px 11px;font-size:13px"></select>
     </div>
+
+    <!-- 🌟 NEW: Cost per Km Panels -->
+    <div class="summary-grid" style="margin-bottom:16px">
+      <div class="panel" style="padding:16px; background:linear-gradient(135deg, rgba(59,130,246,0.05), rgba(168,85,247,0.05)); border-color:rgba(59,130,246,0.2)">
+        <div style="font-size:12px;color:var(--text-dim);margin-bottom:4px">🏎 ระยะทางที่วิ่ง (อิงจากบันทึก)</div>
+        <div style="font-family:'Space Mono',monospace;font-size:22px;font-weight:700;color:var(--text)" id="sumDistance">- km</div>
+      </div>
+      <div class="panel" style="padding:16px; background:linear-gradient(135deg, rgba(34,197,94,0.05), rgba(245,158,11,0.05)); border-color:rgba(34,197,94,0.2)">
+        <div style="font-size:12px;color:var(--text-dim);margin-bottom:4px">💸 ต้นทุนเฉลี่ย (ซ่อม + น้ำมัน)</div>
+        <div style="font-family:'Space Mono',monospace;font-size:22px;font-weight:700;color:var(--green)" id="sumCostPerKm">- <span style="font-size:12px;font-family:'Sarabun',sans-serif;color:var(--text-dim);font-weight:400">/ กม.</span></div>
+      </div>
+    </div>
+    <!-- 🌟 END NEW -->
+
     <div class="summary-grid">
       <div class="panel"><div class="panel-title" style="margin-bottom:13px">💸 ค่า Service</div><div class="bar-chart" id="costChart"></div></div>
       <div class="panel"><div class="panel-title" style="margin-bottom:13px">⛽ ค่าน้ำมัน</div><div class="bar-chart" id="fuelSumChart"></div></div>
@@ -736,21 +751,39 @@
 
 <script>
 // ════ LOCK SCREEN ════
-function lockScreen(){
-  sessionStorage.removeItem('csl_session');
-  document.body.style.transition='opacity 0.3s';
-  document.body.style.opacity='0';
-  setTimeout(()=>window.location.replace('index.html'),300);
+const SESSION_KEY = 'csl_session';
+function checkSession() {
+  if(sessionStorage.getItem(SESSION_KEY) === 'unlocked'){
+    document.getElementById('lockScreenOverlay').style.display = 'none';
+    document.getElementById('mainApp').style.display = 'block';
+  } else {
+    document.getElementById('lockScreenOverlay').style.display = 'flex';
+    document.getElementById('mainApp').style.display = 'none';
+  }
 }
+function unlockScreen() {
+  sessionStorage.setItem(SESSION_KEY, 'unlocked');
+  document.getElementById('lockScreenOverlay').style.display = 'none';
+  document.getElementById('mainApp').style.display = 'block';
+}
+function lockScreen(){
+  sessionStorage.removeItem(SESSION_KEY);
+  document.getElementById('lockScreenOverlay').style.display = 'flex';
+  document.getElementById('mainApp').style.display = 'none';
+}
+checkSession();
 
 // ════════════════════════════════════
 //  CONSTANTS
 // ════════════════════════════════════
 const DEFAULT_SERVICE_TYPES = [
-  {name:'เปลี่ยนถ่ายน้ำมันเครื่อง',cat:'ค่าบริการ'},{name:'เปลี่ยนยาง',cat:'อะไหล่'},{name:'ตรวจเช็คเบรก',cat:'ค่าบริการ'},{name:'เปลี่ยนผ้าเบรก',cat:'อะไหล่'},{name:'ล้างแอร์',cat:'ค่าบริการ'},{name:'เติมน้ำยาแอร์',cat:'อะไหล่'},{name:'เปลี่ยนไส้กรองอากาศ',cat:'อะไหล่'},{name:'เปลี่ยนไส้กรองน้ำมัน',cat:'อะไหล่'},{name:'ตรวจเช็คระยะ',cat:'ค่าบริการ'},{name:'ล้างห้องเครื่อง',cat:'ค่าบริการ'},{name:'เปลี่ยนน้ำมันเกียร์',cat:'ค่าบริการ'},{name:'เปลี่ยนน้ำยาหม้อน้ำ',cat:'อะไหล่'},{name:'ตรวจเช็คแบตเตอรี่',cat:'ค่าบริการ'},{name:'เปลี่ยนแบตเตอรี่',cat:'อะไหล่'},{name:'ตรวจเช็คไฟ',cat:'ค่าบริการ'},{name:'เปลี่ยนหัวเทียน',cat:'อะไหล่'},{name:'เปลี่ยนโซ่-สเตอร์',cat:'อะไหล่'},{name:'ตั้งโซ่',cat:'ค่าแรง'},{name:'ปรับวาล์ว',cat:'ค่าแรง'},{name:'เปลี่ยนน้ำมันโช้ค',cat:'อะไหล่'},{name:'ตรวจเช็คน้ำมันเบรก',cat:'ค่าบริการ'},{name:'ซ่อมทั่วไป',cat:'ค่าแรง'},{name:'อื่นๆ',cat:'อื่นๆ'},
+  {name:'เปลี่ยนถ่ายน้ำมันเครื่อง',cat:'ค่าบริการ'},{name:'เปลี่ยนยาง',cat:'อะไหล่'},{name:'ตรวจเช็คเบรก',cat:'ค่าบริการ'},{name:'เปลี่ยนผ้าเบรก',cat:'อะไหล่'},{name:'ล้างแอร์',cat:'ค่าบริการ'},{name:'เติมน้ำยาแอร์',cat:'อะไหล่'},{name:'เปลี่ยนไส้กรองอากาศ',cat:'อะไหล่'},{name:'เปลี่ยนไส้กรองน้ำมัน',cat:'อะไหล่'},{name:'ตรวจเช็คระยะ',cat:'ค่าบริการ'},{name:'ล้างห้องเครื่อง',cat:'ค่าบริการ'},{name:'เปลี่ยนน้ำมันเกียร์',cat:'ค่าบริการ'},{name:'เปลี่ยนน้ำยาหม้อน้ำ',cat:'อะไหล่'},{name:'ตรวจเช็คแบตเตอรี่',cat:'ค่าบริการ'},{name:'เปลี่ยนแบตเตอรี่',cat:'อะไหล่'},{name:'ตรวจเช็คไฟ',cat:'ค่าบริการ'},{name:'เปลี่ยนหัวเทียน',cat:'อะไหล่'},{name:'เปลี่ยนโซ่-สเตอร์',cat:'อะไหล่'},{name:'ตั้งโซ่',cat:'ค่าแรง'},{name:'ปรับวาล์ว',cat:'ค่าแรง'},{name:'เปลี่ยนน้ำมันโช้ค',cat:'อะไหล่'},{name:'ตรวจเช็คน้ำมันเบรก',cat:'ค่าบริการ'},{name:'ซ่อมทั่วไป',cat:'ค่าแรง'},
+  // 🌟 NEW DEFAULT TYPES 🌟
+  {name:'ต่อภาษีประจำปี',cat:'อื่นๆ'},{name:'ต่อ พ.ร.บ.',cat:'อื่นๆ'},{name:'ต่อประกันภัย',cat:'อื่นๆ'},
+  {name:'อื่นๆ',cat:'อื่นๆ'}
 ];
 const CAT_UNITS = {'ค่าบริการ':'ครั้ง','อะไหล่':'ชิ้น','ค่าแรง':'ครั้ง','อื่นๆ':'รายการ'};
-const TAG_MAP = {'น้ำมัน':'tag-oil','เปลี่ยน':'tag-oil','ยาง':'tag-tire','เบรก':'tag-brake','ผ้าเบรก':'tag-brake','แอร์':'tag-ac','ไส้กรอง':'tag-filter','ตรวจ':'tag-check'};
+const TAG_MAP = {'น้ำมัน':'tag-oil','เปลี่ยน':'tag-oil','ยาง':'tag-tire','เบรก':'tag-brake','ผ้าเบรก':'tag-brake','แอร์':'tag-ac','ไส้กรอง':'tag-filter','ตรวจ':'tag-check','ภาษี':'tag-other','ประกัน':'tag-other'};
 const MONTHS_TH = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
 function getTagClass(n){ for(const[k,v] of Object.entries(TAG_MAP)){if(n.includes(k))return v;} return 'tag-other'; }
 function getUnit(cat){ return CAT_UNITS[cat]||'รายการ'; }
@@ -1192,15 +1225,52 @@ function populateSummaryYear(){
   sel.innerHTML=years.map(y=>`<option value="${y}" ${y===cur?'selected':''}>${y}</option>`).join('');
 }
 function setPeriod(p,btn){ summaryPeriod=p; document.querySelectorAll('.period-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderSummary(); }
+
+// 🌟 NEW: Calculate and Render Cost per Km
+function renderCostPerKm(yr, yrFuel) {
+  const allRecs = [...yr, ...yrFuel]
+    .filter(r => r.mileage && r.mileage > 0)
+    .sort((a,b) => new Date(a.date) - new Date(b.date));
+  
+  let totalCost = 0;
+  yr.forEach(r => totalCost += (r.total || 0));
+  yrFuel.forEach(r => totalCost += (r.total || 0));
+
+  let distance = 0;
+  let costPerKm = 0;
+
+  if (allRecs.length >= 2) {
+    // Find min and max mileage in the selected set
+    const mileages = allRecs.map(r => r.mileage);
+    const minMile = Math.min(...mileages);
+    const maxMile = Math.max(...mileages);
+    distance = maxMile - minMile;
+  }
+
+  if (distance > 0) {
+    costPerKm = totalCost / distance;
+  }
+
+  document.getElementById('sumDistance').textContent = distance > 0 ? distance.toLocaleString() + ' km' : '- km';
+  document.getElementById('sumCostPerKm').innerHTML = costPerKm > 0 ? 
+    `฿${costPerKm.toFixed(2)} <span style="font-size:12px;font-family:'Sarabun',sans-serif;color:var(--text-dim);font-weight:400">/ กม.</span>` : 
+    `- <span style="font-size:12px;font-family:'Sarabun',sans-serif;color:var(--text-dim);font-weight:400">/ กม.</span>`;
+}
+
 function renderSummary(){
   const year=parseInt(document.getElementById('summaryYear').value);
   const base=getSummaryRecords(), baseFuel=getSummaryFuelRecords();
   const yr=base.filter(r=>new Date(r.date).getFullYear()===year);
   const yrFuel=baseFuel.filter(r=>new Date(r.date).getFullYear()===year);
+  
+  // 🌟 Update Cost per Km panels
+  renderCostPerKm(yr, yrFuel);
+
   summaryPeriod==='month'?renderMonthChart(yr,yrFuel):renderYearChart(base,baseFuel);
   renderServiceTable(yr); renderPodium(yr);
   renderEfficiencySummary(yrFuel);
 }
+
 function renderMonthChart(yr,yrFuel){
   const data=Array.from({length:12},(_,i)=>i).map(m=>({label:MONTHS_TH[m],cost:yr.filter(r=>new Date(r.date).getMonth()===m).reduce((s,r)=>s+(r.total||0),0),count:yr.filter(r=>new Date(r.date).getMonth()===m).length,fuel:yrFuel.filter(r=>new Date(r.date).getMonth()===m).reduce((s,r)=>s+r.total,0)}));
   const mxC=Math.max(...data.map(d=>d.cost),1),mxN=Math.max(...data.map(d=>d.count),1),mxF=Math.max(...data.map(d=>d.fuel),1);
@@ -1410,6 +1480,15 @@ function fillFuelFormFromAi(){
     calcFuelEfficiency();
     alert('✅ กรอกข้อมูลจากใบเสร็จสำเร็จ!\nกรุณาตรวจสอบและแก้ไขก่อนบันทึก');
   },150);
+}
+
+// ════ Service Worker Registration (PWA) ════
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => console.log('Service Worker Registered'))
+      .catch(err => console.log('Service Worker Reg Failed', err));
+  });
 }
 
 // Firebase sync (same as original)
