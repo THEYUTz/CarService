@@ -648,8 +648,9 @@
     <div class="modal-header">
       <div class="modal-title">รายละเอียด</div>
       <div style="display:flex; gap:6px;">
-        <!-- 🌟 NEW: Share to LINE Button -->
-        <button class="btn btn-ghost btn-sm" style="color:#00B900; border-color:rgba(0,185,0,0.3);" onclick="shareCurrentRecord('service')">ส่งแชร์ 💬</button>
+        <!-- 🌟 UPDATED: Force LINE Button & Copy Button -->
+        <button class="btn btn-ghost btn-sm" style="color:#00B900; border-color:rgba(0,185,0,0.3);" onclick="shareCurrentRecord('service')">ส่ง LINE 💬</button>
+        <button class="btn btn-ghost btn-sm" onclick="copyRecordText('service')">📋 คัดลอก</button>
         <button class="close-btn" onclick="closeDetail()">✕</button>
       </div>
     </div>
@@ -737,8 +738,9 @@
     <div class="modal-header">
       <div class="modal-title">⛽ รายละเอียด</div>
       <div style="display:flex; gap:6px;">
-        <!-- 🌟 NEW: Share to LINE Button -->
-        <button class="btn btn-ghost btn-sm" style="color:#00B900; border-color:rgba(0,185,0,0.3);" onclick="shareCurrentRecord('fuel')">ส่งแชร์ 💬</button>
+        <!-- 🌟 UPDATED: Force LINE Button & Copy Button -->
+        <button class="btn btn-ghost btn-sm" style="color:#00B900; border-color:rgba(0,185,0,0.3);" onclick="shareCurrentRecord('fuel')">ส่ง LINE 💬</button>
+        <button class="btn btn-ghost btn-sm" onclick="copyRecordText('fuel')">📋 คัดลอก</button>
         <button class="close-btn" onclick="closeFuelDetail()">✕</button>
       </div>
     </div>
@@ -1011,8 +1013,8 @@ function renderRecords(){
   }).join('');
 }
 
-// 🌟 NEW: Web Share API Logic 🌟
-function shareCurrentRecord(type) {
+// 🌟 UPDATED: FORCE LINE SCHEME & ADD COPY FALLBACK 🌟
+function getRecordShareText(type) {
   let text = '';
   if (type === 'service' && viewingId) {
     const r = records.find(x => String(x.id) === String(viewingId));
@@ -1026,13 +1028,37 @@ function shareCurrentRecord(type) {
     if (r.efficiency) text += `\n📈 อัตราสิ้นเปลือง: ${r.efficiency.toFixed(2)} กม./ลิตร`;
     if (r.note) text += `\n📝 หมายเหตุ: ${r.note}`;
   }
+  return text;
+}
 
-  if (navigator.share) {
-    navigator.share({ title: 'Car Service Log', text: text })
-      .catch(console.error);
+function shareCurrentRecord(type) {
+  const text = getRecordShareText(type);
+  if(!text) return;
+  // เปิด LINE โดยตรงเลย (ข้ามหน้าต่าง Share ของ Windows)
+  window.open(`https://line.me/R/share?text=${encodeURIComponent(text)}`, '_blank');
+}
+
+function copyRecordText(type) {
+  const text = getRecordShareText(type);
+  if(!text) return;
+  
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(() => alert('✅ คัดลอกข้อความแล้ว! นำไปวางในแชทได้เลยครับ'));
   } else {
-    // Fallback to LINE URL Scheme
-    window.open(`https://line.me/R/msg/text/?${encodeURIComponent(text)}`);
+    let textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";
+    textArea.style.left = "-9999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+      document.execCommand('copy');
+      alert('✅ คัดลอกข้อความแล้ว! นำไปวางในแชทได้เลยครับ');
+    } catch (err) {
+      alert('❌ ไม่สามารถคัดลอกได้');
+    }
+    document.body.removeChild(textArea);
   }
 }
 
