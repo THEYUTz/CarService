@@ -10,6 +10,16 @@
 <meta name="theme-color" content="#0a0c10">
 <link rel="apple-touch-icon" href="icon-192.png">
 
+<!-- ══════════════════════════════════════════
+     🔒 SESSION GUARD
+     ══════════════════════════════════════════ -->
+<script>
+(function(){
+  const SESSION_KEY = 'csl_session';
+  // ถ้าไม่ใช่สถานะ unlocked จะถูกบังคับโชว์ overlay แทนการรีไดเรกต์เพื่อแก้บั๊ก
+})();
+</script>
+
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -32,8 +42,31 @@
     --fuel: #f59e0b;
     --fuel-glow: rgba(245,158,11,0.15);
   }
+
+  /* 🌟 NEW: Light Mode Colors */
+  body.light-mode {
+    --bg: #f4f5f7;
+    --surface: #ffffff;
+    --surface2: #f9fafb;
+    --border: #e5e7eb;
+    --accent: #f97316;
+    --accent2: #ea580c;
+    --accent-glow: rgba(249,115,22,0.2);
+    --text: #111827;
+    --text-dim: #4b5563;
+    --text-muted: #9ca3af;
+    --green: #16a34a;
+    --blue: #2563eb;
+    --red: #dc2626;
+    --yellow: #ca8a04;
+    --purple: #9333ea;
+    --teal: #0d9488;
+    --fuel: #d97706;
+    --fuel-glow: rgba(217,119,6,0.2);
+  }
+
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+  body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; transition: background 0.3s, color 0.3s; }
   body::before {
     content: '';
     position: fixed; inset: 0;
@@ -45,7 +78,7 @@
 
   header { padding: 26px 0 18px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); margin-bottom: 18px; flex-wrap: wrap; gap: 10px; }
   .logo { display: flex; align-items: center; gap: 12px; }
-  .logo-icon { width: 44px; height: 44px; background: var(--accent); border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 0 20px var(--accent-glow); }
+  .logo-icon { width: 44px; height: 44px; background: var(--accent); border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 0 20px var(--accent-glow); color:white; }
   .logo-text h1 { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 2px; line-height: 1; }
   .logo-text p { font-size: 11px; color: var(--text-dim); letter-spacing: 1px; margin-top: 2px; }
   .header-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
@@ -56,7 +89,7 @@
   .vehicle-chip { display: flex; align-items: center; gap: 7px; padding: 7px 15px; border-radius: 40px; border: 1.5px solid var(--border); background: var(--surface); cursor: pointer; transition: all 0.2s; white-space: nowrap; font-family: 'Sarabun', sans-serif; font-size: 13px; font-weight: 600; color: var(--text-dim); }
   .vehicle-chip:hover { border-color: var(--accent); color: var(--text); }
   .vehicle-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 2px 14px var(--accent-glow); }
-  .vehicle-chip.all-chip.active { background: linear-gradient(135deg,var(--blue),var(--purple)); border-color: var(--blue); box-shadow: 0 2px 14px rgba(59,130,246,0.25); }
+  .vehicle-chip.all-chip.active { background: linear-gradient(135deg,var(--blue),var(--purple)); border-color: var(--blue); box-shadow: 0 2px 14px rgba(59,130,246,0.25); color:white; }
   .chip-plate { font-size: 10px; opacity: 0.75; font-weight: 400; }
   .add-vehicle-btn { display: flex; align-items: center; gap: 5px; padding: 7px 13px; border-radius: 40px; border: 1.5px dashed var(--border); background: transparent; color: var(--text-muted); cursor: pointer; font-family: 'Sarabun', sans-serif; font-size: 12px; font-weight: 600; transition: all 0.2s; white-space: nowrap; }
   .add-vehicle-btn:hover { border-color: var(--accent); color: var(--accent); }
@@ -82,10 +115,10 @@
   .fuel-stat-value { font-family: 'Space Mono', monospace; font-size: 19px; font-weight: 700; }
   .fuel-stat-value.yellow{color:var(--fuel)}.fuel-stat-value.green{color:var(--green)}.fuel-stat-value.blue{color:var(--blue)}.fuel-stat-value.teal{color:var(--teal)}
 
-  /* 🌟 NEW: Daily Fuel Prices Styles */
+  /* 🌟 Daily Fuel Prices Styles */
   .daily-price-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 16px; }
   .daily-price-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; margin-top: 12px; }
-  .daily-price-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; min-width: 90px; text-align: center; flex-shrink: 0; transition: transform 0.2s; border-bottom-width: 3px; }
+  .daily-price-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; min-width: 120px; text-align: center; flex-shrink: 0; transition: transform 0.2s; border-bottom-width: 3px; }
   .daily-price-card:hover { transform: translateY(-2px); }
   .dp-name { font-size: 11px; color: var(--text-dim); margin-bottom: 4px; font-weight: 600; white-space: nowrap; text-transform: uppercase; }
   .dp-val { font-family: 'Space Mono', monospace; font-size: 16px; font-weight: 700; color: var(--text); }
@@ -93,14 +126,14 @@
   .tabs { display:flex; gap:3px; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:4px; margin-bottom:20px; overflow-x:auto; }
   .tab { flex:1; min-width:110px; padding:9px 16px; background:transparent; border:none; border-radius:8px; color:var(--text-dim); font-family:'Sarabun',sans-serif; font-size:13px; font-weight:500; cursor:pointer; transition:all 0.2s; white-space:nowrap; }
   .tab.active { background:var(--accent); color:#fff; box-shadow:0 2px 12px var(--accent-glow); }
-  .tab.fuel-tab.active { background: linear-gradient(135deg, #f59e0b, #ef4444); box-shadow: 0 2px 12px var(--fuel-glow); }
+  .tab.fuel-tab.active { background: linear-gradient(135deg, #f59e0b, #ef4444); box-shadow: 0 2px 12px var(--fuel-glow); color:#fff;}
   .tab:not(.active):hover { color:var(--text); background:var(--border); }
 
   .panel { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:20px; margin-bottom:16px; }
   .panel-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px; }
   .panel-title { font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:1.5px; }
 
-  .btn { display:inline-flex; align-items:center; gap:5px; padding:9px 15px; border-radius:10px; font-family:'Sarabun',sans-serif; font-size:13px; font-weight:600; cursor:pointer; border:none; transition:all 0.2s; }
+  .btn { display:inline-flex; align-items:center; justify-content:center; gap:5px; padding:9px 15px; border-radius:10px; font-family:'Sarabun',sans-serif; font-size:13px; font-weight:600; cursor:pointer; border:none; transition:all 0.2s; }
   .btn-primary { background:var(--accent); color:#fff; box-shadow:0 2px 12px var(--accent-glow); }
   .btn-primary:hover { background:var(--accent2); transform:translateY(-1px); }
   .btn-fuel { background: linear-gradient(135deg, #f59e0b, #ef4444); color:#fff; box-shadow:0 2px 12px var(--fuel-glow); }
@@ -122,6 +155,9 @@
   textarea { resize:vertical; min-height:70px; }
 
   .fuel-form input:focus, .fuel-form select:focus { border-color: var(--fuel); box-shadow: 0 0 0 3px var(--fuel-glow); }
+
+  .input-with-icon { display: flex; gap: 5px; }
+  .input-with-icon input { flex: 1; }
 
   .fuel-record-card { background:var(--surface2); border:1px solid var(--border); border-radius:13px; padding:15px; display:grid; grid-template-columns:auto 1fr auto; gap:13px; align-items:start; transition:border-color 0.2s,transform 0.2s; cursor:pointer; margin-bottom:9px; }
   .fuel-record-card:hover { border-color: var(--fuel); transform:translateX(3px); }
@@ -187,7 +223,7 @@
   @keyframes slideUp{from{transform:translateY(18px);opacity:0}to{transform:translateY(0);opacity:1}}
   .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
   .modal-title { font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:1.5px; }
-  .close-btn { width:30px; height:30px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; color:var(--text-dim); cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; transition:all 0.2s; }
+  .close-btn { width:30px; height:30px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; color:var(--text-dim); cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; transition:all 0.2s; flex-shrink: 0;}
   .close-btn:hover { color:var(--text); border-color:var(--text-dim); }
   .vehicle-modal { max-width:460px; }
 
@@ -229,7 +265,7 @@
   .detail-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border); }
   .detail-row:last-child { border-bottom:none; }
   .detail-label { font-size:12px; color:var(--text-dim); }
-  .detail-value { font-size:13px; font-weight:600; }
+  .detail-value { font-size:13px; font-weight:600; text-align:right;}
 
   .items-table { width:100%; border-collapse:collapse; margin-top:10px; }
   .items-table th { text-align:left; font-size:10px; color:var(--text-muted); font-weight:600; letter-spacing:0.5px; padding:6px 10px; text-transform:uppercase; }
@@ -319,6 +355,9 @@
   .fuel-summary-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
   @media(max-width:700px){ .fuel-summary-grid{grid-template-columns:1fr} }
 
+  .receipt-preview { width: 100%; max-height: 150px; object-fit: contain; border-radius: 8px; border: 1px solid var(--border); margin-top: 8px; display: none; }
+  .receipt-view { width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid var(--border); }
+
   ::-webkit-scrollbar { width:5px; height:5px; }
   ::-webkit-scrollbar-track { background:var(--surface); }
   ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
@@ -328,6 +367,12 @@
     .record-date-block,.fuel-date-block{display:flex;gap:8px;align-items:center;border-radius:8px;padding:7px 11px}
     .record-day,.fuel-date-day{font-size:18px}
   }
+
+  /* 🖨️ Print Styles (Hidden on screen) */
+  @media print {
+    body { background: white !important; color: black !important; }
+    .app, .modal-overlay { display: none !important; }
+  }
 </style>
 </head>
 <body>
@@ -335,7 +380,7 @@
 <!-- 🔒 In-App Lock Screen -->
 <div id="lockScreenOverlay" style="position:fixed; inset:0; z-index:9999; display:none; flex-direction:column; align-items:center; justify-content:center; background:var(--bg);">
   <div class="logo-icon" style="margin-bottom:20px; width:70px; height:70px; font-size:34px; box-shadow: 0 0 30px var(--accent-glow);">🏍</div>
-  <h1 style="font-family:'Bebas Neue', sans-serif; font-size:36px; margin-bottom:8px; letter-spacing:2px; color:#fff;">CAR SERVICE LOG</h1>
+  <h1 style="font-family:'Bebas Neue', sans-serif; font-size:36px; margin-bottom:8px; letter-spacing:2px; color:var(--text);">CAR SERVICE LOG</h1>
   <p style="font-size:13px; color:var(--text-dim); margin-bottom:30px;">กรุณาปลดล็อคเพื่อเข้าใช้งาน</p>
   <button class="btn btn-primary" onclick="unlockScreen()" style="padding:12px 32px; font-size:16px; border-radius:30px;">🔓 ปลดล็อคเข้าสู่ระบบ</button>
 </div>
@@ -351,8 +396,10 @@
       </div>
     </div>
     <div class="header-actions">
-      <button class="btn btn-ghost" id="lockScreenBtn" onclick="lockScreen()" style="border-color:rgba(239,68,68,0.3);color:var(--text-muted)">🔒 ล็อคหน้าจอ</button>
-      <button class="btn btn-ghost" onclick="openExportModal()">💾 Export</button>
+      <!-- 🌟 NEW: Theme Toggle Button -->
+      <button class="btn btn-ghost" id="themeToggleBtn" onclick="toggleTheme()" style="font-size:16px;" title="สลับโหมดสว่าง/มืด">☀️</button>
+      <button class="btn btn-ghost" id="lockScreenBtn" onclick="lockScreen()" style="border-color:rgba(239,68,68,0.3);color:var(--text-muted)">🔒 ล็อค</button>
+      <button class="btn btn-ghost" onclick="openExportModal()">💾 Export / Print</button>
       <button id="reminderBtn" class="btn btn-ghost" onclick="openReminderModal()">🔔 แจ้งเตือน</button>
       <button class="btn btn-ghost" onclick="openServiceTypesModal()">🔩 รายการงาน</button>
       <button class="btn btn-ghost" onclick="openVehicleModal()">🚗 จัดการรถ</button>
@@ -411,16 +458,13 @@
 
   <!-- FUEL TAB -->
   <div class="tab-content" id="tab-fuel">
-    
-    <!-- 🌟 NEW: Daily Fuel Prices Panel -->
+    <!-- 🌟 Daily Fuel Prices Panel -->
     <div class="daily-price-panel">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <div style="font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:1px; color:var(--fuel);">⛽ ราคาน้ำมันวันนี้ <span style="font-family:'Sarabun',sans-serif; font-size:11px; color:var(--text-dim); font-weight:400; letter-spacing:0;">(ปตท. / บางจาก)</span></div>
         <div id="dpDate" style="font-size:11px; color:var(--text-dim);">กำลังโหลด...</div>
       </div>
-      <div class="daily-price-scroll" id="dailyPriceContainer">
-        <!-- Price cards will be injected here via JS -->
-      </div>
+      <div class="daily-price-scroll" id="dailyPriceContainer"></div>
     </div>
 
     <div class="fuel-stats-grid">
@@ -481,7 +525,7 @@
       <select id="summaryYear" onchange="renderSummary()" style="padding:7px 11px;font-size:13px"></select>
     </div>
 
-    <!-- 🌟 NEW: Cost per Km Panels -->
+    <!-- Cost per Km Panels -->
     <div class="summary-grid" style="margin-bottom:16px">
       <div class="panel" style="padding:16px; background:linear-gradient(135deg, rgba(59,130,246,0.05), rgba(168,85,247,0.05)); border-color:rgba(59,130,246,0.2)">
         <div style="font-size:12px;color:var(--text-dim);margin-bottom:4px">🏎 ระยะทางที่วิ่ง (อิงจากบันทึก)</div>
@@ -492,7 +536,6 @@
         <div style="font-family:'Space Mono',monospace;font-size:22px;font-weight:700;color:var(--green)" id="sumCostPerKm">- <span style="font-size:12px;font-family:'Sarabun',sans-serif;color:var(--text-dim);font-weight:400">/ กม.</span></div>
       </div>
     </div>
-    <!-- 🌟 END NEW -->
 
     <div class="summary-grid">
       <div class="panel"><div class="panel-title" style="margin-bottom:13px">💸 ค่า Service</div><div class="bar-chart" id="costChart"></div></div>
@@ -516,7 +559,7 @@
   </div>
 </div>
 
-<!-- All modals same as original -->
+<!-- Modals -->
 <div class="modal-overlay" id="serviceTypesOverlay" onclick="closeSTOnOverlay(event)">
   <div class="modal stype-modal">
     <div class="modal-header">
@@ -556,9 +599,27 @@
     <div class="form-grid">
       <div class="form-group full"><label>🚗 รถที่เข้าศูนย์</label><select id="fVehicle"><option value="">-- เลือกรถ --</option></select></div>
       <div class="form-group"><label>📅 วันที่</label><input type="date" id="fDate" required></div>
-      <div class="form-group"><label>📍 ศูนย์ / อู่</label><input type="text" id="fCenter" placeholder="เช่น Honda Dream Wing" list="centerList"><datalist id="centerList"></datalist></div>
+      
+      <!-- 🌟 NEW: GPS Button in Center Input -->
+      <div class="form-group">
+        <label>📍 ศูนย์ / อู่</label>
+        <div class="input-with-icon">
+          <input type="text" id="fCenter" placeholder="เช่น Honda Dream Wing" list="centerList">
+          <button type="button" class="btn btn-ghost btn-sm" style="border:1px solid var(--border);" onclick="getGPSLocation('fCenter')" title="ดึงตำแหน่ง GPS">📍</button>
+        </div>
+        <datalist id="centerList"></datalist>
+      </div>
+
       <div class="form-group"><label>🏎 เลขไมล์ (km)</label><input type="number" id="fMileage" placeholder="km"></div>
       <div class="form-group"><label>📝 หมายเหตุ</label><input type="text" id="fNote" placeholder="รายละเอียดเพิ่มเติม"></div>
+      
+      <!-- 🌟 NEW: Receipt Image Input -->
+      <div class="form-group full">
+        <label>📸 รูปใบเสร็จ (แนบเก็บไว้ดูย้อนหลัง)</label>
+        <input type="file" id="fReceipt" accept="image/*" onchange="handleImageCompress(event, 'fReceiptPreview', 'fReceiptBase64')">
+        <input type="hidden" id="fReceiptBase64">
+        <img id="fReceiptPreview" class="receipt-preview">
+      </div>
     </div>
     <div class="divider"></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px">
@@ -586,7 +647,11 @@
   <div class="modal">
     <div class="modal-header">
       <div class="modal-title">รายละเอียด</div>
-      <button class="close-btn" onclick="closeDetail()">✕</button>
+      <div style="display:flex; gap:6px;">
+        <!-- 🌟 NEW: Share to LINE Button -->
+        <button class="btn btn-ghost btn-sm" style="color:#00B900; border-color:rgba(0,185,0,0.3);" onclick="shareCurrentRecord('service')">ส่งแชร์ 💬</button>
+        <button class="close-btn" onclick="closeDetail()">✕</button>
+      </div>
     </div>
     <div id="detailContent"></div>
     <div style="display:flex;gap:7px;margin-top:16px;justify-content:flex-end">
@@ -602,7 +667,7 @@
     <div class="modal-header">
       <div class="modal-title">⛽ บันทึกการเติมน้ำมัน</div>
       <div style="display:flex;gap:6px;align-items:center">
-        <button class="btn btn-sm" onclick="openFuelAiScanModal()" style="background:linear-gradient(135deg,rgba(245,158,11,0.15),rgba(239,68,68,0.15));border:1px solid rgba(245,158,11,0.35);color:var(--fuel);">📸 AI สแกนใบเสร็จ</button>
+        <button class="btn btn-sm" onclick="openFuelAiScanModal()" style="background:linear-gradient(135deg,rgba(245,158,11,0.15),rgba(239,68,68,0.15));border:1px solid rgba(245,158,11,0.35);color:var(--fuel);">📸 AI สแกน</button>
         <button class="close-btn" onclick="closeFuelModal()">✕</button>
       </div>
     </div>
@@ -625,7 +690,17 @@
       </div>
       <div class="form-group"><label>🪣 ปริมาณ (ลิตร)</label><input type="number" id="ffLiters" class="fuel-input-highlight" placeholder="เช่น 20.5" step="0.01" min="0" oninput="calcFuelEfficiency()"></div>
       <div class="form-group"><label>💰 ราคา/ลิตร (บาท)</label><input type="number" id="ffPricePerLiter" class="fuel-input-highlight" placeholder="เช่น 40.50" step="0.01" min="0" oninput="calcFuelEfficiency()"></div>
-      <div class="form-group full"><label>🏪 ปั๊มน้ำมัน</label><input type="text" id="ffStation" placeholder="เช่น PTT, Shell, Bangchak..." list="stationList"><datalist id="stationList"><option value="PTT"><option value="Shell"><option value="Bangchak"><option value="Esso"><option value="Caltex"><option value="Susco"><option value="ปตท."><option value="บางจาก"></datalist></div>
+      
+      <!-- 🌟 NEW: GPS Button in Station Input -->
+      <div class="form-group full">
+        <label>🏪 ปั๊มน้ำมัน</label>
+        <div class="input-with-icon">
+          <input type="text" id="ffStation" placeholder="เช่น PTT, Shell..." list="stationList">
+          <button type="button" class="btn btn-ghost btn-sm" style="border:1px solid var(--border);" onclick="getGPSLocation('ffStation')" title="ดึงตำแหน่ง GPS">📍</button>
+        </div>
+        <datalist id="stationList"><option value="PTT"><option value="Shell"><option value="Bangchak"><option value="Esso"><option value="Caltex"><option value="Susco"><option value="ปตท."><option value="บางจาก"></datalist>
+      </div>
+
       <div class="form-group full">
         <label>เติมเต็มถัง?</label>
         <div style="display:flex;gap:8px;margin-top:4px">
@@ -635,6 +710,15 @@
         <input type="hidden" id="ffFullTank" value="true">
       </div>
       <div class="form-group full"><label>📝 หมายเหตุ</label><input type="text" id="ffNote" placeholder="เช่น เติมระหว่างทาง, ราคาโปรโมชั่น"></div>
+      
+      <!-- 🌟 NEW: Receipt Image Input for Fuel -->
+      <div class="form-group full">
+        <label>📸 รูปใบเสร็จ (ลดขนาดให้อัตโนมัติ)</label>
+        <input type="file" id="ffReceipt" accept="image/*" onchange="handleImageCompress(event, 'ffReceiptPreview', 'ffReceiptBase64')">
+        <input type="hidden" id="ffReceiptBase64">
+        <img id="ffReceiptPreview" class="receipt-preview">
+      </div>
+
     </div>
     <div class="fuel-calc-box" id="fuelCalcBox">
       <div class="fuel-calc-row"><span class="fuel-calc-label">💰 ค่าน้ำมันครั้งนี้</span><span class="fuel-calc-value highlight" id="calcTotal">฿ 0.00</span></div>
@@ -650,7 +734,14 @@
 
 <div class="modal-overlay" id="fuelDetailOverlay" onclick="if(event.target===this)closeFuelDetail()">
   <div class="modal" style="max-width:480px">
-    <div class="modal-header"><div class="modal-title">⛽ รายละเอียดการเติมน้ำมัน</div><button class="close-btn" onclick="closeFuelDetail()">✕</button></div>
+    <div class="modal-header">
+      <div class="modal-title">⛽ รายละเอียด</div>
+      <div style="display:flex; gap:6px;">
+        <!-- 🌟 NEW: Share to LINE Button -->
+        <button class="btn btn-ghost btn-sm" style="color:#00B900; border-color:rgba(0,185,0,0.3);" onclick="shareCurrentRecord('fuel')">ส่งแชร์ 💬</button>
+        <button class="close-btn" onclick="closeFuelDetail()">✕</button>
+      </div>
+    </div>
     <div id="fuelDetailContent"></div>
     <div style="display:flex;gap:7px;margin-top:16px;justify-content:flex-end">
       <button class="btn btn-danger btn-sm" onclick="deleteFuelRecord()">🗑 ลบ</button>
@@ -756,15 +847,20 @@
 
 <div class="modal-overlay" id="exportOverlay" onclick="if(event.target===this)closeExportModal()">
   <div class="modal">
-    <div class="modal-header"><div class="modal-title">💾 Export / Import</div><button class="close-btn" onclick="closeExportModal()">✕</button></div>
-    <p style="font-size:12px;color:var(--text-dim);margin-bottom:14px">สำรองข้อมูลหรือโอนย้ายระหว่าง browser</p>
+    <div class="modal-header"><div class="modal-title">💾 Export / Print</div><button class="close-btn" onclick="closeExportModal()">✕</button></div>
+    <p style="font-size:12px;color:var(--text-dim);margin-bottom:14px">สำรองข้อมูล, โอนย้ายระหว่างเครื่อง หรือพิมพ์รายงาน</p>
     <div class="export-grid">
-      <div class="export-card" onclick="exportJSON()"><div class="export-card-icon">📤</div><div class="export-card-title">Export JSON</div><div class="export-card-sub">ดาวน์โหลดข้อมูลทั้งหมดเป็นไฟล์ .json</div></div>
-      <div class="export-card" onclick="exportCSV()"><div class="export-card-icon">📊</div><div class="export-card-title">Export CSV</div><div class="export-card-sub">เปิดใน Excel หรือ Google Sheets ได้เลย</div></div>
-      <div class="export-card" onclick="document.getElementById('importFile').click()"><div class="export-card-icon">📥</div><div class="export-card-title">Import JSON</div><div class="export-card-sub">นำข้อมูลสำรองกลับเข้ามา</div><input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)"></div>
-      <div class="export-card" onclick="clearAllData()" style="border-color:rgba(239,68,68,0.2)"><div class="export-card-icon">🗑</div><div class="export-card-title" style="color:var(--red)">ล้างข้อมูล</div><div class="export-card-sub">ลบทุกอย่าง เริ่มใหม่จากศูนย์</div></div>
+      <div class="export-card" onclick="exportJSON()"><div class="export-card-icon">📤</div><div class="export-card-title">Export JSON</div><div class="export-card-sub">ดาวน์โหลดไฟล์แบคอัป</div></div>
+      <div class="export-card" onclick="exportCSV()"><div class="export-card-icon">📊</div><div class="export-card-title">Export CSV</div><div class="export-card-sub">สำหรับเปิดใน Excel</div></div>
+      <div class="export-card" onclick="document.getElementById('importFile').click()"><div class="export-card-icon">📥</div><div class="export-card-title">Import JSON</div><div class="export-card-sub">นำข้อมูลสำรองเข้ามา</div><input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)"></div>
+      <!-- 🌟 NEW: Generate PDF Report Button -->
+      <div class="export-card" onclick="generatePDFReport()" style="border-color:rgba(59,130,246,0.3)"><div class="export-card-icon">📄</div><div class="export-card-title" style="color:var(--blue)">Print / PDF Report</div><div class="export-card-sub">พิมพ์สรุปประวัติเข้าศูนย์</div></div>
     </div>
     <div class="export-info">📦 ข้อมูลปัจจุบัน: <strong id="dataSize" style="color:var(--text)">-</strong></div>
+    
+    <div class="export-grid" style="grid-template-columns:1fr; margin-top:14px;">
+      <div class="export-card" onclick="clearAllData()" style="border-color:rgba(239,68,68,0.2); padding: 10px;"><div class="export-card-title" style="color:var(--red)">🗑 ล้างข้อมูลทั้งหมด</div></div>
+    </div>
     <div style="display:flex;justify-content:flex-end;margin-top:14px"><button class="btn btn-ghost" onclick="closeExportModal()">ปิด</button></div>
   </div>
 </div>
@@ -793,14 +889,35 @@ function lockScreen(){
 }
 checkSession();
 
+// 🌟 NEW: THEME TOGGLE (Light/Dark Mode) 🌟
+function initTheme() {
+  const savedTheme = localStorage.getItem('csl_theme') || 'dark';
+  if (savedTheme === 'light') {
+    document.body.classList.add('light-mode');
+    document.getElementById('themeToggleBtn').textContent = '🌙';
+  }
+}
+function toggleTheme() {
+  const body = document.body;
+  const btn = document.getElementById('themeToggleBtn');
+  if (body.classList.contains('light-mode')) {
+    body.classList.remove('light-mode');
+    localStorage.setItem('csl_theme', 'dark');
+    btn.textContent = '☀️';
+  } else {
+    body.classList.add('light-mode');
+    localStorage.setItem('csl_theme', 'light');
+    btn.textContent = '🌙';
+  }
+}
+initTheme();
+
 // ════════════════════════════════════
 //  CONSTANTS
 // ════════════════════════════════════
 const DEFAULT_SERVICE_TYPES = [
   {name:'เปลี่ยนถ่ายน้ำมันเครื่อง',cat:'ค่าบริการ'},{name:'เปลี่ยนยาง',cat:'อะไหล่'},{name:'ตรวจเช็คเบรก',cat:'ค่าบริการ'},{name:'เปลี่ยนผ้าเบรก',cat:'อะไหล่'},{name:'ล้างแอร์',cat:'ค่าบริการ'},{name:'เติมน้ำยาแอร์',cat:'อะไหล่'},{name:'เปลี่ยนไส้กรองอากาศ',cat:'อะไหล่'},{name:'เปลี่ยนไส้กรองน้ำมัน',cat:'อะไหล่'},{name:'ตรวจเช็คระยะ',cat:'ค่าบริการ'},{name:'ล้างห้องเครื่อง',cat:'ค่าบริการ'},{name:'เปลี่ยนน้ำมันเกียร์',cat:'ค่าบริการ'},{name:'เปลี่ยนน้ำยาหม้อน้ำ',cat:'อะไหล่'},{name:'ตรวจเช็คแบตเตอรี่',cat:'ค่าบริการ'},{name:'เปลี่ยนแบตเตอรี่',cat:'อะไหล่'},{name:'ตรวจเช็คไฟ',cat:'ค่าบริการ'},{name:'เปลี่ยนหัวเทียน',cat:'อะไหล่'},{name:'เปลี่ยนโซ่-สเตอร์',cat:'อะไหล่'},{name:'ตั้งโซ่',cat:'ค่าแรง'},{name:'ปรับวาล์ว',cat:'ค่าแรง'},{name:'เปลี่ยนน้ำมันโช้ค',cat:'อะไหล่'},{name:'ตรวจเช็คน้ำมันเบรก',cat:'ค่าบริการ'},{name:'ซ่อมทั่วไป',cat:'ค่าแรง'},
-  // 🌟 NEW DEFAULT TYPES 🌟
-  {name:'ต่อภาษีประจำปี',cat:'อื่นๆ'},{name:'ต่อ พ.ร.บ.',cat:'อื่นๆ'},{name:'ต่อประกันภัย',cat:'อื่นๆ'},
-  {name:'อื่นๆ',cat:'อื่นๆ'}
+  {name:'ต่อภาษีประจำปี',cat:'อื่นๆ'},{name:'ต่อ พ.ร.บ.',cat:'อื่นๆ'},{name:'ต่อประกันภัย',cat:'อื่นๆ'},{name:'อื่นๆ',cat:'อื่นๆ'}
 ];
 const CAT_UNITS = {'ค่าบริการ':'ครั้ง','อะไหล่':'ชิ้น','ค่าแรง':'ครั้ง','อื่นๆ':'รายการ'};
 const TAG_MAP = {'น้ำมัน':'tag-oil','เปลี่ยน':'tag-oil','ยาง':'tag-tire','เบรก':'tag-brake','ผ้าเบรก':'tag-brake','แอร์':'tag-ac','ไส้กรอง':'tag-filter','ตรวจ':'tag-check','ภาษี':'tag-other','ประกัน':'tag-other'};
@@ -840,8 +957,6 @@ window.onload = () => {
   updateCenterDatalist(); populateVehicleSelect();
   populateFuelVehicleFilter(); renderFuelRecords(); updateFuelStats(); renderFuelCharts();
   checkReminders();
-  
-  // 🌟 Load today's fuel prices
   fetchTodayFuelPrices();
 };
 
@@ -850,7 +965,7 @@ function renderVehicleChips(){
   let h = `<button class="vehicle-chip all-chip ${selectedVehicleId==='all'?'active':''}" onclick="selectVehicle('all')"><span>🚦</span> ทั้งหมด</button>`;
   vehicles.forEach(v=>{
     const act = selectedVehicleId===v.id;
-    h += `<button class="vehicle-chip ${act?'active':''}" onclick="selectVehicle('${v.id}')" ${act?`style="background:${v.color};border-color:${v.color}"`:''}>${v.icon} ${v.name} <span class="chip-plate">${v.plate}</span></button>`;
+    h += `<button class="vehicle-chip ${act?'active':''}" onclick="selectVehicle('${v.id}')" ${act?`style="background:${v.color};border-color:${v.color};color:#fff;"`:''}>${v.icon} ${v.name} <span class="chip-plate">${v.plate}</span></button>`;
   });
   c.innerHTML = h;
 }
@@ -887,13 +1002,38 @@ function renderRecords(){
     return `<div class="record-card" onclick="openDetail(${r.id})">
       <div class="record-date-block"><div class="record-day">${d.getDate()}</div><div class="record-month">${MONTHS_TH[d.getMonth()]}</div><div class="record-year">${d.getFullYear()}</div></div>
       <div class="record-body">
-        <h3><span class="v-dot" style="background:${v.color||'#f97316'}"></span>${r.center}</h3>
+        <h3><span class="v-dot" style="background:${v.color||'#f97316'}"></span>${r.center} ${r.receipt ? '🖼️' : ''}</h3>
         <p>${v.icon||''} ${v.name||''} ${v.plate?'· '+v.plate:''} ${r.mileage?'· '+r.mileage.toLocaleString()+' km':''} ${r.note?'· '+r.note:''}</p>
         <div class="record-tags">${tags.map(t=>`<span class="tag ${getTagClass(t)}">${t}</span>`).join('')}${r.items.length>3?`<span class="tag tag-other">+${r.items.length-3}</span>`:''}</div>
       </div>
       <div class="record-cost"><div class="record-cost-value">฿${(r.total||0).toLocaleString(undefined,{maximumFractionDigits:2})}</div><div class="record-cost-label">${r.items.length} รายการ</div></div>
     </div>`;
   }).join('');
+}
+
+// 🌟 NEW: Web Share API Logic 🌟
+function shareCurrentRecord(type) {
+  let text = '';
+  if (type === 'service' && viewingId) {
+    const r = records.find(x => String(x.id) === String(viewingId));
+    const v = vehicles.find(x => x.id === r.vehicleId) || {};
+    text = `🔧 ประวัติซ่อมรถ: ${v.name} (${v.plate})\n📅 วันที่: ${r.date}\n📍 ศูนย์: ${r.center}\n🏎 ไมล์: ${r.mileage ? r.mileage.toLocaleString()+' km' : '-'}\n💰 ยอดรวม: ฿${(r.total||0).toLocaleString()}\n\nรายการที่ทำ:\n` + r.items.map(it => `- ${it.name} (${it.qty} ${it.unit}) = ฿${((it.qty||1)*it.cost).toLocaleString()}`).join('\n');
+    if (r.note) text += `\n📝 หมายเหตุ: ${r.note}`;
+  } else if (type === 'fuel' && viewingFuelId) {
+    const r = fuelRecords.find(x => x.id === viewingFuelId);
+    const v = vehicles.find(x => x.id === r.vehicleId) || {};
+    text = `⛽ เติมน้ำมัน: ${v.name} (${v.plate})\n📅 วันที่: ${r.date}\n🏪 ปั๊ม: ${r.station}\n⛽ ชนิด: ${r.fuelType}\n🪣 ปริมาณ: ${r.liters} ลิตร (฿${r.pricePerLiter}/ลิตร)\n💸 ยอดรวม: ฿${(r.total||0).toLocaleString()}`;
+    if (r.efficiency) text += `\n📈 อัตราสิ้นเปลือง: ${r.efficiency.toFixed(2)} กม./ลิตร`;
+    if (r.note) text += `\n📝 หมายเหตุ: ${r.note}`;
+  }
+
+  if (navigator.share) {
+    navigator.share({ title: 'Car Service Log', text: text })
+      .catch(console.error);
+  } else {
+    // Fallback to LINE URL Scheme
+    window.open(`https://line.me/R/msg/text/?${encodeURIComponent(text)}`);
+  }
 }
 
 function openDetail(id){
@@ -919,7 +1059,9 @@ function openDetail(id){
         ${r.items.map(it=>`<tr><td>${it.name}</td><td style="text-align:center;font-family:'Space Mono',monospace">${it.qty||1} ${it.unit||'รายการ'}</td><td style="color:var(--text-dim)">${it.type}</td><td style="text-align:right;font-family:'Space Mono',monospace">${it.cost>0?'฿'+it.cost.toLocaleString():'<span style="color:var(--text-muted)">ฟรี</span>'}</td><td style="text-align:right;font-family:'Space Mono',monospace;color:var(--accent)">${it.cost>0?'฿'+((it.qty||1)*it.cost).toLocaleString():'<span style="color:var(--text-muted)">ฟรี</span>'}</td></tr>`).join('')}
         ${summaryRows}
       </tbody>
-    </table>`;
+    </table>
+    ${r.receipt ? `<div style="margin-top:16px"><div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;font-weight:600">📸 รูปใบเสร็จ:</div><img src="${r.receipt}" class="receipt-view"></div>` : ''}
+    `;
   document.getElementById('detailOverlay').classList.add('open');
 }
 function closeDetail(){ document.getElementById('detailOverlay').classList.remove('open'); viewingId=null; }
@@ -932,10 +1074,89 @@ function deleteCurrentRecord(){
 }
 function editCurrentRecord(){ const id=viewingId; closeDetail(); openModal(id); }
 
+// 🌟 NEW: Image Compressor for Receipts
+function handleImageCompress(event, previewId, base64InputId) {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = e => {
+    const img = new Image();
+    img.src = e.target.result;
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const MAX_WIDTH = 800; // Max width to keep Base64 size small for Firestore (< 100kb usually)
+      let width = img.width;
+      let height = img.height;
+
+      if (width > MAX_WIDTH) {
+        height *= MAX_WIDTH / width;
+        width = MAX_WIDTH;
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+
+      // Compress to JPEG 60% quality
+      const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.6);
+      
+      document.getElementById(base64InputId).value = compressedDataUrl;
+      const preview = document.getElementById(previewId);
+      preview.src = compressedDataUrl;
+      preview.style.display = 'block';
+    };
+  };
+}
+
+// 🌟 NEW: GPS Fetcher
+async function getGPSLocation(inputId) {
+  const input = document.getElementById(inputId);
+  input.value = "กำลังค้นหาตำแหน่ง...";
+  
+  if (!navigator.geolocation) {
+    input.value = "";
+    alert("อุปกรณ์ของคุณไม่รองรับ GPS");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(async pos => {
+    try {
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+      // Use OpenStreetMap Nominatim Free API
+      const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=th`);
+      const data = await res.json();
+      
+      let locName = "";
+      if(data.address) {
+        locName = data.address.road || data.address.suburb || data.address.town || data.address.city;
+      }
+      if(!locName) locName = data.display_name.split(',')[0];
+      
+      input.value = locName ? `${locName} (GPS)` : `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+    } catch(e) {
+      input.value = "";
+      alert("ไม่สามารถระบุชื่อสถานที่ได้จากพิกัด GPS");
+    }
+  }, err => {
+    input.value = "";
+    alert("กรุณาอนุญาตการเข้าถึงตำแหน่ง (Location Permission) ในเบราว์เซอร์");
+  }, { enableHighAccuracy: true, timeout: 10000 });
+}
+
 function openModal(id=null){
   editingId=id?String(id):null;
   document.getElementById('modalTitle').textContent=id?'แก้ไขรายการ':'บันทึกการเข้าศูนย์';
   populateVehicleSelect();
+  
+  // Reset Receipt fields
+  document.getElementById('fReceipt').value = '';
+  document.getElementById('fReceiptBase64').value = '';
+  document.getElementById('fReceiptPreview').style.display = 'none';
+
   if(id){
     const r=records.find(x=>String(x.id)===String(id));
     document.getElementById('fVehicle').value=r.vehicleId||'';
@@ -944,6 +1165,13 @@ function openModal(id=null){
     document.getElementById('fMileage').value=r.mileage||'';
     document.getElementById('fNote').value=r.note||'';
     document.getElementById('fDiscount').value=r.discount||'';
+    
+    if (r.receipt) {
+      document.getElementById('fReceiptBase64').value = r.receipt;
+      document.getElementById('fReceiptPreview').src = r.receipt;
+      document.getElementById('fReceiptPreview').style.display = 'block';
+    }
+
     document.getElementById('serviceItems').innerHTML='';
     r.items.forEach(it=>addServiceItem(it));
   } else {
@@ -1002,7 +1230,10 @@ function saveRecord(){
   const items=Array.from(document.querySelectorAll('.service-item-row')).map(row=>{ const qty=parseFloat(row.querySelector('.svc-qty').value)||1, cost=parseFloat(row.querySelector('.svc-cost').value)||0, type=row.querySelector('.svc-type').value, s=qty*cost; subtotal+=s; return {name:row.querySelector('.svc-name').value,type,qty,unit:getUnit(type),cost,subtotal:s}; });
   const discount=parseFloat(document.getElementById('fDiscount').value)||0;
   const total=Math.max(0,subtotal-discount);
-  const rec={id:editingId||Date.now(),vehicleId:vid,date,center,mileage:parseInt(document.getElementById('fMileage').value)||0,note:document.getElementById('fNote').value.trim(),items,subtotal,discount,total};
+  
+  const receiptBase64 = document.getElementById('fReceiptBase64').value;
+
+  const rec={id:editingId||Date.now(),vehicleId:vid,date,center,mileage:parseInt(document.getElementById('fMileage').value)||0,note:document.getElementById('fNote').value.trim(),items,subtotal,discount,total,receipt:receiptBase64||null};
   if(editingId){ const i=records.findIndex(r=>String(r.id)===String(editingId)); records[i]=rec; } else records.push(rec);
   saveAll(); closeModal(); updateStats(); renderRecords(); renderSummary();
   updateCenterDatalist(); populateSummaryYear();
@@ -1023,6 +1254,12 @@ function openFuelModal(id=null){
   document.getElementById('ffPricePerLiter').value='';
   document.getElementById('ffStation').value='';
   document.getElementById('ffNote').value='';
+  
+  // Reset Receipt fields
+  document.getElementById('ffReceipt').value = '';
+  document.getElementById('ffReceiptBase64').value = '';
+  document.getElementById('ffReceiptPreview').style.display = 'none';
+
   isFullTank=true;
   document.getElementById('fullTankYes').className='fuel-type-btn active';
   document.getElementById('fullTankNo').className='fuel-type-btn';
@@ -1108,7 +1345,10 @@ function saveFuelRecord(){
     const last=getLastFuelRecord(vid);
     if(last && last.mileage>0 && mileage>last.mileage && liters>0) efficiency=(mileage-last.mileage)/liters;
   }
-  const rec={id:Date.now(),vehicleId:vid,date,fuelType:document.getElementById('ffFuelType').value,liters,pricePerLiter:ppl,total:liters*ppl,mileage,station:document.getElementById('ffStation').value.trim(),fullTank:isFullTank,note:document.getElementById('ffNote').value.trim(),efficiency};
+
+  const receiptBase64 = document.getElementById('ffReceiptBase64').value;
+
+  const rec={id:Date.now(),vehicleId:vid,date,fuelType:document.getElementById('ffFuelType').value,liters,pricePerLiter:ppl,total:liters*ppl,mileage,station:document.getElementById('ffStation').value.trim(),fullTank:isFullTank,note:document.getElementById('ffNote').value.trim(),efficiency,receipt:receiptBase64||null};
   fuelRecords.push(rec);
   saveAll(); closeFuelModal();
   renderFuelRecords(); updateFuelStats(); renderFuelCharts(); renderSummary();
@@ -1128,7 +1368,7 @@ function renderFuelRecords(){
     return `<div class="fuel-record-card" onclick="openFuelDetail(${r.id})">
       <div class="fuel-date-block"><div class="fuel-date-day">${d.getDate()}</div><div class="fuel-date-month">${MONTHS_TH[d.getMonth()]}</div><div class="fuel-date-year">${d.getFullYear()}</div></div>
       <div class="fuel-record-body">
-        <h3><span class="v-dot" style="background:${v.color||'#f59e0b'}"></span>${r.station||'ปั๊มน้ำมัน'} <span style="font-size:11px;color:var(--text-dim);font-weight:400">${r.fuelType}</span></h3>
+        <h3><span class="v-dot" style="background:${v.color||'#f59e0b'}"></span>${r.station||'ปั๊มน้ำมัน'} <span style="font-size:11px;color:var(--text-dim);font-weight:400">${r.fuelType}</span> ${r.receipt ? '🖼️' : ''}</h3>
         <p>${v.icon||''} ${v.name||''} ${r.mileage?'· '+r.mileage.toLocaleString()+' km':''} ${r.note?'· '+r.note:''}</p>
         <div class="fuel-badges">
           <span class="fuel-badge badge-liters">🪣 ${r.liters} ลิตร</span>
@@ -1159,7 +1399,9 @@ function openFuelDetail(id){
     ${r.mileage?`<div class="detail-row"><span class="detail-label">🏎 เลขไมล์</span><span class="detail-value">${r.mileage.toLocaleString()} km</span></div>`:''}
     <div class="detail-row"><span class="detail-label">⛽ เติมเต็มถัง?</span><span class="detail-value">${r.fullTank?'✅ เต็มถัง':'🔋 บางส่วน'}</span></div>
     ${r.efficiency?`<div class="detail-row"><span class="detail-label">📈 อัตราสิ้นเปลือง</span><span class="detail-value" style="color:var(--green);font-family:'Space Mono',monospace">${r.efficiency.toFixed(2)} กม./ลิตร</span></div>`:''}
-    ${r.note?`<div class="detail-row"><span class="detail-label">📝 หมายเหตุ</span><span class="detail-value">${r.note}</span></div>`:''}`;
+    ${r.note?`<div class="detail-row"><span class="detail-label">📝 หมายเหตุ</span><span class="detail-value">${r.note}</span></div>`:''}
+    ${r.receipt ? `<div style="margin-top:16px"><div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;font-weight:600">📸 รูปใบเสร็จ:</div><img src="${r.receipt}" class="receipt-view"></div>` : ''}
+    `;
   document.getElementById('fuelDetailOverlay').classList.add('open');
 }
 function closeFuelDetail(){ document.getElementById('fuelDetailOverlay').classList.remove('open'); viewingFuelId=null; }
@@ -1249,33 +1491,30 @@ function populateSummaryYear(){
 }
 function setPeriod(p,btn){ summaryPeriod=p; document.querySelectorAll('.period-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderSummary(); }
 
-// 🌟 NEW: Fetch Daily Fuel Prices
+// 🌟 Fetch Daily Fuel Prices 🌟
 async function fetchTodayFuelPrices() {
   const container = document.getElementById('dailyPriceContainer');
   const dateLabel = document.getElementById('dpDate');
   
   try {
-    // ใช้ API สาธารณะของ chnwt.dev สำหรับราคาน้ำมันไทย
     const response = await fetch('https://api.chnwt.dev/thai-oil-api/latest');
     if (!response.ok) throw new Error('API Error');
     const data = await response.json();
     
     const pttData = data.response.stations.ptt;
-    const bcpData = data.response.stations.bcp; // ดึงข้อมูลของ บางจาก เพิ่มเข้ามา
+    const bcpData = data.response.stations.bcp;
     if(!pttData && !bcpData) throw new Error('No data found');
 
-    // จัดการวันที่
     const updateDate = new Date(data.response.date);
     dateLabel.textContent = `อัปเดต: ${updateDate.getDate()} ${MONTHS_TH[updateDate.getMonth()]} ${updateDate.getFullYear()+543}`;
 
-    // ตั้งค่าประเภทน้ำมันที่ต้องการแสดงและสีขอบด้านล่าง
     const fuelTargets = [
-      { key: 'gasohol_95', name: 'GSH 95', color: '#f97316' }, // Orange
-      { key: 'gasohol_91', name: 'GSH 91', color: '#eab308' }, // Yellow
-      { key: 'gasohol_e20', name: 'E20', color: '#22c55e' }, // Green
-      { key: 'gasohol_e85', name: 'E85', color: '#a855f7' }, // Purple
-      { key: 'diesel', name: 'Diesel', color: '#3b82f6' }, // Blue
-      { key: 'diesel_b7', name: 'Diesel B7', color: '#14b8a6' } // Teal
+      { key: 'gasohol_95', name: 'GSH 95', color: '#f97316' }, 
+      { key: 'gasohol_91', name: 'GSH 91', color: '#eab308' }, 
+      { key: 'gasohol_e20', name: 'E20', color: '#22c55e' }, 
+      { key: 'gasohol_e85', name: 'E85', color: '#a855f7' }, 
+      { key: 'diesel', name: 'Diesel', color: '#3b82f6' }, 
+      { key: 'diesel_b7', name: 'Diesel B7', color: '#14b8a6' } 
     ];
 
     let html = '';
@@ -1303,13 +1542,12 @@ async function fetchTodayFuelPrices() {
     container.innerHTML = html || '<div style="font-size:12px; color:var(--text-dim);">ไม่พบข้อมูลราคา</div>';
 
   } catch (error) {
-    console.error("Failed to fetch fuel prices:", error);
     container.innerHTML = '<div style="font-size:12px; color:var(--text-dim); padding:10px;">⚠️ ไม่สามารถโหลดราคาน้ำมันได้ในขณะนี้</div>';
     dateLabel.textContent = '';
   }
 }
 
-// 🌟 NEW: Calculate and Render Cost per Km
+// 🌟 Calculate Cost per Km 🌟
 function renderCostPerKm(yr, yrFuel) {
   const allRecs = [...yr, ...yrFuel]
     .filter(r => r.mileage && r.mileage > 0)
@@ -1323,16 +1561,13 @@ function renderCostPerKm(yr, yrFuel) {
   let costPerKm = 0;
 
   if (allRecs.length >= 2) {
-    // Find min and max mileage in the selected set
     const mileages = allRecs.map(r => r.mileage);
     const minMile = Math.min(...mileages);
     const maxMile = Math.max(...mileages);
     distance = maxMile - minMile;
   }
 
-  if (distance > 0) {
-    costPerKm = totalCost / distance;
-  }
+  if (distance > 0) { costPerKm = totalCost / distance; }
 
   document.getElementById('sumDistance').textContent = distance > 0 ? distance.toLocaleString() + ' km' : '- km';
   document.getElementById('sumCostPerKm').innerHTML = costPerKm > 0 ? 
@@ -1346,7 +1581,6 @@ function renderSummary(){
   const yr=base.filter(r=>new Date(r.date).getFullYear()===year);
   const yrFuel=baseFuel.filter(r=>new Date(r.date).getFullYear()===year);
   
-  // 🌟 Update Cost per Km panels
   renderCostPerKm(yr, yrFuel);
 
   summaryPeriod==='month'?renderMonthChart(yr,yrFuel):renderYearChart(base,baseFuel);
@@ -1481,6 +1715,77 @@ function renderRemindList(){
 function addReminder(){ const service=document.getElementById('remNewService').value,km=parseInt(document.getElementById('remNewKm').value)||0,month=parseInt(document.getElementById('remNewMonth').value)||0; if(!km&&!month){alert('กรุณากำหนดรอบ');return;} if(reminders.find(r=>r.service===service)){alert('มีการแจ้งเตือนของงานนี้แล้ว');return;} reminders.push({service,km,month}); saveReminders(); document.getElementById('remNewKm').value=''; document.getElementById('remNewMonth').value=''; renderRemindList(); checkReminders(); }
 function deleteReminder(i){ reminders.splice(i,1); saveReminders(); renderRemindList(); checkReminders(); }
 
+// 🌟 NEW: PDF Export Logic 🌟
+function generatePDFReport() {
+  const printWindow = window.open('', '_blank');
+  
+  let html = `
+    <html>
+    <head>
+      <title>รายงานประวัติซ่อมบำรุงรถ - Car Service Log</title>
+      <style>
+        body { font-family: 'Sarabun', sans-serif; color: #111; padding: 20px; font-size: 14px; }
+        h1 { text-align: center; color: #ea580c; margin-bottom: 5px; }
+        h2 { border-bottom: 2px solid #ea580c; padding-bottom: 5px; margin-top: 30px; font-size: 18px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 12px; }
+        th, td { border: 1px solid #ccc; padding: 8px 10px; text-align: left; }
+        th { background: #f3f4f6; font-weight: bold; }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        @media print {
+          @page { size: A4; margin: 15mm; }
+          button { display: none; }
+        }
+      </style>
+    </head>
+    <body>
+      <h1>CAR SERVICE LOG</h1>
+      <p class="text-center" style="color: #555; margin-bottom: 20px;">รายงานประวัติซ่อมบำรุงและค่าใช้จ่าย<br>วันที่พิมพ์: ${new Date().toLocaleDateString('th-TH')}</p>
+  `;
+
+  // Vehicles Summary
+  html += `<h2>ข้อมูลรถทั้งหมด (${vehicles.length} คัน)</h2><table><thead><tr><th>ไอคอน</th><th>ชื่อรถ / รุ่น</th><th>ทะเบียน</th><th>รวมค่าซ่อม (บาท)</th><th>รวมค่าน้ำมัน (บาท)</th></tr></thead><tbody>`;
+  vehicles.forEach(v => {
+    const vRecs = records.filter(r => r.vehicleId === v.id);
+    const vFuel = fuelRecords.filter(r => r.vehicleId === v.id);
+    const cost = vRecs.reduce((s, r) => s + (r.total || 0), 0);
+    const fuelCost = vFuel.reduce((s, r) => s + (r.total || 0), 0);
+    html += `<tr><td class="text-center">${v.icon}</td><td>${v.name}</td><td>${v.plate}</td><td class="text-right">${cost.toLocaleString()}</td><td class="text-right">${fuelCost.toLocaleString()}</td></tr>`;
+  });
+  html += `</tbody></table>`;
+
+  // Service Records
+  const sortedRecords = records.slice().sort((a,b) => new Date(b.date) - new Date(a.date));
+  html += `<h2>ประวัติการซ่อมบำรุง (${sortedRecords.length} รายการ)</h2><table><thead><tr><th>วันที่</th><th>รถ</th><th>ศูนย์ / อู่</th><th>เลขไมล์ (km)</th><th>รายการ</th><th>ยอดรวม (บาท)</th></tr></thead><tbody>`;
+  sortedRecords.forEach(r => {
+    const v = vehicles.find(x => x.id === r.vehicleId) || {name: 'ไม่ระบุ'};
+    const itemsText = r.items.map(it => `${it.name} (${it.qty})`).join(', ');
+    html += `<tr><td>${r.date}</td><td>${v.name}</td><td>${r.center}</td><td class="text-right">${r.mileage?r.mileage.toLocaleString():'-'}</td><td>${itemsText}</td><td class="text-right">${(r.total||0).toLocaleString()}</td></tr>`;
+  });
+  html += `</tbody></table>`;
+
+  // Fuel Records
+  const sortedFuel = fuelRecords.slice().sort((a,b) => new Date(b.date) - new Date(a.date));
+  html += `<h2>ประวัติการเติมน้ำมัน (${sortedFuel.length} รายการ)</h2><table><thead><tr><th>วันที่</th><th>รถ</th><th>ปั๊ม</th><th>ชนิดน้ำมัน</th><th>ปริมาณ (ลิตร)</th><th>ยอดรวม (บาท)</th><th>กม./ลิตร</th></tr></thead><tbody>`;
+  sortedFuel.forEach(r => {
+    const v = vehicles.find(x => x.id === r.vehicleId) || {name: 'ไม่ระบุ'};
+    html += `<tr><td>${r.date}</td><td>${v.name}</td><td>${r.station}</td><td>${r.fuelType}</td><td class="text-right">${r.liters}</td><td class="text-right">${(r.total||0).toLocaleString()}</td><td class="text-center">${r.efficiency?r.efficiency.toFixed(2):'-'}</td></tr>`;
+  });
+  html += `</tbody></table>`;
+
+  html += `
+      <div style="text-align: center; margin-top: 40px;">
+        <button onclick="window.print()" style="padding: 10px 20px; font-size: 16px; background: #ea580c; color: white; border: none; border-radius: 5px; cursor: pointer;">🖨️ พิมพ์รายงาน / เซฟเป็น PDF</button>
+      </div>
+    </body>
+    </html>
+  `;
+
+  printWindow.document.write(html);
+  printWindow.document.close();
+}
+
+
 function openExportModal(){ const size=new Blob([JSON.stringify({vehicles,records,serviceTypes,reminders,fuelRecords})]).size; document.getElementById('dataSize').textContent=`${records.length} service · ${fuelRecords.length} เติมน้ำมัน · ${vehicles.length} คัน · ${(size/1024).toFixed(1)} KB`; document.getElementById('exportOverlay').classList.add('open'); }
 function closeExportModal(){ document.getElementById('exportOverlay').classList.remove('open'); }
 function exportJSON(){ const data={version:2,exportedAt:new Date().toISOString(),vehicles,records,serviceTypes,reminders,fuelRecords}; const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`car-service-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(a.href); }
@@ -1568,9 +1873,7 @@ function fillFuelFormFromAi(){
 // ════ Service Worker Registration (PWA) ════
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js')
-      .then(reg => console.log('Service Worker Registered'))
-      .catch(err => console.log('Service Worker Reg Failed', err));
+    navigator.serviceWorker.register('sw.js').catch(err => console.log('Service Worker Reg Failed', err));
   });
 }
 
@@ -1580,9 +1883,9 @@ if ('serviceWorker' in navigator) {
   const authBtn = document.createElement('button');
   authBtn.className = 'btn btn-ghost';
   authBtn.innerHTML = '☁️ กำลังเชื่อมต่อ...';
-  // Insert after lock button
-  const lockBtn = document.getElementById('lockScreenBtn');
-  headerActions.insertBefore(authBtn, lockBtn ? lockBtn.nextSibling : headerActions.children[1]);
+  // Insert after theme button
+  const themeBtn = document.getElementById('themeToggleBtn');
+  headerActions.insertBefore(authBtn, themeBtn ? themeBtn.nextSibling : headerActions.children[0]);
 
   try {
     const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js");
